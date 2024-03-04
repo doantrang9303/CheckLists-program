@@ -2,25 +2,33 @@ package com.ya3k.checklist.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-@AllArgsConstructor
 @Service
 public class KeyCloakService {
 
-    private final String CLIENT_ID = "auth-client";
-    private final String CLIENT_SECRET = "hbtIpc8gZLyn0fbtHLEBik1h731cfHrm";
-    private final String INTROSPECT_URL = "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspect";
+
+    @Value("${keycloak.client-id}")
+    private  String CLIENT_ID;
+    @Value("${keycloak.client-secret}")
+    private  String CLIENT_SECRET;
+    @Value("${keycloak.introspect-url}")
+    private  String INTROSPECT_URL;
 
 
-    @Autowired
     private final RestTemplate restTemplate;
+    @Autowired
+    public KeyCloakService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     public Boolean introspectToken(String token) throws Exception {
 
