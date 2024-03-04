@@ -1,0 +1,8 @@
+server:
+  port: 9292
+
+keycloak:
+  client-id: "auth-client"
+  client-secret: "hbtIpc8gZLyn0fbtHLEBik1h731cfHrm"
+  introspect-url: "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspect"
+
