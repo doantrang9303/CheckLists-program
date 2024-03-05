@@ -80,7 +80,7 @@ Run the project using Maven: ` mvn spring-boot:run`
 Access the project through your web browser at http://localhost:9292
 
 ### Start Front-end:  
-1. Open file .env and change config keycloak suitable for your local computer:
+1. Open file .env in ` CheckLists-program\Front-end\website\my-react-app` folder and change config keycloak suitable for your local computer:
    
    * VITE_KEYCLOAK_URL =http://localhost:8080`
  
