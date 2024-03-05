@@ -13,7 +13,7 @@ const TokenUpdater = () => {
         localStorage.setItem('access_token', currentToken);
         setStoredToken(currentToken);
       }
-    }, 10000); // Check every 1000ms (1 second)
+    }, 10000); // Check every 10000ms (10 second)
 
     return () => clearInterval(interval); 
   }, [storedToken, auth.userData]);
