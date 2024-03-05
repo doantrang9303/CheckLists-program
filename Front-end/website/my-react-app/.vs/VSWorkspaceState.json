@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\src"
   ],
-  "SelectedNode": "\\.eslintrc.cjs",
+  "SelectedNode": "\\.env",
   "PreviewInSolutionExplorer": false
 }

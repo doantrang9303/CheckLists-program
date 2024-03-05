@@ -8,7 +8,7 @@ function Sidebar() {
     const handleSignOut = () => {
         localStorage.removeItem('access_token');
         // Construct the Keycloak logout URL
-        const logoutUrl = `http://localhost:8080/realms/react-test/protocol/openid-connect/logout?post_logout_redirect_uri=${encodeURIComponent(window.location.origin)}&id_token_hint=${auth.userData.id_token}`;
+        const logoutUrl = `${import.meta.env.VITE_KEYCLOAK_URL}/realms/${import.meta.env.VITE_KEYCLOAK_REALM}/protocol/openid-connect/logout?post_logout_redirect_uri=${encodeURIComponent(window.location.origin)}&id_token_hint=${auth.userData.id_token}`;
         auth.signOut();
         
         window.location.href = logoutUrl;
