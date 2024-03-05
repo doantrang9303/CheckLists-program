@@ -79,10 +79,20 @@ Run the project using Maven: ` mvn spring-boot:run`
 
 Access the project through your web browser at http://localhost:9292
 
-### Start Front-end:
-1.Open another terminal and navigate to ` CheckLists-program\Front-end\website\my-react-app` folder
+### Start Front-end:  
+1. Open file .env and change config keycloak suitable for your local computer:
    
-2. Change config keycloak suitable for your local computer at file .evn
+   * VITE_KEYCLOAK_URL =http://localhost:8080`
+ 
+   * VITE_KEYCLOAK_REALM =`YOUR_REALM_NAME `
+
+   * VITE_KEYCLOAK_CLIENT =`YOUR_CLIENT_NAME` `
+
+   * API_SSO_VERIFY_ACCESS_TOKEN ="http://localhost:9292"`
+
+   * VITE_KEYCLOAK_SECRET_CLIENT = `YOUR_CLIENT_SECRET `
+
+2.Open another terminal and navigate to ` CheckLists-program\Front-end\website\my-react-app` folder
   
 3. Run the command below if you are running the application for the first time:
      `npm install`
