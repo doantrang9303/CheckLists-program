@@ -6,8 +6,9 @@
 
 ### Start Keycloak
 Install Keycloak and unzip 
-Open folder keycloak unzip-> Open folder bin
- Right click and choose Open in Terminal -> Enter './kc.bat start-dev' and wait for it to run
+Open folder keycloak unzip-> Open folder **bin**
+
+ Right click and choose Open in Terminal -> Enter `./kc.bat start-dev` and wait for it to run
 
 
 ### Creating the realm
