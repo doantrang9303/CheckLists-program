@@ -31,8 +31,6 @@ public class KeyCloakController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing");
         }
 
-
-
         token = token.substring(7);
         boolean isActive = keycloakService.introspectToken(token);
 
@@ -57,16 +55,19 @@ public class KeyCloakController {
         if (token.equals("")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing");
         }
-
         //api verify token
         //parse result -> active ? true : false
 
         if (token.equals("123456")) {
             return ResponseEntity.status(HttpStatus.OK).body("True");
         } else {
-            return ResponseEntity.status(HttpStatus.OK).body("False");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("False");
         }
+    }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> testGet() {
+        return ResponseEntity.status(HttpStatus.OK).body("Hello");
     }
 
 
