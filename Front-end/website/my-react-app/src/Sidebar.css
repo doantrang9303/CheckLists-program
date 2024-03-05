@@ -1,0 +1,40 @@
+.sidebar{
+  width: 300px !important;
+
+}
+.page-icon{
+margin-top: 0.5rem;
+width :3.5rem;
+height :auto;
+}
+.bg-custom{
+  background-color: #986f53;
+}
+.brand-name{
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-left:10px;
+}
+.btn-custom{
+  background-color:#D9D9D9;
+  border-radius: 35px;
+}
+.btn-custom1{
+  background-color:#D9D9D9;
+  width:250px;
+  
+}
+.btn-custom2{
+  background-color:#D9D9D9;
+  width: 250px;
+}
+.m-custom{
+  margin-left: 7rem !important;
+}
+.m-custom1{
+  margin-left: 5.4rem !important;
+}
+.m-custom2{
+  margin-left: 6rem !important;
+}
+
