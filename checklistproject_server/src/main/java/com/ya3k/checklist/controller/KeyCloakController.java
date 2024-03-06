@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 public class KeyCloakController {
     @Autowired
     private final KeyCloakService keycloakService;
-
     //method post
     //verify token
     @PostMapping("/verify-token")
@@ -25,16 +24,13 @@ public class KeyCloakController {
         if (token == null || token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is Empty");
         }
-
         //check length of token
         if (!token.startsWith("Bearer ")){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing");
         }
-
+        //substring Bearer
         token = token.substring(7);
         boolean isActive = keycloakService.introspectToken(token);
-
-
         //check token true or false
         if (isActive) {
             return ResponseEntity.status(HttpStatus.OK).body("True");
@@ -44,8 +40,13 @@ public class KeyCloakController {
 
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> testGet() {
+        return ResponseEntity.status(HttpStatus.OK).body("Hello");
+    }
 
     //test function
+    
     @PostMapping("/test")
     public ResponseEntity<String> test(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if (token.length() < 7) {
@@ -65,10 +66,7 @@ public class KeyCloakController {
         }
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> testGet() {
-        return ResponseEntity.status(HttpStatus.OK).body("Hello");
-    }
+
 
 
 }

@@ -5,4 +5,4 @@ keycloak:
   client-id: "auth-client"
   client-secret: "qRVuumbLjUQvOGuQZkCnWsthBVfmnMMt"
   introspect-url: "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspect"
-
+  
