@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
-@CrossOrigin(origins = "http://localhost:3000",
+@CrossOrigin(origins = "${front-end.url}",
         allowedHeaders = "*",
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class KeyCloakController {
@@ -24,17 +24,21 @@ public class KeyCloakController {
         if (token == null || token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is Empty");
         }
+
         //check length of token
         if (!token.startsWith("Bearer ")){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing");
         }
+
         //substring Bearer
         token = token.substring(7);
         boolean isActive = keycloakService.introspectToken(token);
         //check token true or false
         if (isActive) {
+            System.out.println("is active: " + isActive);
             return ResponseEntity.status(HttpStatus.OK).body("True");
         } else {
+            System.out.println("is active: " + isActive);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("False");
         }
 
@@ -46,7 +50,6 @@ public class KeyCloakController {
     }
 
     //test function
-    
     @PostMapping("/test")
     public ResponseEntity<String> test(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if (token.length() < 7) {
@@ -58,7 +61,6 @@ public class KeyCloakController {
         }
         //api verify token
         //parse result -> active ? true : false
-
         if (token.equals("123456")) {
             return ResponseEntity.status(HttpStatus.OK).body("True");
         } else {

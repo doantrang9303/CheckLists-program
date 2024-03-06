@@ -30,39 +30,71 @@ public class KeyCloakService {
         this.restTemplate = restTemplate;
     }
 
-    public Boolean introspectToken(String token) throws Exception {
-
+    public boolean introspectToken(String token) {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-
-
-        //ENV!!!!!!!!!!!!
         body.add("client_id", CLIENT_ID);
         body.add("client_secret", CLIENT_SECRET);
-
-        // access token
         body.add("token", token);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-
-        //ENV!!!!!!!!!!!!
-        //url introspect verify token
-        String url = INTROSPECT_URL;
-
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-
+        ResponseEntity<String> response;
+        try {
+            response = restTemplate.postForEntity(INTROSPECT_URL, entity, String.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while introspecting token", e);
+        }
 
         // Parse JSON string to JsonNode
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode jsonNode = mapper.readTree(response.getBody());
+        JsonNode jsonNode;
+        try {
+            jsonNode = mapper.readTree(response.getBody());
+        } catch (Exception e) {
+            throw new RuntimeException("Error while parsing response", e);
+        }
 
         // Get the value of "active"
-        boolean isActive = jsonNode.get("active").asBoolean();
-
-        return isActive;
-
+        return jsonNode.get("active").asBoolean();
     }
+
+//    public Boolean introspectToken(String token) throws Exception {
+//
+//        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
+//
+//        //ENV!!!!!!!!!!!!
+//        body.add("client_id", CLIENT_ID);
+//        body.add("client_secret", CLIENT_SECRET);
+//
+//        // access token
+//        body.add("token", token);
+//
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//
+//        //ENV!!!!!!!!!!!!
+//        //url introspect verify token
+//        String url = INTROSPECT_URL;
+//
+//        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(body, headers);
+//
+//        ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+//
+//
+//
+//        // Parse JSON string to JsonNode
+//        ObjectMapper mapper = new ObjectMapper();
+//        JsonNode jsonNode = mapper.readTree(response.getBody());
+//
+//        // Get the value of "active"
+//        boolean isActive = jsonNode.get("active").asBoolean();
+//
+//        return isActive;
+//
+//    }
+
+
 }
