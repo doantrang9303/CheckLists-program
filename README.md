@@ -3,8 +3,10 @@
 
 ## PREPARE
 
+### **Install Docker**
+`https://www.docker.com/products/docker-desktop`
 
-### Start Keycloak
+### **Start Keycloak**
 Open CMD : `docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:23.0.7 start-dev`
 
 
@@ -31,12 +33,12 @@ On the next form fill in the following values:
 
 
 
-### Install GIT for WINDOWS
+### **Install GIT for WINDOWS**
  Download and install GIT : https://git-scm.com/download/win
  
  Check git version : `git –version`
  
-### Install Java JDK (JDK 17)
+### **Install Java JDK (JDK 17)**
 Download:  https://download.oracle.com/java/17/latest/jdk-17_windows-x64_bin.exe 
 
 Setup Java Home : RUN CMD With ADMIN
@@ -46,7 +48,7 @@ Setup Java Home : RUN CMD With ADMIN
  
 Check: java --version
 
- ### Install Maven 
+ ### **Install Maven **
 download: https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.zip
 unzip it to a specific folder of our choice
 
@@ -57,7 +59,7 @@ Setup MAVEN Home : open new CMD and run With ADMIN
  
 Check: `mvn –version `
 
-### Install Node.js
+### **Install Node.js**
 -Node.js v20.11.1 :  ` https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi `
 
 
@@ -79,12 +81,25 @@ Open file .env in ` CheckLists-program\Front-end\website\my-react-app` folder an
 
 
 
-## RUN CHECKLIST PROGRAM on CMD
+## RUN CHECKLIST PROGRAM 
 
 ### Install source: 
 Open CMD: ` git clone https://github.com/doantrang9303/CheckLists-program `
+ ####
+ 
+### Run program by Docker:
+Open docker 
+#### Build image
+Open cmd :  `docker build -t imageName `.
+#### Run docker
+On cmd :  `docker run -p setPort(5173:5173) imageName`
 
-### Start Back-end:
+####
+
+
+### Run program by CMD:
+
+#### Start Back-end:
 Navigate to the project directory:` cd CheckLists-program/checklistproject_server `
 
 Build the project using Maven: ` mvn clean install `
@@ -93,7 +108,7 @@ Run the project using Maven: ` mvn spring-boot:run`
 
 Access the project through your web browser at http://localhost:9292
 
-### Start Front-end:  
+#### Start Front-end:  
 
 1. Open another terminal and navigate to ` CheckLists-program\Front-end\website\my-react-app` folder
   
