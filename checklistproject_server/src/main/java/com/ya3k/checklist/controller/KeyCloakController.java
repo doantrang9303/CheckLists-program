@@ -1,6 +1,6 @@
 package com.ya3k.checklist.controller;
 
-import com.ya3k.checklist.services.KeyCloakService;
+import com.ya3k.checklist.service.KeyCloakService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

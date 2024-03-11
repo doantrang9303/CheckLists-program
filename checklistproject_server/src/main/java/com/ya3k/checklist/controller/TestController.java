@@ -1,6 +1,6 @@
 package com.ya3k.checklist.controller;
 
-import com.ya3k.checklist.services.KeyCloakService;
+import com.ya3k.checklist.service.KeyCloakService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +28,7 @@ public class TestController {
 
     //method post
     //verify token
-    @PostMapping("/verify-token")
+    @PostMapping("/verify-2")
     private ResponseEntity<?> verifyToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws IOException, InterruptedException {
         // Check if token is empty or missing "Bearer" prefix
         if (token == null || token.isEmpty() || !token.startsWith("Bearer ")) {
@@ -39,9 +39,9 @@ public class TestController {
         token = token.substring(7);
 
         HttpClient client = HttpClient.newHttpClient();
-        String keycloakTokenUrl = "http://localhost:8080/realms/react-test/protocol/openid-connect/token/introspect";
+        String keycloakTokenUrl = "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspect";
         Map<String, String> data = new HashMap<>();
-        data.put("client_id", "myclient");
+        data.put("client_id", "auth-client");
         data.put("token", token);
         data.put("client_secret", "EOTSj7klMyl84TyEzGSlynKmYEGzRBuS");
 
