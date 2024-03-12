@@ -12,7 +12,7 @@ const callApi = async () => {
     const accessToken = localStorage.getItem('access_token');
     console.log(accessToken)
     try {
-        const response = await axios.post('http', {}, {
+        const response = await axios.post(process.env.REACT_APP_KEYCLOAK_VERIFY , {}, {
             headers: {
                 'Authorization': `Bearer ${accessToken}` // Include the access token in the Authorization header
             }
