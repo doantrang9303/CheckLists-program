@@ -7,7 +7,7 @@ front-end:
 keycloak:
   client-id: "auth-client"
   client-secret: "T1lrAs44N7wsk1mfZxag54IXMO8NOOa1"
-  introspect-url: "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspec
+  introspect-url: "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspect"
 spring:
   datasource:
     url: "jdbc:sqlserver://ThinkPad:1433;encrypt=true;trustServerCertificate=true;databaseName=demo"
