@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -15,19 +18,23 @@ import java.util.Date;
 @NoArgsConstructor
 public class Program {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int pId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
     @Column(name = "name")
     private String name;
-    @Column(name="user_id")
-    private int uId;
+
+   @ManyToOne
+   @JoinColumn(name = "user_id")
+   private Users user;
     @Column(name="status")
     private String status;
     @Column(name="create_time")
-    private Date cTime;
+    @CreatedDate
+    private LocalDateTime create_time;
     @Column(name="end_time")
-    private Date eTime;
+    private Date end_time;
+
 
 
 

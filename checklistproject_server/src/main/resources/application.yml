@@ -1,3 +1,4 @@
+
 server:
   port: 9292
 
@@ -6,5 +7,13 @@ front-end:
 keycloak:
   client-id: "auth-client"
   client-secret: "T1lrAs44N7wsk1mfZxag54IXMO8NOOa1"
-  introspect-url: "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspect"
-  
+  introspect-url: "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspec
+spring:
+  datasource:
+    url: "jdbc:sqlserver://ThinkPad:1433;encrypt=true;trustServerCertificate=true;databaseName=demo"
+    username: "sa"
+    password: "trang"
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
