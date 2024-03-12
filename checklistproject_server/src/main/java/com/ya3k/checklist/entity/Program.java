@@ -23,7 +23,7 @@ public class Program {
     @Column(name="user_id")
     private int uId;
     @Column(name="status")
-    private String sId;
+    private String status;
     @Column(name="create_time")
     private Date cTime;
     @Column(name="end_time")
