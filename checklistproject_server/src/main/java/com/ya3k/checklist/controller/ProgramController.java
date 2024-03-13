@@ -19,8 +19,6 @@ public class ProgramController {
     ProgramRepository repo;
     @Autowired
     UserRepository urepo;
-    @Autowired
-    private UserServiceImpl userService ;
 
 
     @PostMapping("/add")
