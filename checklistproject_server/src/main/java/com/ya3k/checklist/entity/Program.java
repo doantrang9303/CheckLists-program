@@ -31,9 +31,9 @@ public class Program {
     private String status;
     @Column(name="create_time")
     @CreatedDate
-    private LocalDateTime create_time;
+    private LocalDateTime createTime;
     @Column(name="end_time")
-    private Date end_time;
+    private Date endTime;
 
 
 
