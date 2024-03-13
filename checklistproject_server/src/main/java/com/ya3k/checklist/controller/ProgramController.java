@@ -43,14 +43,17 @@ public class ProgramController {
         return ResponseEntity.ok(savedProgram);
     }
 
-    @DeleteMapping("/de")
+    //delete program by id
+    @DeleteMapping("/delete")
     public ResponseEntity createProgram(@RequestParam Integer id)  {
         Optional<Program> p = repo.findById(id);
         Program curP = p.get();
         repo.delete(curP);
         return ResponseEntity.ok().body("Delete successfull");
     }
-    @PutMapping("/up")
+
+        //update program with id
+    @PutMapping("/update")
     public ResponseEntity createProgram(@RequestBody  Program program,@RequestParam Integer id)  {
         Optional<Program> p = repo.findById(id);
         if (p ==null){
@@ -100,10 +103,10 @@ public class ProgramController {
         return ResponseEntity.ok().body(repo.findByStatusContainingIgnoreCaseAndCreateTimeBetween(status,Date.valueOf(startDate).toLocalDate().atStartOfDay(), Date.valueOf(endDate).toLocalDate().atStartOfDay(),pageRequest));
 
     }
-    //update program with id
 
 
-    //delete program by id
+
+    
 
 
 }
