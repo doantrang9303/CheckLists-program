@@ -51,7 +51,7 @@ public class ProgramController {
 
     @GetMapping("/search")
     public ResponseEntity<List<ProgramDto>> searchProgram(
-            @RequestParam(name = "user_name") String userName,
+            @RequestHeader(name = "user_name") String userName,
             @RequestParam(name = "p_name") String name,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
