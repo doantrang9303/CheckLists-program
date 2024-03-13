@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/programs")
+@CrossOrigin(origins = "${front-end.url}",
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class ProgramController {
     @Autowired
     ProgramRepository repo;
