@@ -81,7 +81,7 @@ public class ProgramController {
 
     }
 
-    @GetMapping("/search")//?abc=123&xyz=123
+    @GetMapping("/program")
     public ResponseEntity getAllProgramsByUserId(@RequestParam(name = "status", required = false) String status,
                                                  @RequestParam(name = "startDate", required = false) String startDate,
                                                  @RequestParam(name = "endDate", required = false) String endDate,
