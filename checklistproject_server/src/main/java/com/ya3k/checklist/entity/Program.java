@@ -1,6 +1,7 @@
 package com.ya3k.checklist.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,6 +37,7 @@ public class Program {
 
     @Column(name="end_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonProperty("endtime")
     private Date end_time;
 
 
