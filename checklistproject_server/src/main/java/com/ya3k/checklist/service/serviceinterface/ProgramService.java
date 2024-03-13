@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface ProgramService {
     List<ProgramDto> findProgramName(String name, Pageable pageable);
-    List<ProgramDto> findProgramStatus(String status, Pageable pageable);
-    List<ProgramDto> findProgramUser(int id, Pageable pageable);
 
+    List<ProgramDto> seachProgramName(String userName, String pName, Pageable pageable);
 }

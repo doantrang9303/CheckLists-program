@@ -39,19 +39,15 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public List<ProgramDto> findProgramStatus(String status, Pageable pageable) {
-        Page<Program> programs = programRepository.findByStatus(status, pageable);
-        return programs.getContent().stream()
-                .map(ProgramMapper::toDto)
-                .collect(Collectors.toList());
+    public List<ProgramDto> seachProgramName(String userName, String pName, Pageable pageable) {
+        Page<Program> programs = programRepository.findByNameAndUserName(userName, pName, pageable);
+        if(programs != null && !programs.isEmpty()){
+            return programs.getContent().stream()
+                    .map(ProgramMapper::toDto)
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 
-    @Override
-    public List<ProgramDto> findProgramUser(int id, Pageable pageable) {
 
-        Page<Program> programs = programRepository.findByUser(id, pageable);
-        return programs.getContent().stream()
-                .map(ProgramMapper::toDto)
-                .collect(Collectors.toList());
-    }
 }

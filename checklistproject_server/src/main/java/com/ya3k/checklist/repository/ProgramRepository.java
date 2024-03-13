@@ -11,9 +11,8 @@
 
     public interface ProgramRepository extends JpaRepository<Program, Integer> {
         Page<Program> findByNameContaining(String name, Pageable pageable);
-        Page<Program> findByStatus(String status, Pageable pageable);
 
-        @Query("SELECT p FROM Program p WHERE p.user.user_id = :id")
-        Page<Program> findByUser(int id, Pageable pageable);
+        @Query("SELECT p FROM Program p WHERE  p.user.user_name = :userName AND p.name like %:pName%")
+        Page<Program> findByNameAndUserName(String userName, String pName, Pageable pageable);
 
     }

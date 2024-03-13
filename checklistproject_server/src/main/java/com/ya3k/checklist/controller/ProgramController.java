@@ -47,37 +47,23 @@ public class ProgramController {
     }
 
     //search program
-    @GetMapping("/filter")
-    public ResponseEntity<List<ProgramDto>> getProgramsByName(
-            @RequestParam(name = "name", required = false) String name,
-            @RequestParam(name = "status", required = false) String status,
+
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProgramDto>> searchProgram(
+            @RequestParam(name = "user_name") String userName,
+            @RequestParam(name = "p_name") String name,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page - 1, size);
-
-
-        if (name != null) {
-            return ResponseEntity.ok(programService.findProgramName(name, pageable));
-        } else if (status != null) {
-            return ResponseEntity.ok(programService.findProgramStatus(status, pageable));
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+            ) {
+        Pageable pageable = PageRequest.of(page -1, size);
+        List<ProgramDto> programs = programService.seachProgramName(userName, name, pageable);
+        if(programs == null || programs.isEmpty())
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.ok(programs);
     }
 
 
-    @GetMapping("/list")
-    public ResponseEntity<List<ProgramDto>> getPrograms(@RequestHeader int user_id,
-                                                     @RequestParam(name = "page", defaultValue = "1") int page,
-                                                     @RequestParam(name = "size", defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page - 1, size);
 
-        if(user_id == 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        } else  {
-            return ResponseEntity.ok(programService.findProgramUser(user_id, pageable));
-        }
-    }
 
 }
