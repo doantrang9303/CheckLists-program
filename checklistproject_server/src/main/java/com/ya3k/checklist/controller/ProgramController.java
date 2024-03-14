@@ -5,13 +5,12 @@ import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Users;
 import com.ya3k.checklist.repository.ProgramRepository;
 import com.ya3k.checklist.repository.UserRepository;
-import com.ya3k.checklist.service.serviceimpl.UserServiceImpl;
+import com.ya3k.checklist.response.ProgramListResponse;
+import com.ya3k.checklist.response.ProgramResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
-import lombok.Data;
-import org.apache.catalina.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
+
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -63,20 +62,77 @@ public class ProgramController {
 
 
     @GetMapping("/search")
-    public ResponseEntity<List<ProgramDto>> searchProgram(
+    public ResponseEntity<?> searchProgram(
             @RequestHeader(name = "user_name") String userName,
             @RequestParam(name = "p_name") String name,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
             ) {
         Pageable pageable = PageRequest.of(page -1, size);
-        List<ProgramDto> programs = programService.seachProgramName(userName, name, pageable);
-        if(programs == null || programs.isEmpty())
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        return ResponseEntity.ok(programs);
+      try{
+            Page<ProgramResponse> programsList = programService.seachProgramName(userName, name, pageable);
+            int totalPage = programsList.getTotalPages();
+            int totalElements = (int) programsList.getTotalElements();
+
+            List<ProgramResponse> programs = programsList.getContent();
+            return ResponseEntity.ok(ProgramListResponse.builder()
+                    .programResponseList(programs)
+                    .totalPage(totalPage)
+                    .total(totalElements)
+                    .build());
+      }catch (Exception e){
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      }
     }
 
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllPrograms(
+            @RequestHeader(name = "user_name") String userName,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page -1, size);
+        try {
+            Page<ProgramResponse> programsList = programService.findByUserName(userName, pageable);
+            int totalPage = programsList.getTotalPages();
+            int totalElements = (int) programsList.getTotalElements();
+
+            List<ProgramResponse> programs = programsList.getContent();
+            return ResponseEntity.ok(ProgramListResponse.builder()
+                    .programResponseList(programs)
+                    .totalPage(totalPage)
+                    .total(totalElements)
+                    .build());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<?> getProgramsByFilters(
+            @RequestHeader(name = "user_name") String userName,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "program_name", required = false) String programName,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page -1, size);
+        try {
+            Page<ProgramResponse> programsList = programService.findByUserAndFilters(userName, status, programName, pageable);
+            int totalPage = programsList.getTotalPages();
+            int totalElements = (int) programsList.getTotalElements();
+
+            List<ProgramResponse> programs = programsList.getContent();
+            return ResponseEntity.ok(ProgramListResponse.builder()
+                    .programResponseList(programs)
+                    .totalPage(totalPage)
+                    .total(totalElements)
+                    .build());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
 
 }

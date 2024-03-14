@@ -19,7 +19,7 @@ import java.util.Date;
 public class ProgramDto {
     private int id;
     private String name;
-    private Users user;
+    private  int user_id;
     private String status;
     private LocalDateTime create_time;
     private Date end_time;

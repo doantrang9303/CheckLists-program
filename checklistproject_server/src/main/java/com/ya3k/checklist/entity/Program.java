@@ -1,6 +1,8 @@
 package com.ya3k.checklist.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,6 +30,7 @@ public class Program {
     private String name;
   
     @ManyToOne
+    @JsonBackReference
     @JoinColumn(name = "user_id")
     private Users user;
   
@@ -38,7 +41,6 @@ public class Program {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @CreatedDate
     private LocalDateTime create_time;
-  
     @Column(name="end_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("endtime")

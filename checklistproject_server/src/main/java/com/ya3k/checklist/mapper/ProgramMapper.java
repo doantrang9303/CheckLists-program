@@ -3,37 +3,31 @@ package com.ya3k.checklist.mapper;
 import com.ya3k.checklist.dto.ProgramDto;
 import com.ya3k.checklist.entity.Program;
 
+import java.time.ZoneId;
+import java.util.Date;
+
 public class ProgramMapper {
 
-    public static ProgramDto toDto(Program program) {
-        if (program == null) {
-            return null;
-        }
-
-        ProgramDto dto = new ProgramDto();
-        dto.setId(program.getId());
-        dto.setName(program.getName());
-        dto.setUser(program.getUser());
-        dto.setStatus(program.getStatus());
-        dto.setCreate_time(program.getCreate_time());
-        dto.setEnd_time(program.getEnd_time());
-
-        return dto;
+    public static ProgramDto mapToDto(Program program) {
+        return new ProgramDto(
+                program.getId(),
+                program.getName(),
+                program.getUser() != null ? program.getUser().getUser_id() : 0,
+                program.getStatus(),
+                program.getCreate_time(),
+                program.getEnd_time()
+        );
     }
 
-    public static Program toEntity(ProgramDto dto) {
-        if (dto == null) {
-            return null;
-        }
-
-        Program entity = new Program();
-        entity.setId(dto.getId());
-        entity.setName(dto.getName());
-        entity.setUser(dto.getUser());
-        entity.setStatus(dto.getStatus());
-        entity.setCreate_time(dto.getCreate_time());
-        entity.setEnd_time(dto.getEnd_time());
-
-        return entity;
+    public static Program mapDtoToProgram(ProgramDto programDto) {
+        Program program = new Program();
+        program.setId(programDto.getId());
+        program.setName(programDto.getName());
+        // Assuming there's a separate service to fetch User by ID and set it to Program
+        // program.setUser(userService.findById(programDto.getUser_id()));
+        program.setStatus(programDto.getStatus());
+        program.setCreate_time(programDto.getCreate_time());
+        program.setEnd_time(programDto.getEnd_time());
+        return program;
     }
 }
