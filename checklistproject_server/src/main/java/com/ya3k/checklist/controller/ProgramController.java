@@ -5,13 +5,9 @@ import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Users;
 import com.ya3k.checklist.repository.ProgramRepository;
 import com.ya3k.checklist.repository.UserRepository;
-import com.ya3k.checklist.service.serviceimpl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
-import lombok.Data;
-import org.apache.catalina.User;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
