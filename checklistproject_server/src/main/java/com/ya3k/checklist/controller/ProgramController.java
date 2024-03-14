@@ -85,14 +85,14 @@ public class ProgramController {
         try {
             Page<ProgramResponse> programs = programService.findByUserName(userName, pageable);
             int totalPage = programs.getTotalPages();
-            int totalElement = programs.getNumberOfElements();
+            int totalElement = (int)programs.getTotalElements();
 
             List<ProgramResponse> content = programs.getContent();
 
             return ResponseEntity.ok(ProgramListResponse.builder()
                     .programResponseList(content)
                     .totalPage(totalPage)
-                    .total(totalElement)
+                    .totalElement(totalElement)
                     .build());
 
         } catch (Exception e) {
