@@ -1,5 +1,6 @@
 package com.ya3k.checklist.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,6 +19,8 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer user_id;
     private String user_name;
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference
     private List<Program> programs;
 }
