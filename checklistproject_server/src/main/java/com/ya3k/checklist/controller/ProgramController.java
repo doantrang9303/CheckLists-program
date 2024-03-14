@@ -5,14 +5,18 @@ import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Users;
 import com.ya3k.checklist.repository.ProgramRepository;
 import com.ya3k.checklist.repository.UserRepository;
+import com.ya3k.checklist.response.ProgramListResponse;
+import com.ya3k.checklist.response.ProgramResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,17 +39,16 @@ public class ProgramController {
     }
 
 
-
     @PostMapping("/add")
     public ResponseEntity<?> createProgram(@RequestBody Program program, @RequestHeader String userName) {
-        if(userName==null || userName.isEmpty()){
+        if (userName == null || userName.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username is empty");
         }
         Users user = urepo.findByUser(userName);
-        if(user==null){
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User Not Found");
         }
-      
+
         program.setUser(user);
         if (program.getStatus() == null || program.getStatus().equals(""))
             program.setStatus("IN_PROGRESS");
@@ -64,15 +67,40 @@ public class ProgramController {
             @RequestParam(name = "p_name") String name,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
-            ) {
-        Pageable pageable = PageRequest.of(page -1, size);
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, size);
         List<ProgramDto> programs = programService.seachProgramName(userName, name, pageable);
-        if(programs == null || programs.isEmpty())
+        if (programs == null || programs.isEmpty())
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         return ResponseEntity.ok(programs);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> listAllProgram(
+            @RequestHeader(name = "user_name") String userName,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        try {
+            Page<ProgramResponse> programs = programService.findByUserName(userName, pageable);
+            int totalPage = programs.getTotalPages();
+            int totalElement = programs.getNumberOfElements();
 
+            List<ProgramResponse> content = programs.getContent();
+
+            return ResponseEntity.ok(ProgramListResponse.builder()
+                    .programResponseList(content)
+                    .totalPage(totalPage)
+                    .total(totalElement)
+                    .build());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+
+
+    }
 
 
 }
