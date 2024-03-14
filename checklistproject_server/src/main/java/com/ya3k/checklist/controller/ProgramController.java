@@ -21,6 +21,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/programs")
+@CrossOrigin(origins = "${front-end.url}",
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class ProgramController {
     ProgramRepository repo;
     UserRepository urepo;

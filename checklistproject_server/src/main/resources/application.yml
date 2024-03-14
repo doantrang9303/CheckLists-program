@@ -3,7 +3,7 @@ server:
   port: 9292
 
 front-end:
-  url: "http://localhost:5173"
+  url: "http://localhost:3000"
 keycloak:
   client-id: "auth-client"
   client-secret: "T1lrAs44N7wsk1mfZxag54IXMO8NOOa1"
