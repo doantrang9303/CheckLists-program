@@ -16,6 +16,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.lang.annotation.Documented;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -59,8 +61,15 @@ public class ProgramController {
     }
 
     //search program
-
-
+    /**
+     * Searches for programs based on the specified criteria.
+     *
+     * @param userName The username of the user making the request (from the request header).
+     * @param name The program name to search for (from the request parameter).
+     * @param page The page number for pagination (default is 1).
+     * @param size The page size for pagination (default is 10).
+     * @return ResponseEntity containing the program list, total pages, and total elements.
+     */
     @GetMapping("/search")
     public ResponseEntity<?> searchProgram(
             @RequestHeader(name = "user_name") String userName,
@@ -86,6 +95,14 @@ public class ProgramController {
     }
 
 
+    /**
+     * Searches for programs based on the specified criteria.
+     *
+     * @param userName The username of the user making the request (from the request header).
+     * @param page The page number for pagination (default is 1).
+     * @param size The page size for pagination (default is 10).
+     * @return ResponseEntity containing the program list, total pages, and total elements.
+     */
     @GetMapping("/all")
     public ResponseEntity<?> getAllPrograms(
             @RequestHeader(name = "user_name") String userName,
@@ -109,6 +126,16 @@ public class ProgramController {
         }
     }
 
+    /**
+     * Searches for programs based on the specified criteria.
+     *
+     * @param userName The username of the user making the request (from the request header).
+     * @param status The status of the program to search for (from the request parameter).
+     * @param programName The program name to search for (from the request parameter).
+     * @param page The page number for pagination (default is 1).
+     * @param size The page size for pagination (default is 10).
+     * @return ResponseEntity containing the program list, total pages, and total elements.
+     */
     @GetMapping("/filter")
     public ResponseEntity<?> getProgramsByFilters(
             @RequestHeader(name = "user_name") String userName,
