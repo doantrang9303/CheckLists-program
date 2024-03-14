@@ -5,6 +5,8 @@ import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Users;
 import com.ya3k.checklist.repository.ProgramRepository;
 import com.ya3k.checklist.repository.UserRepository;
+import com.ya3k.checklist.service.serviceimpl.UserServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import lombok.Data;
 import org.apache.catalina.User;
@@ -15,9 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/programs")
@@ -37,9 +39,17 @@ public class ProgramController {
     }
 
 
+
     @PostMapping("/add")
-    public ResponseEntity<Program> createProgram(@RequestBody Program program, @RequestHeader Long id) {
-        Users user = urepo.findById(id).orElseThrow();
+    public ResponseEntity<?> createProgram(@RequestBody Program program, @RequestHeader String userName) {
+        if(userName==null || userName.isEmpty()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username is empty");
+        }
+        Users user = urepo.findByUser(userName);
+        if(user==null){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User Not Found");
+        }
+      
         program.setUser(user);
         if (program.getStatus() == null || program.getStatus().equals(""))
             program.setStatus("IN_PROGRESS");

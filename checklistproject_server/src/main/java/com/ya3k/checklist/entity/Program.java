@@ -20,21 +20,25 @@ import java.util.Date;
 @NoArgsConstructor
 public class Program {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+  
     @Column(name = "name")
     private String name;
+  
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user;
+  
     @Column(name="status")
     private String status;
+  
     @Column(name="create_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @CreatedDate
     private LocalDateTime create_time;
-
+  
     @Column(name="end_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("endtime")
