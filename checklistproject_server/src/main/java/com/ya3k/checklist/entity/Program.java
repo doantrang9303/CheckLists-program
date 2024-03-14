@@ -23,7 +23,6 @@ public class Program {
   private int id;
     @Column(name = "name")
     private String name;
-
    @ManyToOne
    @JoinColumn(name = "user_id")
    private Users user;
@@ -34,8 +33,5 @@ public class Program {
     private LocalDateTime createTime;
     @Column(name="end_time")
     private Date endTime;
-
-
-
 
 }

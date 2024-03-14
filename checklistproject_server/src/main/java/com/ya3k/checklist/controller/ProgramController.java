@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/program")
+@RequestMapping("/programs")
 public class ProgramController {
     @Autowired
     ProgramRepository repo;
@@ -37,9 +38,8 @@ public class ProgramController {
         else program.setStatus(program.getStatus());
         program.setCreateTime(LocalDateTime.now());
         Program savedProgram = repo.save(program);
-
-        Optional<Program> p = repo.findById(Integer.valueOf(String.valueOf(id)));
-        Program curP = p.get();
+        // Optional<Program> p = repo.findById(Integer.valueOf(String.valueOf(id)));
+      //  Program curP = p.get();
         return ResponseEntity.ok(savedProgram);
     }
 
@@ -81,14 +81,16 @@ public class ProgramController {
 
     }
 
-    @GetMapping("/program")
-    public ResponseEntity getAllProgramsByUserId(@RequestParam(name = "status", required = false) String status,
+    @GetMapping()
+    public ResponseEntity getAllProgramsByUserId(
+                                                 @RequestParam(name = "status", required = false) String status,
+                                                 @RequestParam(name = "userName", required = true) String userName,
                                                  @RequestParam(name = "startDate", required = false) String startDate,
                                                  @RequestParam(name = "endDate", required = false) String endDate,
-                                                 @RequestParam(name = "page", defaultValue = "0") int page,
+                                                 @RequestParam(name = "page", defaultValue = "1") int page,
                                                  @RequestParam(name = "size", defaultValue = "10") int size
                                                  ){
-        Pageable pageRequest = PageRequest.of(page,size);
+        Pageable pageRequest = PageRequest.of(page-1,size);
         if (status ==null){
             status = "";
         }
@@ -100,8 +102,10 @@ public class ProgramController {
 
             endDate = "2990-01-01";
         }
-        return ResponseEntity.ok().body(repo.findByStatusContainingIgnoreCaseAndCreateTimeBetween(status,Date.valueOf(startDate).toLocalDate().atStartOfDay(), Date.valueOf(endDate).toLocalDate().atStartOfDay(),pageRequest));
-
+        if ( userName.isEmpty()){
+           return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This userName invalid!");
+        }
+        return ResponseEntity.ok().body(repo.findByStatusContainingIgnoreCaseAndCreateTimeBetweenAndUserUserName(status,Date.valueOf(startDate).toLocalDate().atStartOfDay(), Date.valueOf(endDate).toLocalDate().atStartOfDay(),userName,pageRequest));
     }
 
 

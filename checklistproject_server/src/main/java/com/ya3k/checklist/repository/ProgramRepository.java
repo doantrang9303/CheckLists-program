@@ -14,5 +14,5 @@ public interface ProgramRepository extends JpaRepository<Program, Integer> {
 
     List<Program> findByUserUserId(Integer userID);
 
-    Page<Program> findByStatusContainingIgnoreCaseAndCreateTimeBetween(String status, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable);
+    Page<Program> findByStatusContainingIgnoreCaseAndCreateTimeBetweenAndUserUserName(String status, LocalDateTime startDate, LocalDateTime endDate, String userName, Pageable pageable);
 }
