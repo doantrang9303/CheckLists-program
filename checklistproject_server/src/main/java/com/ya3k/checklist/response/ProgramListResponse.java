@@ -20,4 +20,5 @@ public class ProgramListResponse {
     public int total;
     @JsonProperty("total_page")
     public int totalPage;
+
 }
