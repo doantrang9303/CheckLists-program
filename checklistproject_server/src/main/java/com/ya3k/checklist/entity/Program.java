@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -22,18 +23,25 @@ public class Program {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+  
     @Column(name = "name")
     private String name;
+  
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user;
+  
     @Column(name="status")
     private String status;
+  
     @Column(name="create_time")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @CreatedDate
     private LocalDateTime create_time;
-    @JsonProperty("endtime")
+  
     @Column(name="end_time")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonProperty("endtime")
     private Date end_time;
 
 

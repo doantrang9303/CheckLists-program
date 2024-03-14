@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 
 @Data
@@ -16,4 +18,6 @@ public class Users {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer user_id;
     private String user_name;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private List<Program> programs;
 }

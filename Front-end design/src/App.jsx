@@ -2,9 +2,10 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
-import Home from './Home';
+
 import { AuthProvider } from 'oidc-react';
 import TokenUpdater from './TokenUpdater';
+import TablePrograms from './TablePrograms';
 
 
 
@@ -34,7 +35,7 @@ function App() {
         </div>
         <div className='col'>
           <Navbar />
-          <Home />
+          <TablePrograms />
         </div>
       </div>
     </AuthProvider>

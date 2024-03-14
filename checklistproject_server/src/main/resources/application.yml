@@ -3,17 +3,19 @@ server:
   port: 9292
 
 front-end:
-  url: "http://localhost:5173"
+  url: "http://localhost:3000"
 keycloak:
   client-id: "auth-client"
   client-secret: "T1lrAs44N7wsk1mfZxag54IXMO8NOOa1"
   introspect-url: "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspect"
 spring:
   datasource:
-    url: "jdbc:sqlserver://ThinkPad:1433;encrypt=true;trustServerCertificate=true;databaseName=demo"
-    username: "sa"
-    password: "trang"
+    url: jdbc:mysql://localhost:3306/checklist
+    username: root
+    password: "23012003aA@"
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true
     hibernate:
       ddl-auto: update
+
