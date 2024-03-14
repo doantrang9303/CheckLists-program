@@ -5,9 +5,12 @@ import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Users;
 import com.ya3k.checklist.repository.ProgramRepository;
 import com.ya3k.checklist.repository.UserRepository;
+import com.ya3k.checklist.response.ProgramListResponse;
+import com.ya3k.checklist.response.ProgramResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -73,6 +76,28 @@ public class ProgramController {
     }
 
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllPrograms(
+            @RequestHeader(name = "user_name") String userName,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page -1, size);
+        try {
+            Page<ProgramResponse> programsList = programService.findByUserName(userName, pageable);
+            int totalPage = programsList.getTotalPages();
+            int totalElements = (int) programsList.getTotalElements();
+
+            List<ProgramResponse> programs = programsList.getContent();
+            return ResponseEntity.ok(ProgramListResponse.builder()
+                    .programResponseList(programs)
+                    .totalPage(totalPage)
+                    .total(totalElements)
+                    .build());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 
 
 }
