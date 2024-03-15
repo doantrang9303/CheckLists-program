@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "programs")
@@ -46,7 +47,9 @@ public class Program {
     @JsonProperty("endtime")
     private Date end_time;
 
-
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<Tasks> listTask;
 
 
 }
