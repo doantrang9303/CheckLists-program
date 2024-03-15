@@ -6,7 +6,7 @@ import Pagination from 'react-bootstrap/Pagination';
 import Form from 'react-bootstrap/Form';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
-import { fetchAllProgram } from './services/ProgramService';
+import ProgramSerivce from './services/ProgramService';
 import { useAuth } from 'oidc-react';  
 
 const callApi = async () => {
@@ -79,7 +79,7 @@ const TablePrograms = (props) => {
     }}, [auth.isLoading,auth.userData])
     
     const getPrograms = async (page,username) => { 
-        let res = await fetchAllProgram(page,username);
+        let res = await ProgramSerivce.fetchAllProgram(page,username);
         
         if(res && res.program_list) { 
             console.log(res)
@@ -101,7 +101,7 @@ const TablePrograms = (props) => {
                     <Button style={{ width: '150px' }}
                         type="button"
                         className="text-center btn btn-custom1 btn-outline-dark btn-lg fs-6 ms-2"
-                        onClick={handleCreateProgramClick}
+                      
                     >
                         Name Program
                     </Button>
@@ -110,7 +110,7 @@ const TablePrograms = (props) => {
                     <Button style={{ width: '140px' }}
                         type="button"
                         className="text-center btn btn-custom1 btn-outline-dark btn-lg fs-6 ms-2"
-                        onClick={handleCreateProgramClick}
+                       
                     >
                         Deadline
                     </Button>
@@ -126,6 +126,7 @@ const TablePrograms = (props) => {
                 <Button style={{ width: '125px' }}
                     type="button"
                     className="text-center btn btn-custom1 btn-outline-dark btn-lg fs-6 ms-2"
+                    onClick={handleCreateProgramClick}
                 >
                     Create new
                 </Button>
@@ -138,14 +139,7 @@ const TablePrograms = (props) => {
                     Delete
                 </Button>
             </li>
-            <li style={{ display: 'inline-block' }}>
-                <Button style={{ width: '125px' }}
-                    type="button"
-                    className="text-center btn btn-custom1 btn-outline-dark btn-lg fs-6 ms-2"
-                >
-                    Import File
-                </Button>
-            </li>
+          
         </ul>
 
 
@@ -182,8 +176,8 @@ const TablePrograms = (props) => {
                             
                         <td>{item.id}</td>
                         <td>{item.name}</td>
-                        <td>{item.createTime}</td>
-                        <td>{item.endTime}</td>
+                        <td>{item.create_time}</td>
+                        <td>{item.end_time}</td>
                         <td>{item.status}</td>
                     </tr>   
                           )   

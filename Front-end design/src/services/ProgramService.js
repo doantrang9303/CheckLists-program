@@ -9,5 +9,16 @@ const fetchAllProgram = (page,username ) => {
     }
   });   
 }
+const createProgram = (programData, username) => {
+  return axios.post(`/programs/add`, programData, {
+    headers: {
+      'user_name': username || ''
+    }
+  }); 
+}
+const ProgramService = {
+  fetchAllProgram,
+  createProgram,
+}
 
-export { fetchAllProgram };
+export  default ProgramService;
