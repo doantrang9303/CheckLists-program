@@ -11,7 +11,9 @@ import java.util.List;
 public interface ProgramService {
     List<ProgramDto> findProgramName(String name, Pageable pageable);
 
-    List<ProgramDto> seachProgramName(String userName, String pName, Pageable pageable);
+    Page<ProgramResponse> seachProgramName(String userName, String pName, Pageable pageable);
 
     Page<ProgramResponse> findByUserName(String userName, Pageable pageable);
+
+    Page<ProgramResponse> findByUserAndFilters(String username, String status, String programName, Pageable pageable);
 }

@@ -33,11 +33,9 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public List<ProgramDto> seachProgramName(String userName, String pName, Pageable pageable) {
+    public Page<ProgramResponse> seachProgramName(String userName, String pName, Pageable pageable) {
         Page<Program> programs = programRepository.findByNameAndUserName(userName, pName, pageable);
-        return programs.getContent().stream()
-                .map(ProgramMapper::mapToDto)
-                .collect(Collectors.toList());
+        return programs.map(ProgramResponse::fromProgram);
     }
 
     @Override
@@ -46,5 +44,10 @@ public class ProgramServiceImpl implements ProgramService {
        return programs.map(ProgramResponse::fromProgram);
     }
 
+    @Override
+    public Page<ProgramResponse> findByUserAndFilters(String username, String status, String programName, Pageable pageable) {
+        Page<Program> programs = programRepository.findByUserAndFilters(username, status, programName, pageable);
+        return programs.map(ProgramResponse::fromProgram);
+    }
 
 }

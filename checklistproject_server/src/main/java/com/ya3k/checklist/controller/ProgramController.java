@@ -62,17 +62,27 @@ public class ProgramController {
 
 
     @GetMapping("/search")
-    public ResponseEntity<List<ProgramDto>> searchProgram(
+    public ResponseEntity<?> searchProgram(
             @RequestHeader(name = "user_name") String userName,
             @RequestParam(name = "p_name") String name,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
             ) {
         Pageable pageable = PageRequest.of(page -1, size);
-        List<ProgramDto> programs = programService.seachProgramName(userName, name, pageable);
-        if(programs == null || programs.isEmpty())
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        return ResponseEntity.ok(programs);
+      try{
+            Page<ProgramResponse> programsList = programService.seachProgramName(userName, name, pageable);
+            int totalPage = programsList.getTotalPages();
+            int totalElements = (int) programsList.getTotalElements();
+
+            List<ProgramResponse> programs = programsList.getContent();
+            return ResponseEntity.ok(ProgramListResponse.builder()
+                    .programResponseList(programs)
+                    .totalPage(totalPage)
+                    .total(totalElements)
+                    .build());
+      }catch (Exception e){
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+      }
     }
 
 
@@ -95,7 +105,32 @@ public class ProgramController {
                     .total(totalElements)
                     .build());
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<?> getProgramsByFilters(
+            @RequestHeader(name = "user_name") String userName,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "program_name", required = false) String programName,
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page -1, size);
+        try {
+            Page<ProgramResponse> programsList = programService.findByUserAndFilters(userName, status, programName, pageable);
+            int totalPage = programsList.getTotalPages();
+            int totalElements = (int) programsList.getTotalElements();
+
+            List<ProgramResponse> programs = programsList.getContent();
+            return ResponseEntity.ok(ProgramListResponse.builder()
+                    .programResponseList(programs)
+                    .totalPage(totalPage)
+                    .total(totalElements)
+                    .build());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
