@@ -1,4 +1,4 @@
-package com.ya3k.checklist.service;
+package com.ya3k.checklist.service.serviceimpl;
 
 import com.ya3k.checklist.dto.ProgramDto;
 import com.ya3k.checklist.entity.Program;
