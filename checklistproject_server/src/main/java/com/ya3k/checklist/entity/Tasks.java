@@ -42,6 +42,7 @@ public class Tasks {
 
     @Column(name="end_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd ")
+    @JsonProperty("endtime")
     private LocalDate end_time;
 
 
