@@ -9,41 +9,11 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import ProgramSerivce from './services/ProgramService';
 import { useAuth } from 'oidc-react';  
 
-const callApi = async () => {
-    const accessToken = localStorage.getItem('access_token');
-    console.log(accessToken)
-    try {
-        const response = await axios.post(process.env.REACT_APP_KEYCLOAK_VERIFY , {}, {
-            headers: {
-                'Authorization': `Bearer ${accessToken}` // Include the access token in the Authorization header
-            }
-        })
 
-        alert(response.data);
-        // Handle your response data
-    } catch (error) {
-
-       if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-    } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(error.request);
-    } else {
-        // Something happened in setting up the request that triggered an Error
-        console.log('Error', error.message);
-    }
-    console.log(error.config);
-    }
-};
     
 const TablePrograms = (props) => {
     const [showCreateProgram, setShowCreateProgram] = useState(false);
+    const [refresh, setRefresh] = useState(false);
     const auth = useAuth(); 
    
     // Function to handle the click event of the "checkbox-all"
@@ -60,6 +30,7 @@ const TablePrograms = (props) => {
 
     const handleCloseCreateProgram = () => {
         setShowCreateProgram(false);
+        setRefresh(prev => !prev);
     };
     const [selectedOption, setSelectedOption] = useState(""); // State to track selected option
 
@@ -76,7 +47,7 @@ const TablePrograms = (props) => {
         console.log(auth);
         console.log(auth.userData?.profile);
         getPrograms(1,auth.userData?.profile.preferred_username);
-    }}, [auth.isLoading,auth.userData])
+    }}, [auth.isLoading,auth.userData,refresh])
     
     const getPrograms = async (page,username) => { 
         let res = await ProgramSerivce.fetchAllProgram(page,username);
