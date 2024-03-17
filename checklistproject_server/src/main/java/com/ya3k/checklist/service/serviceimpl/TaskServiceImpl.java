@@ -1,7 +1,52 @@
 package com.ya3k.checklist.service.serviceimpl;
 
+import com.ya3k.checklist.entity.Program;
+import com.ya3k.checklist.entity.Tasks;
+import com.ya3k.checklist.repository.ProgramRepository;
+import com.ya3k.checklist.repository.TasksRepository;
+import com.ya3k.checklist.response.taskresponse.TasksResponse;
+import com.ya3k.checklist.service.serviceinterface.TasksService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.Optional;
+
 @Service
-public class TaskServiceImpl {
+public class TaskServiceImpl implements TasksService {
+    private final TasksRepository tasksRepository;
+    private final ProgramRepository programRepository;
+
+    @Autowired
+    public TaskServiceImpl(TasksRepository tasksRepository, ProgramRepository programRepository) {
+        this.programRepository = programRepository;
+        this.tasksRepository = tasksRepository;
+    }
+
+    @Override
+    public Page<TasksResponse> listTasksOfProgram(int programId, Pageable pageable) {
+        Optional<Program> programs = programRepository.findById(programId);
+        if (programs.isEmpty()) {
+            throw new IllegalArgumentException("Program not existed");
+        }
+
+        Page<Tasks> tasks = tasksRepository.listTasksOfProgram(programId, pageable);
+
+        return tasks.map(TasksResponse::fromTasks);
+    }
+
+    @Override
+    public Page<TasksResponse> findByProgramIdAndFilter(int programId, String status, String taskName, String endTime, Pageable pageable) {
+        Optional<Program> programs = programRepository.findById(programId);
+        if (programs.isEmpty()) {
+            throw new IllegalArgumentException("Program not existed");
+        }
+
+        Page<Tasks> tasks = tasksRepository.findByProgramIdAndFilter(programId, status, taskName, endTime, pageable);
+
+
+        return tasks.map(TasksResponse::fromTasks);
+    }
 }

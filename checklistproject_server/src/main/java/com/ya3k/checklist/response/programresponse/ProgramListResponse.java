@@ -1,7 +1,6 @@
-package com.ya3k.checklist.response;
+package com.ya3k.checklist.response.programresponse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ya3k.checklist.repository.ProgramRepository;
 import lombok.*;
 
 import java.util.List;

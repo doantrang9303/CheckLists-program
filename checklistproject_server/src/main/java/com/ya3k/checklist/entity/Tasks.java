@@ -3,6 +3,7 @@ package com.ya3k.checklist.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -27,9 +28,12 @@ public class Tasks {
     private String status;
 
     @Column(name = "create_time")
+    @CreatedDate
     private LocalDate createTime;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "end_time")
     private Date endTime;
+
+
 }
