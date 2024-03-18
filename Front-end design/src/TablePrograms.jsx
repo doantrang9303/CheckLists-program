@@ -8,14 +8,20 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import ProgramSerivce from './services/ProgramService';
 import { useAuth } from 'oidc-react';  
-
+import { format } from 'date-fns'; // Import định dạng ngày tháng từ date-fns
+import ReactPaginate from 'react-paginate';
 
     
 const TablePrograms = (props) => {
     const [showCreateProgram, setShowCreateProgram] = useState(false);
     const [refresh, setRefresh] = useState(false);
     const auth = useAuth(); 
-   
+    const [counter, setCounter] = useState(1); // Biến đếm cho ID
+    const [startingId, setStartingId] = useState(1); // ID bắt đầu
+    const formatDate = (dateString) => {
+        return format(new Date(dateString), 'yyyy/MM/dd'); // Định dạng ngày tháng
+    };
+
     // Function to handle the click event of the "checkbox-all"
     const handleCheckAll = (event) => {
         const checkboxes = document.querySelectorAll('.CheckOption input[type="checkbox"]');
@@ -39,11 +45,11 @@ const TablePrograms = (props) => {
     };
     const [ listPrograms, setListPrograms] = useState([]);
     const [totalPrograms, setTotalPrograms] = useState(0); 
-    const [totalPages, setTotalPages] = useState(0);
-   
+    const [totalPage, setTotalPage] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
 
     useEffect(() => {
-        if (!auth.isLoanding  && !!auth.userData ) {
+        if (!auth.isLoading  && !!auth.userData ) {
         console.log(auth);
         console.log(auth.userData?.profile);
         getPrograms(1,auth.userData?.profile.preferred_username);
@@ -56,12 +62,17 @@ const TablePrograms = (props) => {
             console.log(res)
             setTotalPrograms(res.total)
             setListPrograms(res.program_list)
-            setTotalPages(res.total_pages); 
+            setTotalPage(res.total_page); 
+            setCurrentPage(page); // Cập nhật trang hiện tại
         }
     }
     const handlePageClick = (event) => { 
         console.log("event lib: ", event)
-        getPrograms(+ event.selected + 1)
+        const nextPage = + event.selected + 1;
+        getPrograms(nextPage, auth.userData?.profile.preferred_username);
+        const newStartingId = (nextPage - 1) * 10 + 1; // Tính toán ID bắt đầu của trang mới
+        setStartingId(newStartingId); // Cập nhật ID bắt đầu
+        setCounter(newStartingId); // Cập nhật counter
     }
     return (
         <>
@@ -128,7 +139,7 @@ const TablePrograms = (props) => {
                             </Form>
                         </th>
                         <th scope="col">ID</th>
-                        <th scope="col">Program Name</th>
+                        <th scope="col" href="/TaskPage">Program Name</th>
                         <th scope="col">Create Date</th>
                         <th scope="col">Deadline</th>
                         <th scope="col">Status</th>
@@ -145,10 +156,10 @@ const TablePrograms = (props) => {
                             </Form>
                         </th>
                             
-                        <td>{item.id}</td>
+                        <td>{counter + index}</td> {/* ID được tự động tăng */}
                         <td>{item.name}</td>
-                        <td>{item.create_time}</td>
-                        <td>{item.end_time}</td>
+                        <td>{formatDate(item.create_time)}</td>
+                        <td>{formatDate(item.end_time)}</td>
                         <td>{item.status}</td>
                     </tr>   
                           )   
@@ -156,20 +167,33 @@ const TablePrograms = (props) => {
                   } 
                 </tbody>
             </table>
-            <Pagination style={{ display: 'flex', justifyContent: 'center' }}>
-                <Pagination.First />
-                <Pagination.Prev />
-                <Pagination.Item>{1}</Pagination.Item>
-                <Pagination.Item>{2}</Pagination.Item>
-                <Pagination.Ellipsis />
-                <Pagination.Item>{19}</Pagination.Item>
-                <Pagination.Item>{20}</Pagination.Item>
-                <Pagination.Next />
-                <Pagination.Last />
-            </Pagination>
-
+            <>
+            {/* <div className='pagination-container'> */}
+            <ReactPaginate 
+                breakLabel="..."
+                nextLabel="next >"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={5}
+                pageCount={totalPage}
+                previousLabel="< previous"
+                
+                pageClassName="page-item"
+                pageLinkClassName="page-link"
+                previousClassName="page-item"
+                previousLinkClassName="page-link"
+                nextClassName="page-item"
+                nextLinkClassName="page-link"
+                breakClassName="page-item"
+                breakLinkClassName="page-link"
+                containerClassName="pagination"
+                activeClassName="active"
+            />
+            {/* </div> */}
+            </>
         </nav >
         </>
     )
 }
 export default TablePrograms;
+
+//18/3/2024
