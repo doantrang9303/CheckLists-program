@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 
@@ -38,7 +39,7 @@ public class TaskServiceImpl implements TasksService {
     }
 
     @Override
-    public Page<TasksResponse> findByProgramIdAndFilter(int programId, String status, String taskName, String endTime, Pageable pageable) {
+    public Page<TasksResponse> findByProgramIdAndFilter(int programId, String status, String taskName, LocalDate endTime, Pageable pageable) {
         Optional<Program> programs = programRepository.findById(programId);
         if (programs.isEmpty()) {
             throw new IllegalArgumentException("Program not existed");

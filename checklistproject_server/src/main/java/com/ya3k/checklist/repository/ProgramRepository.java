@@ -7,6 +7,8 @@
     import org.springframework.data.jpa.repository.Query;
     import org.springframework.data.repository.query.Param;
 
+    import java.time.LocalDate;
+
     public interface ProgramRepository extends JpaRepository<Program, Integer> {
         Page<Program> findByNameContaining(String name, Pageable pageable);
 
@@ -21,7 +23,7 @@
                 "AND (:programName IS NULL OR p.name like %:programName%)")
         Page<Program> findByUserAndFilters(String username,
                                            String status,
-                                           String endTime,
+                                           LocalDate endTime,
                                            String programName, Pageable pageable);
 
         Program deleteById(int id);

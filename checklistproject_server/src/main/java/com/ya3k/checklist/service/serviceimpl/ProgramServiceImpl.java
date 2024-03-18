@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,10 +46,10 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public Page<ProgramResponse> findByUserAndFilters(String username, String status, String endTime, String programName, Pageable pageable) {
+    public Page<ProgramResponse> findByUserAndFilters(String username, String status, LocalDate endTime, String programName, Pageable pageable) {
         Page<Program> programs = programRepository.findByUserAndFilters(username, status, endTime,programName, pageable);
         if(programs.isEmpty()) {
-            throw new IllegalArgumentException("This user has no programs.");
+            throw new IllegalArgumentException("There are no programs with the given filters.");
         }
         return programs.map(ProgramResponse::fromProgram);
     }

@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.server.Session;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -83,7 +84,7 @@ public class TasksController {
             @PathVariable(name = "program_id") int programId,
             @RequestParam(name = "status", required = false) String status,
             @RequestParam(name = "task_name", required = false) String taskName,
-            @RequestParam(name = "end_time", required = false) String endTime,
+            @RequestParam(name = "end_time", required = false) LocalDate endTime,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
     ) {
@@ -98,6 +99,7 @@ public class TasksController {
             if (programId < 1) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
             }
+
             Page<TasksResponse> tasksList = tasksService.findByProgramIdAndFilter(programId, status, taskName, endTime, pageable);
 
             if (tasksList.isEmpty()) {
@@ -136,8 +138,7 @@ public class TasksController {
     @GetMapping("/all/{program_id}")
     public ResponseEntity<?> listTasksOfProgram(@PathVariable(name = "program_id") int programId,
                                                 @RequestParam(name = "page", defaultValue = "1") int page,
-                                                @RequestParam(name = "size", defaultValue = "10") int size,
-                                                HttpSession session
+                                                @RequestParam(name = "size", defaultValue = "10") int size, HttpSession session
 
     ) {
         try {

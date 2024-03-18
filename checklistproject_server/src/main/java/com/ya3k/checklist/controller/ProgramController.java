@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -62,11 +64,12 @@ public class ProgramController {
     }
 
 
-    @GetMapping("/filter")
+    //get list program with filter or not
+    @GetMapping()
     public ResponseEntity<?> getProgramsByFilters(
             @RequestHeader(name = "user_name") String userName,
             @RequestParam(name = "status", required = false) String status,
-            @RequestParam(name = "end_time", required = false) String endTime,
+            @RequestParam(name = "end_time", required = false) LocalDate endTime,
             @RequestParam(name = "program_name", required = false) String programName,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
@@ -74,10 +77,11 @@ public class ProgramController {
         Pageable pageable = PageRequest.of(page -1, size);
         try {
             Page<ProgramResponse> programsList = programService.findByUserAndFilters(userName, status, endTime ,programName, pageable);
+
             int totalPage = programsList.getTotalPages();
             int totalElements = (int) programsList.getTotalElements();
-
             List<ProgramResponse> programs = programsList.getContent();
+
             return ResponseEntity.ok(ProgramListResponse.builder()
                     .programResponseList(programs)
                     .totalPage(totalPage)

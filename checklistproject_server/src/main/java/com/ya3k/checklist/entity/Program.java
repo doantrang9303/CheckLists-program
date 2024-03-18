@@ -44,6 +44,7 @@ public class Program {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @CreatedDate
     private LocalDateTime create_time;
+
     @Column(name="end_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("endtime")
