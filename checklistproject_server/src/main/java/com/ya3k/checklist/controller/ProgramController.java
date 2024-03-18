@@ -49,7 +49,7 @@ public class ProgramController {
         Optional<Program> p = repo.findById(id);
         Program curP = p.get();
         repo.delete(curP);
-        return ResponseEntity.ok().body("Delete successfull");
+        return ResponseEntity.ok().body("Delete successfully");
     }
 
         //update program with id
@@ -63,7 +63,7 @@ public class ProgramController {
         curP.setStatus(program.getStatus());
         curP.setName(program.getName());
         repo.save(curP);
-        return ResponseEntity.ok().body("Update successfull");
+        return ResponseEntity.ok().body("Update successfully");
     }
 
     //get program by id
