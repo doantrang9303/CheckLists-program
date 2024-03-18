@@ -24,7 +24,7 @@ public class Tasks {
     private int id;
 
     @Column(name = "name")
-    private String name;
+    private String taskName;
 
     @ManyToOne
     @JsonBackReference
