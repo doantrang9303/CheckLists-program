@@ -79,7 +79,6 @@ public class TasksController {
      * @param size     The page size for pagination (default is 10).
      * @return ResponseEntity representing the paginated list of tasks and metadata.
      */
-
     @GetMapping("/{program_id}")
     public ResponseEntity<?> filterTasksOfProgram(
             @PathVariable(name = "program_id") int programId,
