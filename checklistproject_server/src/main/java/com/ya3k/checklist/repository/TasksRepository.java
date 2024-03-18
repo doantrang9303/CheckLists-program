@@ -6,8 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Repository
@@ -21,5 +23,10 @@ public interface TasksRepository extends JpaRepository<Tasks, Integer> {
             "AND (:status IS NULL OR t.status = :status)" +
             "AND (:taskName IS NULL OR t.taskName like %:taskName%)" +
             "AND (:endTime IS NULL OR t.endTime = :endTime)")
-    Page<Tasks> findByProgramIdAndFilter(int programId, String status, String taskName, String endTime , Pageable pageable);
+    Page<Tasks> findByProgramIdAndFilter(int programId, String status, String taskName, LocalDate endTime , Pageable pageable);
+
+    Tasks deleteById(int id);
+
+    @Query("SELECT t FROM Tasks t WHERE t.id = :id")
+    Tasks findByTasksId(int id);
 }

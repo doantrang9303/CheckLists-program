@@ -36,6 +36,7 @@ public class Tasks {
     private String status;
 
     @Column(name = "create_time")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @CreatedDate
     private LocalDateTime createTime;
 

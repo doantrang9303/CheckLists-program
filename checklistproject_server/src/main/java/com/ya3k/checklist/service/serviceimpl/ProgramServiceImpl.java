@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,30 +26,12 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public List<ProgramDto> findProgramName(String name, Pageable pageable) {
-        Page<Program> programs = programRepository.findByNameContaining(name, pageable);
-        return programs.getContent().stream()
-                .map(ProgramMapper::mapToDto)
-                .collect(Collectors.toList());
-    }
+    public Page<ProgramResponse> findByUserAndFilters(String username, String status, LocalDate endTime, String programName, Pageable pageable) {
 
-    @Override
-    public Page<ProgramResponse> seachProgramName(String userName, String pName, Pageable pageable) {
-        Page<Program> programs = programRepository.findByNameAndUserName(userName, pName, pageable);
-        return programs.map(ProgramResponse::fromProgram);
-    }
 
-    @Override
-    public Page<ProgramResponse> findProgramByUserName(String userName, Pageable pageable) {
-       Page<Program> programs = programRepository.findProgramByUserName(userName, pageable);
-       return programs.map(ProgramResponse::fromProgram);
-    }
-
-    @Override
-    public Page<ProgramResponse> findByUserAndFilters(String username, String status, String endTime, String programName, Pageable pageable) {
-        Page<Program> programs = programRepository.findByUserAndFilters(username, status, endTime,programName, pageable);
-        if(programs.isEmpty()) {
-            throw new IllegalArgumentException("This user has no programs.");
+        Page<Program> programs = programRepository.findByUserAndFilters(username, status, endTime, programName, pageable);
+        if (programs.isEmpty()) {
+            throw new IllegalArgumentException("There are no programs with the given filters.");
         }
         return programs.map(ProgramResponse::fromProgram);
     }
