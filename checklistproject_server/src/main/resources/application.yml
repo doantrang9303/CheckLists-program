@@ -10,9 +10,9 @@ keycloak:
   introspect-url: "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspect"
 spring:
   datasource:
-    url: "jdbc:sqlserver://ThinkPad:1433;encrypt=true;trustServerCertificate=true;databaseName=test"
-    username: "sa"
-    password: "trang"
+    url: "jdbc:mysql://localhost:3306/checklist"
+    username: "root"
+    password: "23012003aA@"
   jpa:
     show-sql: true
     hibernate:
