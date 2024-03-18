@@ -45,8 +45,11 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public Page<ProgramResponse> findByUserAndFilters(String username, String status, String programName, Pageable pageable) {
-        Page<Program> programs = programRepository.findByUserAndFilters(username, status, programName, pageable);
+    public Page<ProgramResponse> findByUserAndFilters(String username, String status, String endTime, String programName, Pageable pageable) {
+        Page<Program> programs = programRepository.findByUserAndFilters(username, status, endTime,programName, pageable);
+        if(programs.isEmpty()) {
+            throw new IllegalArgumentException("This user has no programs.");
+        }
         return programs.map(ProgramResponse::fromProgram);
     }
 

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -22,7 +23,7 @@ public class ProgramResponse {
     private String userName;
     private String status;
     private LocalDateTime create_time;
-    private Date end_time;
+    private LocalDate end_time;
 
     public static ProgramResponse fromProgram(Program program) {
         ProgramResponse programResponse = ProgramResponse.builder()

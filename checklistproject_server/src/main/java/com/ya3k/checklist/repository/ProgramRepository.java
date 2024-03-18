@@ -17,9 +17,11 @@
         Page<Program> findProgramByUserName(String userName, Pageable pageable);
         @Query("SELECT p FROM Program p JOIN p.user u WHERE u.user_name = :username " +
                 "AND (:status IS NULL OR p.status = :status) " +
+                "AND (:endTime IS NULL OR p.end_time = :endTime)"+
                 "AND (:programName IS NULL OR p.name like %:programName%)")
         Page<Program> findByUserAndFilters(String username,
                                            String status,
+                                           String endTime,
                                            String programName, Pageable pageable);
 
         Program deleteById(int id);
