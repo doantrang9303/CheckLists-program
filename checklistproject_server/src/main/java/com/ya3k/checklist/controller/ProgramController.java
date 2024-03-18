@@ -1,12 +1,13 @@
 package com.ya3k.checklist.controller;
 
+import com.ya3k.checklist.Enum.StatusEnum;
 import com.ya3k.checklist.dto.ProgramDto;
 import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Users;
 import com.ya3k.checklist.repository.ProgramRepository;
 import com.ya3k.checklist.repository.UserRepository;
-import com.ya3k.checklist.response.ProgramListResponse;
-import com.ya3k.checklist.response.ProgramResponse;
+import com.ya3k.checklist.response.programresponse.ProgramListResponse;
+import com.ya3k.checklist.response.programresponse.ProgramResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -50,55 +53,34 @@ public class ProgramController {
         }
       
         program.setUser(user);
-        if (program.getStatus() == null || program.getStatus().equals(""))
-            program.setStatus("IN_PROGRESS");
+        if (program.getStatus() == null || program.getStatus().isEmpty())
+
+            //set default status to IN_PROGRESS
+            program.setStatus(StatusEnum.IN_PROGRESS.name());
         else program.setStatus(program.getStatus());
         program.setCreate_time(LocalDateTime.now());
         Program savedProgram = repo.save(program);
         return ResponseEntity.ok(savedProgram);
     }
 
-    //search program
 
-
-    @GetMapping("/search")
-    public ResponseEntity<?> searchProgram(
+    //get list program with filter or not
+    @GetMapping()
+    public ResponseEntity<?> getProgramsByFilters(
             @RequestHeader(name = "user_name") String userName,
-            @RequestParam(name = "p_name") String name,
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size
-            ) {
-        Pageable pageable = PageRequest.of(page -1, size);
-      try{
-            Page<ProgramResponse> programsList = programService.seachProgramName(userName, name, pageable);
-            int totalPage = programsList.getTotalPages();
-            int totalElements = (int) programsList.getTotalElements();
-
-            List<ProgramResponse> programs = programsList.getContent();
-            return ResponseEntity.ok(ProgramListResponse.builder()
-                    .programResponseList(programs)
-                    .totalPage(totalPage)
-                    .total(totalElements)
-                    .build());
-      }catch (Exception e){
-          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-      }
-    }
-
-
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllPrograms(
-            @RequestHeader(name = "user_name") String userName,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "end_time", required = false) LocalDate endTime,
+            @RequestParam(name = "program_name", required = false) String programName,
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page -1, size);
         try {
-            Page<ProgramResponse> programsList = programService.findByUserName(userName, pageable);
+            Page<ProgramResponse> programsList = programService.findByUserAndFilters(userName, status, endTime ,programName, pageable);
             int totalPage = programsList.getTotalPages();
             int totalElements = (int) programsList.getTotalElements();
-
             List<ProgramResponse> programs = programsList.getContent();
+
             return ResponseEntity.ok(ProgramListResponse.builder()
                     .programResponseList(programs)
                     .totalPage(totalPage)
@@ -109,27 +91,24 @@ public class ProgramController {
         }
     }
 
-    @GetMapping("/filter")
-    public ResponseEntity<?> getProgramsByFilters(
-            @RequestHeader(name = "user_name") String userName,
-            @RequestParam(name = "status", required = false) String status,
-            @RequestParam(name = "program_name", required = false) String programName,
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page -1, size);
-        try {
-            Page<ProgramResponse> programsList = programService.findByUserAndFilters(userName, status, programName, pageable);
-            int totalPage = programsList.getTotalPages();
-            int totalElements = (int) programsList.getTotalElements();
 
-            List<ProgramResponse> programs = programsList.getContent();
-            return ResponseEntity.ok(ProgramListResponse.builder()
-                    .programResponseList(programs)
-                    .totalPage(totalPage)
-                    .total(totalElements)
-                    .build());
-        }catch (Exception e){
+    //xoa 1
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteProgram(@PathVariable int id) {
+        if(id < 1) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
+        }
+        try {
+            ProgramDto findProgram = programService.findByProgramId(id);
+            if(findProgram == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Program not found");
+            }
+            else{
+                ProgramDto program = programService.deleteById(id);
+                return ResponseEntity.status(HttpStatus.OK).body(findProgram.getName() + " deleted successfully");
+
+            }
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

@@ -1,9 +1,8 @@
 package com.ya3k.checklist.dto;
 
-import com.ya3k.checklist.entity.Users;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ya3k.checklist.entity.Program;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,17 +11,16 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProgramDto {
+public class TasksDto {
+
     private int id;
-    private String name;
-    private  int user_id;
+    private String taskName;
+    private int programId;
     private String status;
     private LocalDateTime createTime;
     private LocalDate endTime;
-
 }

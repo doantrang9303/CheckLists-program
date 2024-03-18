@@ -4,13 +4,14 @@ import com.ya3k.checklist.dto.ProgramDto;
 import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.mapper.ProgramMapper;
 import com.ya3k.checklist.repository.ProgramRepository;
-import com.ya3k.checklist.response.ProgramResponse;
+import com.ya3k.checklist.response.programresponse.ProgramResponse;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,29 +26,34 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public List<ProgramDto> findProgramName(String name, Pageable pageable) {
-        Page<Program> programs = programRepository.findByNameContaining(name, pageable);
-        return programs.getContent().stream()
-                .map(ProgramMapper::mapToDto)
-                .collect(Collectors.toList());
-    }
+    public Page<ProgramResponse> findByUserAndFilters(String username, String status, LocalDate endTime, String programName, Pageable pageable) {
 
-    @Override
-    public Page<ProgramResponse> seachProgramName(String userName, String pName, Pageable pageable) {
-        Page<Program> programs = programRepository.findByNameAndUserName(userName, pName, pageable);
+
+        Page<Program> programs = programRepository.findByUserAndFilters(username, status, endTime, programName, pageable);
+        if (programs.isEmpty()) {
+            throw new IllegalArgumentException("There are no programs with the given filters.");
+        }
         return programs.map(ProgramResponse::fromProgram);
     }
 
     @Override
-    public Page<ProgramResponse> findByUserName(String userName, Pageable pageable) {
-       Page<Program> programs = programRepository.findByUserName(userName, pageable);
-       return programs.map(ProgramResponse::fromProgram);
+    public ProgramDto deleteById(int id) {
+
+        Program program = programRepository.deleteById(id);
+        if (program != null) {
+            return ProgramMapper.mapToDto(program);
+        }
+        return null;
     }
 
     @Override
-    public Page<ProgramResponse> findByUserAndFilters(String username, String status, String programName, Pageable pageable) {
-        Page<Program> programs = programRepository.findByUserAndFilters(username, status, programName, pageable);
-        return programs.map(ProgramResponse::fromProgram);
+    public ProgramDto findByProgramId(int id) {
+        Program program = programRepository.findByProgramId(id);
+        if (program != null) {
+            return ProgramMapper.mapToDto(program);
+        }
+        return null;
     }
+
 
 }

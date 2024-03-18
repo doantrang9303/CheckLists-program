@@ -15,7 +15,7 @@ public class ProgramMapper {
                 program.getUser() != null ? program.getUser().getUser_id() : 0,
                 program.getStatus(),
                 program.getCreate_time(),
-                program.getEnd_time()
+                program.getEndTime()
         );
     }
 
@@ -24,10 +24,10 @@ public class ProgramMapper {
         program.setId(programDto.getId());
         program.setName(programDto.getName());
         // Assuming there's a separate service to fetch User by ID and set it to Program
-        // program.setUser(userService.findById(programDto.getUser_id()));
+//         program.setUser(userService.findById(programDto.getUser_id()));
         program.setStatus(programDto.getStatus());
-        program.setCreate_time(programDto.getCreate_time());
-        program.setEnd_time(programDto.getEnd_time());
+        program.setCreate_time(programDto.getCreateTime());
+        program.setEndTime(programDto.getEndTime());
         return program;
     }
 }
