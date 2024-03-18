@@ -40,11 +40,11 @@ public class ProgramController {
 
 
     @PostMapping("/add")
-    public ResponseEntity<?> createProgram(@RequestBody Program program, @RequestHeader String userName) {
-        if(userName==null || userName.isEmpty()){
+    public ResponseEntity<?> createProgram(@RequestBody Program program, @RequestHeader String user_name) {
+        if(user_name==null || user_name.isEmpty()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username is empty");
         }
-        Users user = urepo.findByUser(userName);
+        Users user = urepo.findByUser(user_name);
         if(user==null){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User Not Found");
         }
