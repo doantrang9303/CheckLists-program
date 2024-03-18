@@ -5,8 +5,8 @@ import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Users;
 import com.ya3k.checklist.repository.ProgramRepository;
 import com.ya3k.checklist.repository.UserRepository;
-import com.ya3k.checklist.response.ProgramListResponse;
-import com.ya3k.checklist.response.ProgramResponse;
+import com.ya3k.checklist.response.programresponse.ProgramListResponse;
+import com.ya3k.checklist.response.programresponse.ProgramResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 
@@ -94,7 +94,7 @@ public class ProgramController {
     ) {
         Pageable pageable = PageRequest.of(page -1, size);
         try {
-            Page<ProgramResponse> programsList = programService.findByUserName(userName, pageable);
+            Page<ProgramResponse> programsList = programService.findProgramByUserName(userName, pageable);
             int totalPage = programsList.getTotalPages();
             int totalElements = (int) programsList.getTotalElements();
 
@@ -130,6 +130,26 @@ public class ProgramController {
                     .total(totalElements)
                     .build());
         }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteProgram(@PathVariable int id) {
+        if(id < 1) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
+        }
+        try {
+            ProgramDto findProgram = programService.findByProgramId(id);
+            if(findProgram == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Program not found");
+            }
+            else{
+                ProgramDto program = programService.deleteById(id);
+                return ResponseEntity.status(HttpStatus.OK).body(findProgram.getName() + " deleted successfully");
+
+            }
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

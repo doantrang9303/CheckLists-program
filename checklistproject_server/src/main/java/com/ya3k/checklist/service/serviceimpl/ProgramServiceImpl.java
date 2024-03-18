@@ -4,7 +4,7 @@ import com.ya3k.checklist.dto.ProgramDto;
 import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.mapper.ProgramMapper;
 import com.ya3k.checklist.repository.ProgramRepository;
-import com.ya3k.checklist.response.ProgramResponse;
+import com.ya3k.checklist.response.programresponse.ProgramResponse;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,8 +39,8 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public Page<ProgramResponse> findByUserName(String userName, Pageable pageable) {
-       Page<Program> programs = programRepository.findByUserName(userName, pageable);
+    public Page<ProgramResponse> findProgramByUserName(String userName, Pageable pageable) {
+       Page<Program> programs = programRepository.findProgramByUserName(userName, pageable);
        return programs.map(ProgramResponse::fromProgram);
     }
 
@@ -49,5 +49,25 @@ public class ProgramServiceImpl implements ProgramService {
         Page<Program> programs = programRepository.findByUserAndFilters(username, status, programName, pageable);
         return programs.map(ProgramResponse::fromProgram);
     }
+
+    @Override
+    public ProgramDto deleteById(int id) {
+
+        Program program = programRepository.deleteById(id);
+        if (program != null) {
+            return ProgramMapper.mapToDto(program);
+        }
+        return null;
+    }
+
+    @Override
+    public ProgramDto findByProgramId(int id) {
+        Program program = programRepository.findByProgramId(id);
+        if (program != null) {
+            return ProgramMapper.mapToDto(program);
+        }
+        return null;
+    }
+
 
 }

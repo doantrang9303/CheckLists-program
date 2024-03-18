@@ -12,7 +12,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
-
 @Entity
 @Table(name = "tasks")
 @Data
@@ -35,17 +34,12 @@ public class Tasks {
     @Column(name="status")
     private String status;
 
-    @Column(name="create_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Column(name = "create_time")
     @CreatedDate
-    private LocalDate create_time;
+    private LocalDate createTime;
 
-    @Column(name="end_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd ")
-    @JsonProperty("endtime")
-    private LocalDate end_time;
-
-
-
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "end_time")
+    private Date endTime;
 
 }

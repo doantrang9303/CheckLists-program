@@ -1,8 +1,7 @@
 package com.ya3k.checklist.service.serviceinterface;
 
 import com.ya3k.checklist.dto.ProgramDto;
-import com.ya3k.checklist.entity.Program;
-import com.ya3k.checklist.response.ProgramResponse;
+import com.ya3k.checklist.response.programresponse.ProgramResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,7 +12,12 @@ public interface ProgramService {
 
     Page<ProgramResponse> seachProgramName(String userName, String pName, Pageable pageable);
 
-    Page<ProgramResponse> findByUserName(String userName, Pageable pageable);
+    Page<ProgramResponse> findProgramByUserName(String userName, Pageable pageable);
 
     Page<ProgramResponse> findByUserAndFilters(String username, String status, String programName, Pageable pageable);
+
+    ProgramDto deleteById(int id);
+
+
+    ProgramDto findByProgramId(int id);
 }
