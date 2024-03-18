@@ -48,7 +48,7 @@ public class Program {
     @Column(name="end_time")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("endtime")
-    private LocalDate end_time;
+    private LocalDate endTime;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference

@@ -8,18 +8,13 @@
     import org.springframework.data.repository.query.Param;
 
     import java.time.LocalDate;
+    import java.util.List;
 
     public interface ProgramRepository extends JpaRepository<Program, Integer> {
-        Page<Program> findByNameContaining(String name, Pageable pageable);
 
-        @Query("SELECT p FROM Program p WHERE  p.user.user_name = :userName AND p.name like %:pName%")
-        Page<Program> findByNameAndUserName(String userName, String pName, Pageable pageable);
-
-        @Query("SELECT p FROM Program p WHERE  p.user.user_name = :userName order by p.create_time desc")
-        Page<Program> findProgramByUserName(String userName, Pageable pageable);
         @Query("SELECT p FROM Program p JOIN p.user u WHERE u.user_name = :username " +
                 "AND (:status IS NULL OR p.status = :status) " +
-                "AND (:endTime IS NULL OR p.end_time = :endTime)"+
+                "AND (:endTime IS NULL OR p.endTime = :endTime)"+
                 "AND (:programName IS NULL OR p.name like %:programName%)")
         Page<Program> findByUserAndFilters(String username,
                                            String status,

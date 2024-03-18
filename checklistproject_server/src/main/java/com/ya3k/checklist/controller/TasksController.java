@@ -1,5 +1,6 @@
 package com.ya3k.checklist.controller;
 
+import com.ya3k.checklist.dto.TasksDto;
 import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Tasks;
 import com.ya3k.checklist.repository.ProgramRepository;
@@ -121,56 +122,20 @@ public class TasksController {
         }
     }
 
-
-
-
-    //list tasks of program
-    //http://localhost:9292/tasks/{program_id}?page=1&size=10
-
-    /**
-     * Retrieves a paginated list of tasks for a given program ID.
-     *
-     * @param programId The ID of the program to list tasks for.
-     * @param page      The page number for pagination (default is 1).
-     * @param size      The page size for pagination (default is 10).
-     * @return ResponseEntity representing the paginated list of tasks and metadata.
-     */
-    @GetMapping("/all/{program_id}")
-    public ResponseEntity<?> listTasksOfProgram(@PathVariable(name = "program_id") int programId,
-                                                @RequestParam(name = "page", defaultValue = "1") int page,
-                                                @RequestParam(name = "size", defaultValue = "10") int size, HttpSession session
-
-    ) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteTask(@PathVariable int id) {
+        if (id < 1) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Task ID must be greater than 0");
+        }
         try {
-            if (page < 1 || size < 1) {
-                page = 1;
-                size = 10;
+            TasksDto findTask = tasksService.findByTaskId(id);
+            if (findTask == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
+            } else {
+                TasksDto task = tasksService.deleteById(id);
+                return ResponseEntity.status(HttpStatus.OK).body(findTask.getTaskName() + " deleted successfully");
+
             }
-            Pageable pageable = PageRequest.of(page - 1, size);
-
-            if (programId < 1) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
-            }
-            session.setAttribute("program_id", programId);
-            Page<TasksResponse> tasksList = tasksService.listTasksOfProgram(programId, pageable);
-            if (tasksList.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No tasks found");
-            }
-            //set program_id to request attribute
-
-            int totalPages = tasksList.getTotalPages();
-            int totalElements = (int) tasksList.getTotalElements();
-
-            List<TasksResponse> tasks = tasksList.getContent();
-
-            //set for filter
-
-            return ResponseEntity.ok(TasksListResponse.builder()
-                    .tasksResponseList(tasks)
-                    .totalPage(totalPages)
-                    .total(totalElements)
-                    .build());
-
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

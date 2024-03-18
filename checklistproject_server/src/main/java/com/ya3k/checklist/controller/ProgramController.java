@@ -77,7 +77,6 @@ public class ProgramController {
         Pageable pageable = PageRequest.of(page -1, size);
         try {
             Page<ProgramResponse> programsList = programService.findByUserAndFilters(userName, status, endTime ,programName, pageable);
-
             int totalPage = programsList.getTotalPages();
             int totalElements = (int) programsList.getTotalElements();
             List<ProgramResponse> programs = programsList.getContent();
@@ -113,50 +112,4 @@ public class ProgramController {
     }
 
 
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllPrograms(
-            @RequestHeader(name = "user_name") String userName,
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page -1, size);
-        try {
-            Page<ProgramResponse> programsList = programService.findProgramByUserName(userName, pageable);
-            int totalPage = programsList.getTotalPages();
-            int totalElements = (int) programsList.getTotalElements();
-
-            List<ProgramResponse> programs = programsList.getContent();
-            return ResponseEntity.ok(ProgramListResponse.builder()
-                    .programResponseList(programs)
-                    .totalPage(totalPage)
-                    .total(totalElements)
-                    .build());
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<?> searchProgram(
-            @RequestHeader(name = "user_name") String userName,
-            @RequestParam(name = "p_name") String name,
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page -1, size);
-        try{
-            Page<ProgramResponse> programsList = programService.seachProgramName(userName, name, pageable);
-            int totalPage = programsList.getTotalPages();
-            int totalElements = (int) programsList.getTotalElements();
-
-            List<ProgramResponse> programs = programsList.getContent();
-            return ResponseEntity.ok(ProgramListResponse.builder()
-                    .programResponseList(programs)
-                    .totalPage(totalPage)
-                    .total(totalElements)
-                    .build());
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-    }
 }

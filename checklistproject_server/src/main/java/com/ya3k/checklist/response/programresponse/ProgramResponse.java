@@ -32,7 +32,7 @@ public class ProgramResponse {
                 .userName(program.getUser().getUser_name())
                 .status(program.getStatus())
                 .create_time(program.getCreate_time())
-                .end_time(program.getEnd_time())
+                .end_time(program.getEndTime())
                 .build();
         return programResponse;
     }
