@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -36,10 +37,10 @@ public class Tasks {
 
     @Column(name = "create_time")
     @CreatedDate
-    private LocalDate createTime;
+    private LocalDateTime createTime;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "end_time")
-    private Date endTime;
+    private LocalDate endTime;
 
 }

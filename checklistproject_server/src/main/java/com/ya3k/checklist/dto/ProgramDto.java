@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -22,6 +23,6 @@ public class ProgramDto {
     private  int user_id;
     private String status;
     private LocalDateTime create_time;
-    private Date end_time;
+    private LocalDate end_time;
 
 }

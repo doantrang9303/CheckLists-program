@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class TasksController {
         if (task.getStatus() == null || task.getStatus().equals(""))
             task.setStatus("IN_PROGRESS");
         else task.setStatus(task.getStatus());
-        task.setCreateTime(LocalDate.now());
+        task.setCreateTime(LocalDateTime.now());
         Tasks savedTask = trepo.save(task);
         return ResponseEntity.ok(savedTask.getTaskName() + " add successfully");
     }
@@ -97,18 +98,15 @@ public class TasksController {
             if (programId < 1) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
             }
-
             Page<TasksResponse> tasksList = tasksService.findByProgramIdAndFilter(programId, status, taskName, endTime, pageable);
 
             if (tasksList.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No tasks found");
             }
-
             int totalPages = tasksList.getTotalPages();
             int totalElements = (int) tasksList.getTotalElements();
 
             List<TasksResponse> tasks = tasksList.getContent();
-
 
             return ResponseEntity.ok(TasksListResponse.builder()
                     .tasksResponseList(tasks)
@@ -152,10 +150,8 @@ public class TasksController {
             if (programId < 1) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
             }
-
             session.setAttribute("program_id", programId);
             Page<TasksResponse> tasksList = tasksService.listTasksOfProgram(programId, pageable);
-
             if (tasksList.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No tasks found");
             }

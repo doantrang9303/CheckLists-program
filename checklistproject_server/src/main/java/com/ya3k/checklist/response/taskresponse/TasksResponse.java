@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -36,11 +37,11 @@ public class TasksResponse {
     private String status;
 
     @JsonProperty("create_time")
-    private LocalDate createTime;
+    private LocalDateTime createTime;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @JsonProperty("end_time")
-    private Date endTime;
+    private LocalDate endTime;
 
     public static TasksResponse fromTasks(Tasks tasks) {
         TasksResponse tasksResponse = TasksResponse.builder()

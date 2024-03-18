@@ -14,7 +14,7 @@ public interface ProgramService {
 
     Page<ProgramResponse> findProgramByUserName(String userName, Pageable pageable);
 
-    Page<ProgramResponse> findByUserAndFilters(String username, String status, String programName, Pageable pageable);
+    Page<ProgramResponse> findByUserAndFilters(String username, String status, String endTime,String programName, Pageable pageable);
 
     ProgramDto deleteById(int id);
 
