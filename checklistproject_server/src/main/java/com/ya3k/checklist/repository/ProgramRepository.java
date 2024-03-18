@@ -13,8 +13,8 @@
         @Query("SELECT p FROM Program p WHERE  p.user.user_name = :userName AND p.name like %:pName%")
         Page<Program> findByNameAndUserName(String userName, String pName, Pageable pageable);
 
-        @Query("SELECT p FROM Program p WHERE  p.user.user_name = :userName")
-        Page<Program> findByUserName(String userName, Pageable pageable);
+        @Query("SELECT p FROM Program p WHERE  p.user.user_name = :userName order by p.create_time desc")
+        Page<Program> findProgramByUserName(String userName, Pageable pageable);
         @Query("SELECT p FROM Program p JOIN p.user u WHERE u.user_name = :username " +
                 "AND (:status IS NULL OR p.status = :status) " +
                 "AND (:programName IS NULL OR p.name like %:programName%)")

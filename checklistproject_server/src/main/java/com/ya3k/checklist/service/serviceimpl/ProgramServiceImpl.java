@@ -39,8 +39,8 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
     @Override
-    public Page<ProgramResponse> findByUserName(String userName, Pageable pageable) {
-       Page<Program> programs = programRepository.findByUserName(userName, pageable);
+    public Page<ProgramResponse> findProgramByUserName(String userName, Pageable pageable) {
+       Page<Program> programs = programRepository.findProgramByUserName(userName, pageable);
        return programs.map(ProgramResponse::fromProgram);
     }
 

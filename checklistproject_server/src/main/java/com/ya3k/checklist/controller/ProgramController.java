@@ -94,7 +94,7 @@ public class ProgramController {
     ) {
         Pageable pageable = PageRequest.of(page -1, size);
         try {
-            Page<ProgramResponse> programsList = programService.findByUserName(userName, pageable);
+            Page<ProgramResponse> programsList = programService.findProgramByUserName(userName, pageable);
             int totalPage = programsList.getTotalPages();
             int totalElements = (int) programsList.getTotalElements();
 

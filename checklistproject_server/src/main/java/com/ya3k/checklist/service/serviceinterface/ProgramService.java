@@ -12,7 +12,7 @@ public interface ProgramService {
 
     Page<ProgramResponse> seachProgramName(String userName, String pName, Pageable pageable);
 
-    Page<ProgramResponse> findByUserName(String userName, Pageable pageable);
+    Page<ProgramResponse> findProgramByUserName(String userName, Pageable pageable);
 
     Page<ProgramResponse> findByUserAndFilters(String username, String status, String programName, Pageable pageable);
 
