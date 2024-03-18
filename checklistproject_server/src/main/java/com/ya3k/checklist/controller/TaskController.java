@@ -40,7 +40,7 @@ public class TaskController {
         if (task.getStatus() == null || task.getStatus().equals(""))
             task.setStatus("IN_PROGRESS");
         else task.setStatus(task.getStatus());
-        task.setCreate_time(LocalDate.now());
+        task.setCreateTime(LocalDate.now());
         Tasks savedTask = trepo.save(task);
         return ResponseEntity.ok(savedTask);
     }
