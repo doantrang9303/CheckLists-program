@@ -31,7 +31,7 @@ public class TasksController {
     private final TasksService tasksService;
 
     private TasksRepository trepo;
-  private ProgramRepository repo;
+    private ProgramRepository repo;
 
     @Autowired
     public TasksController(TasksService tasksService, TasksRepository trepo, ProgramRepository repo) {
@@ -43,12 +43,12 @@ public class TasksController {
 
     @PostMapping("/add")
     public ResponseEntity<?> createProgram(@RequestBody Tasks task, @RequestHeader Integer program_id) {
-        if(program_id<=0){
+        if (program_id <= 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("program_id is invalid");
         }
-        Program program=repo.findById(program_id).get();
+        Program program = repo.findById(program_id).get();
 
-        if(program==null){
+        if (program == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program not found");
         }
         task.setProgram(program);
@@ -61,30 +61,30 @@ public class TasksController {
     }
 
 
-
     //filter tasks of program
     //http://localhost:9292/tasks/filter/{program_id}/?status=done&task_name=task1&end_time=2021-08-01&page=1&size=10
+
     /**
      * Retrieves a paginated list of tasks for a given program ID.
+     * <p>
+     * //     * @param programId The ID of the program to list tasks for.
      *
-//     * @param programId The ID of the program to list tasks for.
      * @param status   The status of the tasks to filter by (optional).
      * @param taskName The name of the tasks to filter by (optional).
      * @param endTime  The end time of the tasks to filter by (optional).
-     * @param page      The page number for pagination (default is 1).
-     * @param size      The page size for pagination (default is 10).
+     * @param page     The page number for pagination (default is 1).
+     * @param size     The page size for pagination (default is 10).
      * @return ResponseEntity representing the paginated list of tasks and metadata.
      */
 
-    @GetMapping("/filter/{program_id}")
+    @GetMapping("/{program_id}")
     public ResponseEntity<?> filterTasksOfProgram(
             @PathVariable(name = "program_id") int programId,
             @RequestParam(name = "status", required = false) String status,
             @RequestParam(name = "task_name", required = false) String taskName,
             @RequestParam(name = "end_time", required = false) String endTime,
             @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size,
-            HttpSession session
+            @RequestParam(name = "size", defaultValue = "10") int size
     ) {
         try {
             if (page < 1 || size < 1) {
@@ -123,8 +123,10 @@ public class TasksController {
 
 
 
+
     //list tasks of program
     //http://localhost:9292/tasks/{program_id}?page=1&size=10
+
     /**
      * Retrieves a paginated list of tasks for a given program ID.
      *
@@ -133,7 +135,7 @@ public class TasksController {
      * @param size      The page size for pagination (default is 10).
      * @return ResponseEntity representing the paginated list of tasks and metadata.
      */
-    @GetMapping("/{program_id}")
+    @GetMapping("/all/{program_id}")
     public ResponseEntity<?> listTasksOfProgram(@PathVariable(name = "program_id") int programId,
                                                 @RequestParam(name = "page", defaultValue = "1") int page,
                                                 @RequestParam(name = "size", defaultValue = "10") int size,
@@ -176,9 +178,6 @@ public class TasksController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
-
-
 
 
 }
