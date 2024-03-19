@@ -6,7 +6,7 @@ import Keycloak from 'keycloak-js';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [auth, setAuth] = useState({ keycloak: null, authenticated: false, username: "", initialized: false, access_token:"" });
+  const [auth, setAuth] = useState({ keycloak: null, authenticated: false, username: "", initialized: false, access_token:"", });
 
   useEffect(() => {
     const keycloakConfig = {
@@ -24,7 +24,8 @@ export const AuthProvider = ({ children }) => {
         authenticated,
         initialized: true,
         username: keycloak.tokenParsed?.preferred_username || "",
-        access_token : keycloak.tokenParsed?.access_token 
+        access_token : keycloak.tokenParsed?.access_token,
+       
       });
     });
   }, []);

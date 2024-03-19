@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { fetchAllProgram } from './services/ProgramService';
+import { useAuth } from 'oidc-react';  
 
 const callApi = async () => {
     const accessToken = localStorage.getItem('access_token');
@@ -40,10 +41,11 @@ const callApi = async () => {
     console.log(error.config);
     }
 };
-
+    
 const TablePrograms = (props) => {
     const [showCreateProgram, setShowCreateProgram] = useState(false);
-
+    const auth = useAuth(); 
+   
     // Function to handle the click event of the "checkbox-all"
     const handleCheckAll = (event) => {
         const checkboxes = document.querySelectorAll('.CheckOption input[type="checkbox"]');
@@ -67,20 +69,22 @@ const TablePrograms = (props) => {
     const [ listPrograms, setListPrograms] = useState([]);
     const [totalPrograms, setTotalPrograms] = useState(0); 
     const [totalPages, setTotalPages] = useState(0);
-
+   
 
     useEffect(() => {
-        //call apis
-        //dry
-        getPrograms(1);
-    }, [])
-    const getPrograms = async (page) => { 
-        let res = await fetchAllProgram(page);
-
-        if(res && res.data) { 
+        if (!auth.isLoanding  && !!auth.userData ) {
+        console.log(auth);
+        console.log(auth.userData?.profile);
+        getPrograms(1,auth.userData?.profile.preferred_username);
+    }}, [auth.isLoading,auth.userData])
+    
+    const getPrograms = async (page,username) => { 
+        let res = await fetchAllProgram(page,username);
+        
+        if(res && res.program_list) { 
             console.log(res)
             setTotalPrograms(res.total)
-            setListPrograms(res.data)
+            setListPrograms(res.program_list)
             setTotalPages(res.total_pages); 
         }
     }
