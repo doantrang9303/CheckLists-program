@@ -1,18 +1,28 @@
-// import axios from "axios";
-
 import axios from './customize-axios';
 
-const fetchAllProgram =(page) => { 
-return axios.get(`/program?page=${page}}`);   
 
+const fetchAllProgram = (page,username ) => { 
+  return axios.get(`/programs?page=${page}`, {
+    headers: {
+      // Include the username in the request headers if available
+      'user_name': username || ''
+    }
+  });   
+}
+const createProgram = (programData, username) => {
+  return axios.post(`/programs/add`, programData, {
+    headers: {
+      'user_name': username || ''
+    }
+  }); 
+}
+const deleteProgram = (programId) => {
+  return axios.delete(`/programs/delete/${programId}`);
+}
+const ProgramService = {
+  fetchAllProgram,
+  createProgram,
+  deleteProgram,
 }
 
-// const postCreateUser = (name, job) => { 
-//     return axios.post("/api/users", {name, job})
-// }
-
-// const putUpdateUser = (name, job)  => { 
-//     return axios.put("/api/users/2", {name, job})
-// }
-
-export {fetchAllProgram}; //postCreateUser, putUpdateUser};
+export  default ProgramService;

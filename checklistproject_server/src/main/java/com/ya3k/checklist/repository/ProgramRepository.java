@@ -25,7 +25,6 @@
 
         Program deleteById(int id);
 
-
         @Query("SELECT p FROM Program p WHERE p.id = :id")
         Program findByProgramId(int id);
         

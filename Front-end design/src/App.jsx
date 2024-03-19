@@ -6,7 +6,7 @@ import Navbar from './Navbar';
 import { AuthProvider } from 'oidc-react';
 import TokenUpdater from './TokenUpdater';
 import TablePrograms from './TablePrograms';
-
+import TaskPage from './Task/TaskPage';
 
 
 const oidcConfig = {
@@ -35,7 +35,9 @@ function App() {
         </div>
         <div className='col'>
           <Navbar />
+
           <TablePrograms />
+          {/* <TaskPage/> */}
         </div>
       </div>
     </AuthProvider>

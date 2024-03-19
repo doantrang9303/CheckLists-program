@@ -105,11 +105,27 @@ public class ProgramController {
                 ProgramDto program = programService.deleteById(id);
                 return ResponseEntity.status(HttpStatus.OK).body(findProgram.getName() + " deleted successfully");
 
+              
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteProgram(@PathVariable int id) {
+        if(id < 1) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
+        }
+        try {
+            ProgramDto findProgram = programService.findByProgramId(id);
+            if(findProgram == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Program not found");
+            }
+            else{
+                ProgramDto program = programService.deleteById(id);
+                return ResponseEntity.status(HttpStatus.OK).body(findProgram.getName() + " deleted successfully");
+
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
 
 
 }
