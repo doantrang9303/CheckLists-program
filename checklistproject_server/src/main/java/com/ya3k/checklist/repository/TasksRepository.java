@@ -22,7 +22,8 @@ public interface TasksRepository extends JpaRepository<Tasks, Integer> {
             "WHERE p.id = :programId " +
             "AND (:status IS NULL OR t.status = :status)" +
             "AND (:taskName IS NULL OR t.taskName like %:taskName%)" +
-            "AND (:endTime IS NULL OR t.endTime = :endTime)")
+            "AND (:endTime IS NULL OR t.endTime = :endTime)"+
+            "ORDER BY t.createTime DESC")
     Page<Tasks> findByProgramIdAndFilter(int programId, String status, String taskName, LocalDate endTime , Pageable pageable);
 
     Tasks deleteById(int id);
