@@ -16,7 +16,10 @@ public interface TasksService {
 
     Page<TasksResponse> findByProgramIdAndFilter(int programId, String status, String taskName, LocalDate endTime, Pageable pageable);
 
-TasksDto deleteById(int id);
-TasksDto findByTaskId(int id);
+    TasksDto deleteById(int id);
 
-    }
+    TasksDto findByTaskId(int id);
+
+    TasksDto updateTask(Integer taskId, TasksDto updatedTaskDto);
+
+}

@@ -1,6 +1,7 @@
 package com.ya3k.checklist.dto;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ya3k.checklist.entity.Program;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -17,10 +18,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TasksDto {
 
+
     private int id;
+    @JsonProperty("task_name")
     private String taskName;
+    @JsonProperty("program_id")
     private int programId;
+    @JsonProperty("status")
     private String status;
+    @JsonProperty("create_time")
     private LocalDateTime createTime;
+    @JsonProperty("end_time")
     private LocalDate endTime;
 }

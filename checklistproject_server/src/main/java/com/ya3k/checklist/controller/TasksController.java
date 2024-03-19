@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/tasks")
@@ -105,6 +106,7 @@ public class TasksController {
             if (tasksList.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No tasks found");
             }
+
             int totalPages = tasksList.getTotalPages();
             int totalElements = (int) tasksList.getTotalElements();
 
@@ -141,5 +143,44 @@ public class TasksController {
         }
     }
 
+    //update task
+    //http://localhost:9292/tasks/update/{id}
+    // {
+    //     "task_name": "task1",
+    //     "status": "COMPLETED",
+    //     "end_time": "2021-08-01"
+    // }
+    // truyen vao body 1 hoac nhieu truong can update
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateTask(@PathVariable int id, @RequestBody TasksDto updatedTaskDto) {
+        if (id < 1) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Task ID must be greater than 0");
+        }
+        try {
+            TasksDto findTask = tasksService.findByTaskId(id);
+            if (findTask == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
+            } else {
+                String updateMessage = ""; // Initialize update message
+                TasksDto updatedTask = tasksService.updateTask(id, updatedTaskDto);
+
+                if (!Objects.equals(findTask.getTaskName(), updatedTask.getTaskName())) {
+                    updateMessage += "Task Name updated: " + findTask.getTaskName() + " to " + updatedTask.getTaskName() + ".\n ";
+                }
+                if (!Objects.equals(findTask.getStatus(), updatedTask.getStatus())) {
+                    updateMessage += "Status updated: " + findTask.getStatus() + " to " + updatedTask.getStatus() + ".\n";
+                }
+                if (!Objects.equals(findTask.getEndTime(), updatedTask.getEndTime())) {
+                    updateMessage += "End Time updated: " + findTask.getEndTime() + " to " + updatedTask.getEndTime() + ".\n";
+                }
+
+                return ResponseEntity.status(HttpStatus.OK).body(updateMessage.isEmpty() ?
+                        "No changes were made to the task" : updateMessage);
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 
 }
