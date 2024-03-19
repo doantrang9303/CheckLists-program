@@ -6,6 +6,7 @@ import com.ya3k.checklist.response.programresponse.ProgramResponse;
 import com.ya3k.checklist.response.taskresponse.TasksResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -18,5 +19,7 @@ public interface TasksService {
 
 TasksDto deleteById(int id);
 TasksDto findByTaskId(int id);
+
+public void inportTask(MultipartFile file ,int programId);
 
     }

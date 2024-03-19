@@ -19,10 +19,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -62,7 +72,13 @@ public class TasksController {
         Tasks savedTask = trepo.save(task);
         return ResponseEntity.ok(savedTask.getTaskName() + " add successfully");
     }
+    @PostMapping("/importTasksFromExcel")
+    public ResponseEntity<Tasks> importTasksFromExcel(      @RequestParam(name = "program_id") int programId,@RequestParam("file") MultipartFile   filePath) throws IOException {
 
+        tasksService.inportTask(filePath,programId);
+        return ResponseEntity.ok().build();
+
+    }
 
     //filter tasks of program
     //http://localhost:9292/tasks/filter/{program_id}/?status=done&task_name=task1&end_time=2021-08-01&page=1&size=10
