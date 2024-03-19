@@ -21,8 +21,8 @@ public class TasksMapper {
         Tasks tasks = new Tasks();
         tasks.setId(tasksDto.getId());
         tasks.setTaskName(tasksDto.getTaskName());
-        // Assuming there's a separate service to fetch Program by ID and set it to Tasks
-        // tasks.setProgram(programService.findById(tasksDto.getProgramId()));
+        // Assuming there's a separate service to fetch Program by ID and set it to the tasks object
+//        tasks.setProgram(programService.findById(tasksDto.getProgramId()
         tasks.setStatus(tasksDto.getStatus());
         tasks.setCreateTime(tasksDto.getCreateTime());
         tasks.setEndTime(tasksDto.getEndTime());
