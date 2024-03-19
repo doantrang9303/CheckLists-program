@@ -30,9 +30,9 @@ public class ProgramServiceImpl implements ProgramService {
 
 
         Page<Program> programs = programRepository.findByUserAndFilters(username, status, endTime, programName, pageable);
-        if (programs.isEmpty()) {
-            throw new IllegalArgumentException("There are no programs with the given filters.");
-        }
+//        if (programs.isEmpty()) {
+//            throw new IllegalArgumentException("There are no programs with the given filters.");
+//        }
         return programs.map(ProgramResponse::fromProgram);
     }
 

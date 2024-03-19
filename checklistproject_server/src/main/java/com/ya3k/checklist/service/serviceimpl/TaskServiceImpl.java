@@ -50,16 +50,13 @@ public class TaskServiceImpl implements TasksService {
 
         Page<Tasks> tasks = tasksRepository.findByProgramIdAndFilter(programId, status, taskName, endTime, pageable);
 
-
-
-
         return tasks.map(TasksResponse::fromTasks);
     }
 
     @Override
     public TasksDto deleteById(int id) {
         Tasks tasks = tasksRepository.deleteById(id);
-        if(tasks != null) {
+        if (tasks != null) {
             return TasksMapper.tasksToDto(tasks);
         }
         return null;
@@ -68,7 +65,7 @@ public class TaskServiceImpl implements TasksService {
     @Override
     public TasksDto findByTaskId(int id) {
         Tasks tasks = tasksRepository.findByTasksId(id);
-        if(tasks != null) {
+        if (tasks != null) {
             return TasksMapper.tasksToDto(tasks);
         }
         return null;
