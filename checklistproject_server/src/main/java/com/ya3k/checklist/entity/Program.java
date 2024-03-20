@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class Program {
     private int id;
   
     @Column(name = "name")
+    @Size(min = 3, max = 50, message = "Program name must be between 3 and 50 characters.")
     private String name;
   
     @ManyToOne
@@ -53,7 +55,5 @@ public class Program {
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Tasks> listTask;
-
-
 
 }

@@ -1,16 +1,13 @@
 package com.ya3k.checklist.repository;
 
 import com.ya3k.checklist.entity.Tasks;
-import com.ya3k.checklist.response.taskresponse.TasksResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Repository
 public interface TasksRepository extends JpaRepository<Tasks, Integer> {

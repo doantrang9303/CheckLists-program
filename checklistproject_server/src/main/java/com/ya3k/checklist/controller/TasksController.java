@@ -1,18 +1,19 @@
 package com.ya3k.checklist.controller;
 
+import com.ya3k.checklist.Enum.StatusEnum;
 import com.ya3k.checklist.dto.TasksDto;
 import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Tasks;
 import com.ya3k.checklist.repository.ProgramRepository;
 import com.ya3k.checklist.repository.TasksRepository;
-import com.ya3k.checklist.response.taskresponse.TasksListResponse;
-import com.ya3k.checklist.response.taskresponse.TasksResponse;
+import com.ya3k.checklist.dto.response.taskresponse.TasksListResponse;
+import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
+import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import com.ya3k.checklist.service.serviceinterface.TasksService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.server.Session;
-import org.springframework.cglib.core.Local;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,35 +33,59 @@ import java.util.Objects;
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class TasksController {
     private final TasksService tasksService;
-
+    private final ProgramService programservice;
     private TasksRepository trepo;
     private ProgramRepository repo;
 
     @Autowired
-    public TasksController(TasksService tasksService, TasksRepository trepo, ProgramRepository repo) {
+    public TasksController(TasksService tasksService, ProgramService programservice, TasksRepository trepo, ProgramRepository repo) {
         this.tasksService = tasksService;
+        this.programservice = programservice;
         this.trepo = trepo;
         this.repo = repo;
     }
 
 
-    @PostMapping("/add")
-    public ResponseEntity<?> createProgram(@RequestBody Tasks task, @RequestHeader Integer program_id) {
-        if (program_id <= 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("program_id is invalid");
-        }
-        Program program = repo.findById(program_id).get();
+//    @PostMapping("/add")
+//    public ResponseEntity<?> createProgram(@RequestBody Tasks task, @RequestHeader Integer program_id) {
+//        if (program_id <= 0) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("program_id is invalid");
+//        }
+//        Program program = repo.findById(program_id).orElse(null);
+//
+//        if (program == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program not found");
+//        }
+//        task.setProgram(program);
+//        if (task.getStatus() == null || task.getStatus().isEmpty())
+//            task.setStatus(StatusEnum.IN_PROGRESS.getStatus());
+//        else task.setStatus(task.getStatus());
+//        task.setCreateTime(LocalDateTime.now());
+//        Tasks savedTask = trepo.save(task);
+//
+//        //call check status of program
+//        programservice.autoUpdateStatusByTaskStatus(task.getId());
+//
+//        return ResponseEntity.ok(savedTask.getTaskName() + " add successfully");
+//    }
 
-        if (program == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program not found");
+    @PostMapping("/add")
+    public ResponseEntity<?> createTask(@Valid @RequestBody TasksDto taskDto, @RequestHeader(name = "program_id") Integer programId) {
+        try {
+            if (programId < 1) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
+            }
+
+            TasksDto createdTask = tasksService.createTask(taskDto, programId);
+            programservice.autoUpdateStatusByTaskStatus(createdTask.getId());
+            return ResponseEntity.ok(createdTask);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Program not found");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
         }
-        task.setProgram(program);
-        if (task.getStatus() == null || task.getStatus().equals(""))
-            task.setStatus("IN_PROGRESS");
-        else task.setStatus(task.getStatus());
-        task.setCreateTime(LocalDateTime.now());
-        Tasks savedTask = trepo.save(task);
-        return ResponseEntity.ok(savedTask.getTaskName() + " add successfully");
     }
 
 
@@ -152,7 +176,7 @@ public class TasksController {
     // }
     // truyen vao body 1 hoac nhieu truong can update
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateTask(@PathVariable int id, @RequestBody TasksDto updatedTaskDto) {
+    public ResponseEntity<?> updateTask(@PathVariable int id, @RequestBody @Valid TasksDto updatedTaskDto) {
         if (id < 1) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Task ID must be greater than 0");
         }

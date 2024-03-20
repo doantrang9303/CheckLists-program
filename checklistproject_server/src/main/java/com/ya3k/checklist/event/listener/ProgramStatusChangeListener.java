@@ -12,7 +12,7 @@ public class ProgramStatusChangeListener implements ApplicationListener<ProgramE
         Program program = event.getProgram();
 
         //send mess
-        System.out.println("Program " +program.getName() + " status change to: " + program.getStatus());
+        System.out.println("Program " +program.getName() + " status: " + program.getStatus());
     }
 
 

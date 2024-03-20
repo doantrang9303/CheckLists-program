@@ -1,4 +1,4 @@
-package com.ya3k.checklist.response.programresponse;
+package com.ya3k.checklist.dto.response.programresponse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ya3k.checklist.entity.Program;
@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Data
 @Builder

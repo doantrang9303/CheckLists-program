@@ -1,4 +1,4 @@
-package com.ya3k.checklist.response.taskresponse;
+package com.ya3k.checklist.dto.response.taskresponse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
