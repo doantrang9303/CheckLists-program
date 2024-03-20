@@ -46,7 +46,6 @@ private final TasksRepository tasksRepository;
     @Override
     public ProgramDto createProgram(ProgramDto programDto,String userName) {
         Program program = ProgramMapper.mapDtoToProgram(programDto);
-
         Users user = urepo.findByUser(userName);
         program.setUser(user);
         if (programDto.getName() != null) {
@@ -57,14 +56,15 @@ private final TasksRepository tasksRepository;
         if (program.getStatus() == null || program.getStatus().isEmpty())
             program.setStatus(StatusEnum.IN_PROGRESS.getStatus());
         else program.setStatus(program.getStatus());
+
+        //set create time
         program.setCreate_time(LocalDateTime.now());
+
+
         if (programDto.getEndTime() != null) {
-            String endTimeString = programDto.getEndTime().toString();
-            if (!endTimeString.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                throw new IllegalArgumentException("End time must be in the format YYYY-MM-DD");
-            }
             program.setEndTime(programDto.getEndTime());
         }
+
         Program savedProgram = programRepository.save(program);
         return ProgramMapper.mapToDto(savedProgram);
     }

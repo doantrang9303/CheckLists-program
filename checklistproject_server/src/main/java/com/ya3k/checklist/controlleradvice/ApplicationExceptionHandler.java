@@ -6,29 +6,37 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, List<Map<String, String>>> handleInvalidArgument(MethodArgumentNotValidException ex) {
-        Map<String, List<Map<String, String>>> errorMap = new HashMap<>();
-        List<Map<String, String>> errorList = new ArrayList<>();
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, List<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        // Create a map to store errors, where each key represents a category of errors
+        Map<String, List<Map<String, String>>> errors = new HashMap<>();
 
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            Map<String, String> fieldError = new HashMap<>();
-            fieldError.put(error.getField(), error.getDefaultMessage());
+        // Create a list to store individual error maps
+        List<Map<String, String>> errorList = ex.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> {
+                    // Create a new error map for each field error
+                    Map<String, String> errorMap = new HashMap<>();
+                    // Add field name and error message to the error map
+                    errorMap.put("field", fieldError.getField());  // Key "field" for field name
+                    errorMap.put("message", fieldError.getDefaultMessage());  // Key "message" for error message
+                    return errorMap;
+                })
+                .collect(Collectors.toList());  // Collect error maps into a list
 
-            errorList.add(fieldError);
-        });
-        errorMap.put("invalid_input", errorList);
-        return errorMap;
+        // Add the error list to the errors map with a specific key ("invalid_input")
+        errors.put("invalid_input", errorList);
+
+        return errors;  // Return the errors map with categorized error lists
     }
+
 
 
 }
