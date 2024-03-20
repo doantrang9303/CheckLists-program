@@ -4,11 +4,11 @@ import com.ya3k.checklist.Enum.StatusEnum;
 import com.ya3k.checklist.dto.TasksDto;
 import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Tasks;
-import com.ya3k.checklist.event.eventhandle.ProgramEventHandle;
 import com.ya3k.checklist.mapper.TasksMapper;
 import com.ya3k.checklist.repository.ProgramRepository;
 import com.ya3k.checklist.repository.TasksRepository;
-import com.ya3k.checklist.response.taskresponse.TasksResponse;
+import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
+import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import com.ya3k.checklist.service.serviceinterface.TasksService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,11 +31,70 @@ public class TaskServiceImpl implements TasksService {
     private final ProgramRepository programRepository;
 
     private final ApplicationEventPublisher eventPublisher;
+    private final ProgramService programService;
+
     @Autowired
-    public TaskServiceImpl(TasksRepository tasksRepository, ProgramRepository programRepository, ApplicationEventPublisher eventPublisher) {
+    public TaskServiceImpl(TasksRepository tasksRepository, ProgramRepository programRepository, ApplicationEventPublisher eventPublisher, ProgramService programService) {
         this.programRepository = programRepository;
         this.tasksRepository = tasksRepository;
         this.eventPublisher = eventPublisher;
+        this.programService = programService;
+    }
+
+    @Override
+    public TasksDto createTask(TasksDto taskDto, Integer programId) {
+        Program programs = programRepository.findById(programId).orElseThrow(() -> new EntityNotFoundException("Program not found"));
+        List<String> errorsMess = new ArrayList<>();
+
+        if (programs != null) {
+            Tasks tasks = TasksMapper.mapToTasks(taskDto);
+
+            //validate task name
+            if (taskDto.getTaskName() != null) {
+                String trimmedName = taskDto.getTaskName().trim();
+                if (trimmedName.isEmpty() || trimmedName.isBlank()) {
+                    errorsMess.add("Task name is required");
+                } else if (trimmedName.length() < 3 || trimmedName.length() > 50) {
+                    errorsMess.add("Task name must be between 3 and 50 characters.");
+                } else {
+                    //set task name
+                    tasks.setTaskName(trimmedName);
+                }
+            } else {
+                errorsMess.add("Task name is required");
+            }
+
+            //set program
+            tasks.setProgram(programs);
+
+            //set default status to IN_PROGRESS
+            if (tasks.getStatus() == null || tasks.getStatus().isEmpty() || tasks.getStatus().isBlank()) {
+                tasks.setStatus(StatusEnum.IN_PROGRESS.getStatus());
+            }
+
+            //set create time
+            tasks.setCreateTime(LocalDateTime.now());
+
+            if (taskDto.getEndTime() != null) {
+                if (tasks.getEndTime().isBefore(LocalDate.now())) {
+                    errorsMess.add("End time must be in the future");
+                } else if (tasks.getEndTime().isAfter(programs.getEndTime())) {
+                    errorsMess.add("Tasks End time must be before program end time");
+                }else {
+                    tasks.setEndTime(taskDto.getEndTime());
+                }
+            }
+
+
+            //print error message
+            if (!errorsMess.isEmpty()) {
+                throw new IllegalArgumentException(String.join("\n", errorsMess));
+            }
+            tasksRepository.save(tasks);
+            return TasksMapper.tasksToDto(tasks);
+        }
+
+        return null;
     }
 
     @Override
@@ -84,16 +145,23 @@ public class TaskServiceImpl implements TasksService {
     public TasksDto updateTask(Integer taskId, TasksDto updatedTaskDto) {
 
 //        Tasks tasks = tasksRepository.findByTasksId(taskId);
-        Tasks tasks= tasksRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found"));
+        Tasks tasks = tasksRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found"));
+        List<String> errorsMess = new ArrayList<>();
+
         if (tasks != null) {
-
-            //update name
-            if (updatedTaskDto.getTaskName() != null &&
-                    !updatedTaskDto.getTaskName().isEmpty() &&
-                    !updatedTaskDto.getTaskName().isBlank()) {
-                tasks.setTaskName(updatedTaskDto.getTaskName());
+            // Update name with trimmed spaces and validate length
+            if (updatedTaskDto.getTaskName() != null) {
+                String trimmedName = updatedTaskDto.getTaskName().trim();
+                if (trimmedName.isEmpty() || trimmedName.isBlank()) {
+                    tasks.setTaskName(tasks.getTaskName());
+                } else if (trimmedName.length() < 3 || trimmedName.length() > 50) {
+                    errorsMess.add("Task name must be between 3 and 50 characters.");
+                } else {
+                    tasks.setTaskName(trimmedName);
+                }
+            } else {
+                tasks.setTaskName(tasks.getTaskName());
             }
-
             //update status
             if (updatedTaskDto.getStatus() != null &&
                     !updatedTaskDto.getStatus().isEmpty() &&
@@ -102,7 +170,7 @@ public class TaskServiceImpl implements TasksService {
                 if (StatusEnum.IN_PROGRESS.toString().equals(status) || StatusEnum.COMPLETED.toString().equals(status)) {
                     tasks.setStatus(status);
                 } else {
-                    throw new IllegalArgumentException("Status must be IN_PROGRESS or COMPLETED");
+                    errorsMess.add("Status must be IN_PROGRESS or COMPLETED");
                 }
             }
 
@@ -113,32 +181,23 @@ public class TaskServiceImpl implements TasksService {
                 try {
                     LocalDate endTime = LocalDate.parse(endTimeString, formatter);
                     if (endTime.isBefore(LocalDate.now())) {
-                        throw new IllegalArgumentException("End time must be in the future");
+                        errorsMess.add("End time must be in the future");
+                    } else if (endTime.isAfter(tasks.getProgram().getEndTime())) {
+                        errorsMess.add("Tasks End time must be before program end time");
                     }
+
                     tasks.setEndTime(endTime);
                 } catch (DateTimeParseException e) {
-                    throw new IllegalArgumentException("End time must be in the format YYYY-MM-DD");
+                    errorsMess.add("End time must be in the format YYYY-MM-DD");
                 }
             }
 
-            //handler auto update status for program
-            Program program = tasks.getProgram();
-            List<Tasks> allTasks = program.getListTask();
-            boolean allTasksCompleted = allTasks.stream().allMatch(t -> "COMPLETED".equals(t.getStatus()));
-
-            // Update program status if all tasks are completed
-            if (allTasksCompleted) {
-                program.setStatus("COMPLETED");
-                programRepository.save(program);
-                // Publish program status change event
-                eventPublisher.publishEvent(new ProgramEventHandle(this, program));
-            }else{
-                program.setStatus("IN_PROGRESS");
-                programRepository.save(program);
-                // Publish program status change event
-                eventPublisher.publishEvent(new ProgramEventHandle(this, program));
+            //print error message
+            if (!errorsMess.isEmpty()) {
+                throw new IllegalArgumentException(String.join("\n", errorsMess));
             }
 
+            programService.autoUpdateStatusByTaskStatus(taskId);
 
             tasksRepository.save(tasks);
             return TasksMapper.tasksToDto(tasks);
