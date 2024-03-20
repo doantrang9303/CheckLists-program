@@ -75,7 +75,6 @@ public class TasksController {
             if (programId < 1) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
             }
-
             TasksDto createdTask = tasksService.createTask(taskDto, programId);
             programservice.autoUpdateStatusByTaskStatus(createdTask.getId());
             return ResponseEntity.ok(createdTask);

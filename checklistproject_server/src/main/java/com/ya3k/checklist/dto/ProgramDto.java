@@ -1,6 +1,7 @@
 package com.ya3k.checklist.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.ya3k.checklist.Enum.StatusEnum;
 import com.ya3k.checklist.entity.Users;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -26,6 +28,7 @@ public class ProgramDto {
     private int id;
     @JsonProperty("name")
     @Size(min = 3, max = 50, message = "Program name must be between 3 and 50 characters.")
+    @NotBlank(message = "Program name cannot be empty.")
     private String name;
     @JsonProperty("username")
     private String userName;
@@ -37,6 +40,8 @@ public class ProgramDto {
     private LocalDateTime createTime;
     @JsonProperty("endtime")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @FutureOrPresent(message = "End time must be in the present or future.")
     private LocalDate endTime;
+
 
 }
