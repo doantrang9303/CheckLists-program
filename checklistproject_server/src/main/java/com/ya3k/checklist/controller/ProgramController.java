@@ -42,25 +42,7 @@ public class ProgramController {
     }
 
 
-//    @PostMapping("/add")
-//    public ResponseEntity<?> createProgram(@RequestBody Program program, @RequestHeader String user_name) {
-//        if(user_name==null || user_name.isEmpty()){
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username is empty");
-//        }
-//        Users user = urepo.findByUser(user_name);
-//        if(user==null){
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User Not Found");
-//        }
-//
-//        program.setUser(user);
-//        if (program.getStatus() == null || program.getStatus().isEmpty())
-//            //set default status to IN_PROGRESS
-//            program.setStatus(StatusEnum.IN_PROGRESS.getStatus());
-//        else program.setStatus(program.getStatus());
-//        program.setCreate_time(LocalDateTime.now());
-//        Program savedProgram = repo.save(program);
-//        return ResponseEntity.ok(savedProgram);
-//    }
+
 
     @PostMapping("/add")
     public ResponseEntity<?> createProgram(@RequestBody @Valid ProgramDto programDto,
@@ -132,5 +114,24 @@ public class ProgramController {
         }
     }
 
+    //    @PostMapping("/add")
+//    public ResponseEntity<?> createProgram(@RequestBody Program program, @RequestHeader String user_name) {
+//        if(user_name==null || user_name.isEmpty()){
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username is empty");
+//        }
+//        Users user = urepo.findByUser(user_name);
+//        if(user==null){
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User Not Found");
+//        }
+//
+//        program.setUser(user);
+//        if (program.getStatus() == null || program.getStatus().isEmpty())
+//            //set default status to IN_PROGRESS
+//            program.setStatus(StatusEnum.IN_PROGRESS.getStatus());
+//        else program.setStatus(program.getStatus());
+//        program.setCreate_time(LocalDateTime.now());
+//        Program savedProgram = repo.save(program);
+//        return ResponseEntity.ok(savedProgram);
+//    }
 
 }
