@@ -34,40 +34,12 @@ import java.util.Objects;
 public class TasksController {
     private final TasksService tasksService;
     private final ProgramService programservice;
-    private TasksRepository trepo;
-    private ProgramRepository repo;
 
-    @Autowired
-    public TasksController(TasksService tasksService, ProgramService programservice, TasksRepository trepo, ProgramRepository repo) {
+    public TasksController(TasksService tasksService, ProgramService programservice) {
         this.tasksService = tasksService;
         this.programservice = programservice;
-        this.trepo = trepo;
-        this.repo = repo;
     }
 
-
-//    @PostMapping("/add")
-//    public ResponseEntity<?> createProgram(@RequestBody Tasks task, @RequestHeader Integer program_id) {
-//        if (program_id <= 0) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("program_id is invalid");
-//        }
-//        Program program = repo.findById(program_id).orElse(null);
-//
-//        if (program == null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program not found");
-//        }
-//        task.setProgram(program);
-//        if (task.getStatus() == null || task.getStatus().isEmpty())
-//            task.setStatus(StatusEnum.IN_PROGRESS.getStatus());
-//        else task.setStatus(task.getStatus());
-//        task.setCreateTime(LocalDateTime.now());
-//        Tasks savedTask = trepo.save(task);
-//
-//        //call check status of program
-//        programservice.autoUpdateStatusByTaskStatus(task.getId());
-//
-//        return ResponseEntity.ok(savedTask.getTaskName() + " add successfully");
-//    }
 
     @PostMapping("/add")
     public ResponseEntity<?> createTask(@Valid @RequestBody TasksDto taskDto, @RequestHeader(name = "program_id") Integer programId) {
@@ -205,5 +177,28 @@ public class TasksController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+    //    @PostMapping("/add")
+//    public ResponseEntity<?> createProgram(@RequestBody Tasks task, @RequestHeader Integer program_id) {
+//        if (program_id <= 0) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("program_id is invalid");
+//        }
+//        Program program = repo.findById(program_id).orElse(null);
+//
+//        if (program == null) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program not found");
+//        }
+//        task.setProgram(program);
+//        if (task.getStatus() == null || task.getStatus().isEmpty())
+//            task.setStatus(StatusEnum.IN_PROGRESS.getStatus());
+//        else task.setStatus(task.getStatus());
+//        task.setCreateTime(LocalDateTime.now());
+//        Tasks savedTask = trepo.save(task);
+//
+//        //call check status of program
+//        programservice.autoUpdateStatusByTaskStatus(task.getId());
+//
+//        return ResponseEntity.ok(savedTask.getTaskName() + " add successfully");
+//    }
 
 }
