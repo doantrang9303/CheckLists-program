@@ -10,6 +10,10 @@ import com.ya3k.checklist.dto.response.taskresponse.TasksListResponse;
 import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import com.ya3k.checklist.service.serviceinterface.TasksService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +35,7 @@ import java.util.Objects;
 @CrossOrigin(origins = "${front-end.url}",
         allowedHeaders = "*",
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@Tag(name = "Tasks API", description = "APIs for Tasks")
 public class TasksController {
     private final TasksService tasksService;
     private final ProgramService programservice;
@@ -40,6 +45,13 @@ public class TasksController {
         this.programservice = programservice;
     }
 
+
+    //document
+    @Operation(summary = "Add New Tasks", description = "Add New Tasks")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Add New Tasks Successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid Body")
+    })
 
     @PostMapping("/add")
     public ResponseEntity<?> createTask(@Valid @RequestBody TasksDto taskDto, @RequestHeader(name = "program_id") Integer programId) {
@@ -63,18 +75,11 @@ public class TasksController {
     //filter tasks of program
     //http://localhost:9292/tasks/filter/{program_id}/?status=done&task_name=task1&end_time=2021-08-01&page=1&size=10
 
-    /**
-     * Retrieves a paginated list of tasks for a given program ID.
-     * <p>
-     * //     * @param programId The ID of the program to list tasks for.
-     *
-     * @param status   The status of the tasks to filter by (optional).
-     * @param taskName The name of the tasks to filter by (optional).
-     * @param endTime  The end time of the tasks to filter by (optional).
-     * @param page     The page number for pagination (default is 1).
-     * @param size     The page size for pagination (default is 10).
-     * @return ResponseEntity representing the paginated list of tasks and metadata.
-     */
+    @Operation(summary = "Get Tasks", description = "Get all Tasks of programs with program ID and filter by status, task name, end time")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Get Tasks Successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid Body")
+    })
     @GetMapping("/{program_id}")
     public ResponseEntity<?> filterTasksOfProgram(
             @PathVariable(name = "program_id") int programId,
@@ -98,10 +103,6 @@ public class TasksController {
 
             Page<TasksResponse> tasksList = tasksService.findByProgramIdAndFilter(programId, status, taskName, endTime, pageable);
 
-            if (tasksList.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No tasks found");
-            }
-
             int totalPages = tasksList.getTotalPages();
             int totalElements = (int) tasksList.getTotalElements();
 
@@ -118,6 +119,12 @@ public class TasksController {
         }
     }
 
+    @Operation(summary = "Delete Tasks", description = "Delete Tasks by Tasks ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Delete Tasks Successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid Tasks ID"),
+            @ApiResponse(responseCode = "404", description = "Tasks Not Found")
+    })
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteTask(@PathVariable int id) {
         if (id < 1) {
@@ -146,6 +153,13 @@ public class TasksController {
     //     "end_time": "2021-08-01"
     // }
     // truyen vao body 1 hoac nhieu truong can update
+
+    @Operation(summary = "Update Tasks", description = "Update Tasks by Tasks ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Update Tasks Successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid Tasks ID"),
+            @ApiResponse(responseCode = "404", description = "Tasks Not Found")
+    })
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateTask(@PathVariable int id, @RequestBody @Valid TasksDto updatedTaskDto) {
         if (id < 1) {

@@ -27,5 +27,7 @@
 
         @Query("SELECT p FROM Program p WHERE p.id = :id")
         Program findByProgramId(int id);
-        
+
+        @Query("SELECT p FROM Program p JOIN p.user u WHERE u.user_name = :username")
+      List<Program> findByUserName(String username);
     }

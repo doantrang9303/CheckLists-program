@@ -6,6 +6,11 @@ import com.ya3k.checklist.repository.ProgramRepository;
 import com.ya3k.checklist.repository.UserRepository;
 import com.ya3k.checklist.dto.response.programresponse.ProgramListResponse;
 import com.ya3k.checklist.dto.response.programresponse.ProgramResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.servers.Servers;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
@@ -29,6 +34,7 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "${front-end.url}",
         allowedHeaders = "*",
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@Tag(name = "Programs API", description = "APIs for Programs")
 public class ProgramController {
     ProgramRepository repo;
     UserRepository urepo;
@@ -42,7 +48,12 @@ public class ProgramController {
     }
 
 
-
+    @Operation(summary = "Create a new Program", description = "Create a new Program")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Add Program Successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid Body"),
+            @ApiResponse(responseCode = "401", description = "User Not Found")
+    })
 
     @PostMapping("/add")
     public ResponseEntity<?> createProgram(@RequestBody @Valid ProgramDto programDto,
@@ -69,6 +80,12 @@ public class ProgramController {
 
 
     //get list program with filter or not
+    //http://localhost:9292/programs/?status=done&end_time=2021-08-01&program_name=program1&page=1&size=10
+    @Operation(summary = "Get Programs", description = "Get all programs or filter by status, end time, program name")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Get Programs Successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid Body")
+    })
     @GetMapping()
     public ResponseEntity<?> getProgramsByFilters(
             @RequestHeader(name = "user_name") String userName,
@@ -94,7 +111,13 @@ public class ProgramController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
-
+    //delete program by id
+    @Operation(summary = "Delete Programs", description = "Delete Programs by programs ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Delete Program Successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ProgramID"),
+            @ApiResponse(responseCode = "404", description = "Program Not Found")
+    })
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteProgram(@PathVariable int id) {
         if (id < 1) {
