@@ -3,6 +3,7 @@ package com.ya3k.checklist.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ya3k.checklist.Enum.StatusEnum;
 import com.ya3k.checklist.entity.Users;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -25,6 +26,8 @@ import java.time.LocalDateTime;
 
 public class ProgramDto {
 
+
+    @Schema(hidden = true)
     private int id;
     @JsonProperty("name")
     @Size(min = 3, max = 50, message = "Program name must be between 3 and 50 characters.")
