@@ -1,5 +1,5 @@
 # CheckLists program
-
+http://localhost:9292/swagger-ui/index.html#
 
 ## PREPARE
 
