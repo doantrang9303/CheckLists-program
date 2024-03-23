@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import CreateProgram from './CreateProgram';
-import axios from 'axios';
-import Pagination from 'react-bootstrap/Pagination';
 import Form from 'react-bootstrap/Form';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -10,6 +8,7 @@ import ProgramSerivce from './services/ProgramService';
 import { useAuth } from 'oidc-react';
 import { format } from 'date-fns'; // Import định dạng ngày tháng từ date-fns
 import ReactPaginate from 'react-paginate';
+import { Link } from 'react-router-dom';
 
 
 const TablePrograms = (props) => {
@@ -22,7 +21,7 @@ const TablePrograms = (props) => {
         return format(new Date(dateString), 'yyyy/MM/dd'); // Định dạng ngày tháng
     };
 
-    // Function click event to delete
+    // Function click event to delete//////////////////////////////////////////////////
     const [selectedPrograms, setSelectedPrograms] = useState([]);
     // Function to handle the click event of the "checkbox-all"
     const toggleProgramSelection = (programId) => {
@@ -36,11 +35,16 @@ const TablePrograms = (props) => {
         for (const programId of selectedPrograms) {
             await ProgramSerivce.deleteProgram(programId);
         }
-
-        getPrograms(currentPage, auth.userData?.profile.preferred_username);
+        if (listPrograms.length === 1 && currentPage === 1) {
+            setListPrograms([]);
+            setTotalPrograms(0);
+            setTotalPage(0);
+        } else {
+            getPrograms(currentPage, auth.userData?.profile.preferred_username);
+        }
         setSelectedPrograms([]); // Clear selected programs after deletion
     };
-    //
+    ///////////////////Delete//////////////////////////////
     const handleCheckAll = (event) => {
         const checkboxes = document.querySelectorAll('.CheckOption input[type="checkbox"]');
         checkboxes.forEach((checkbox) => {
@@ -55,7 +59,9 @@ const TablePrograms = (props) => {
     const handleCloseCreateProgram = () => {
         setShowCreateProgram(false);
         // Refresh the data on the current page
-        getPrograms(currentPage, auth.userData?.profile.preferred_username);
+        setCurrentPage(1);
+        getPrograms(currentPage, auth.userData?.profile.preferred_username)
+
     };
     const [selectedOption, setSelectedOption] = useState(""); // State to track selected option
 
@@ -66,32 +72,30 @@ const TablePrograms = (props) => {
     const [totalPrograms, setTotalPrograms] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
     const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
-
+    /////////////////useEffect////////////////
     useEffect(() => {
         if (!auth.isLoading && !!auth.userData) {
-            
             console.log(auth);
             console.log(auth.userData?.profile);
-            getPrograms(1, auth.userData?.profile.preferred_username);
+            getPrograms(currentPage, auth.userData?.profile.preferred_username);
+
         }
     }, [auth.isLoading, auth.userData, refresh])
 
-    const getPrograms = async (page, username) => {
-        if (listPrograms.length === 1 && page > 1) {
-            getPrograms(page - 1, username);
-        } else if (listPrograms.length === 1 && page === 1) {
-            setListPrograms([]); 
-            setTotalPrograms(0); 
-            setTotalPage(0);
-        } 
-         else {
-            let res = await ProgramSerivce.fetchAllProgram(page, username);
-            if (res && res.program_list) {
-                setTotalPrograms(res.total)
-                setListPrograms(res.program_list)
-                setTotalPage(res.total_page);
-            }
+    useEffect(() => {
+        if (listPrograms.length === 0 && currentPage > 1) {
+            const previousPage = currentPage - 1;
+            getPrograms(previousPage, auth.userData?.profile.preferred_username);
+            setCurrentPage(previousPage);
         }
+    }, [listPrograms, currentPage, auth.userData]);
+    /////////////////useEffect////////////////
+    const getPrograms = async (page, username) => {
+
+        let res = await ProgramSerivce.fetchAllProgram(page, username);
+        setTotalPrograms(res.total)
+        setListPrograms(res.program_list)
+        setTotalPage(res.total_page);
     }
     const handlePageClick = (event) => {
         console.log("event lib: ", event)
@@ -155,73 +159,73 @@ const TablePrograms = (props) => {
 
 
                 {showCreateProgram && <CreateProgram onClose={handleCloseCreateProgram} />}
-                <table className="table caption-top bg-white rounded" >
-                    <thead>
-                        <tr>
-                            <th scope="col">
-                                <Form className="ClickAll" style={{ display: 'flex', justifyContent: 'center' }}>
-                                    <Form.Check
-                                        type="checkbox"
-                                        id="check-all"
-                                        onChange={handleCheckAll} // Attach the event handler here
-                                    />
-                                </Form>
-                            </th>
-                            <th scope="col">ID</th>
-                            <th scope="col" href="/TaskPage">Program Name</th>
-                            <th scope="col">Create Date</th>
-                            <th scope="col">Deadline</th>
-                            <th scope="col">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {listPrograms && listPrograms.length > 0 &&
-                            listPrograms.map((item, index) => {
-                                return (
-                                    <tr key={`programs-${index}`}>
-                                        <th>
-                                            <Form className="CheckOption" style={{ display: 'flex', justifyContent: 'center' }}>
-                                                <Form.Check
-                                                    type="checkbox"
-                                                    onChange={() => toggleProgramSelection(item.id)} // Toggle program selection
-                                                    checked={selectedPrograms.includes(item.id)} // Check if program is selected
-                                                />
-                                            </Form>
-                                        </th>
-                                        <td>{counter + index}</td> {/* ID được tự động tăng */}
-                                        <td>{item.name}</td>
-                                        <td>{formatDate(item.create_time)}</td>
-                                        <td>{formatDate(item.end_time)}</td>
-                                        <td>{item.status}</td>
-                                    </tr>
-                                )
-                            })
-                        }
-                    </tbody>
-                </table>
-                <>
-                    {/* <div className='pagination-container'> */}
-                    <ReactPaginate
-                        breakLabel="..."
-                        nextLabel="next >"
-                        onPageChange={handlePageClick}
-                        pageRangeDisplayed={5}
-                        pageCount={totalPage}
-                        previousLabel="< previous"
+                {listPrograms.length === 0 && currentPage === 1 ? (
+                    <p>There are no Program</p>
+                ) :
+                    <>
+                        <table className="table caption-top bg-white rounded">
+                            <thead>
+                                <tr>
+                                    <th scope="col">
+                                        <Form className="ClickAll" style={{ display: 'flex', justifyContent: 'center' }}>
+                                            <Form.Check
+                                                type="checkbox"
+                                                id="check-all"
+                                                onChange={handleCheckAll} // Attach the event handler here
+                                            />
+                                        </Form>
+                                    </th>
 
-                        pageClassName="page-item"
-                        pageLinkClassName="page-link"
-                        previousClassName="page-item"
-                        previousLinkClassName="page-link"
-                        nextClassName="page-item"
-                        nextLinkClassName="page-link"
-                        breakClassName="page-item"
-                        breakLinkClassName="page-link"
-                        containerClassName="pagination"
-                        activeClassName="active"
-                    />
-                    {/* </div> */}
-                </>
+                                    <th scope="col" href="/TaskPage">Program Name</th>
+                                    <th scope="col">Create Date</th>
+                                    <th scope="col">Deadline</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {listPrograms && listPrograms.length > 0 &&
+                                    listPrograms.map((item, index) => {
+                                        return (
+                                            <tr key={`programs-${index}`}>
+                                                <th>
+                                                    <Form className="CheckOption" style={{ display: 'flex', justifyContent: 'center' }}>
+                                                        <Form.Check
+                                                            type="checkbox"
+                                                            onChange={() => toggleProgramSelection(item.id)}
+                                                            checked={selectedPrograms.includes(item.id)}
+                                                        />
+                                                    </Form>
+                                                </th>
+                                                <td><Link to={`/TaskPage/${item.id}`} className='nav-link'>{item.name}</Link></td>
+                                                <td><Link to={`/TaskPage/${item.id}`} className='nav-link'>{formatDate(item.create_time)}</Link></td>
+                                                <td><Link to={`/TaskPage/${item.id}`} className='nav-link'>{formatDate(item.end_time)}</Link></td>
+                                                <td><Link to={`/TaskPage/${item.id}`} className='nav-link'>{item.status}</Link></td>
+                                            </tr>
+                                        )
+                                    })
+                                }
+                            </tbody>
+                        </table>
+                        <ReactPaginate
+                            breakLabel="..."
+                            nextLabel="next >"
+                            onPageChange={handlePageClick}
+                            pageRangeDisplayed={5}
+                            pageCount={totalPage}
+                            previousLabel="< previous"
+                            pageClassName="page-item"
+                            pageLinkClassName="page-link"
+                            previousClassName="page-item"
+                            previousLinkClassName="page-link"
+                            nextClassName="page-item"
+                            nextLinkClassName="page-link"
+                            breakClassName="page-item"
+                            breakLinkClassName="page-link"
+                            containerClassName="pagination justify-content-center" // Thêm lớp justify-content-center để căn giữa
+                            activeClassName="active"
+                        />
+                    </>
+                }
             </nav >
         </>
     )
