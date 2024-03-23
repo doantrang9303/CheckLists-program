@@ -5,8 +5,7 @@ import Navbar from './Navbar';
 
 import { AuthProvider } from 'oidc-react';
 import TokenUpdater from './TokenUpdater';
-import TablePrograms from './TablePrograms';
-import TaskPage from './Task/TaskPage';
+import { Outlet } from 'react-router-dom';
 
 
 const oidcConfig = {
@@ -31,12 +30,12 @@ function App() {
       <TokenUpdater />
       <div className='d-flex bg-light vh-100'>
         <div className='w-auto'>
-          <Sidebar />
+    
         </div>
         <div className='col'>
           <Navbar />
-
-          <TablePrograms />
+          <Outlet/>
+          {/*<TablePrograms />*/}
           {/* <TaskPage/> */}
         </div>
       </div>

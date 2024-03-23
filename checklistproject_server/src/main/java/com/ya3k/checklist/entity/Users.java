@@ -20,7 +20,7 @@ public class Users {
     private Integer user_id;
     private String user_name;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Program> programs;
 }

@@ -1,9 +1,10 @@
-
 server:
   port: 9292
 
 front-end:
   url: "http://localhost:3000"
+back-end:
+  url: "http://localhost:9292"
 keycloak:
   client-id: "myclient"
   client-secret: "EXbUdVCyKJ5NUitgZi5CBINt85dkoNlx"
@@ -17,4 +18,12 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
+
+springdoc:
+  api-docs:
+    enabled: true
+
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
 

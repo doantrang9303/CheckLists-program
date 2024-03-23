@@ -14,8 +14,9 @@
 
         @Query("SELECT p FROM Program p JOIN p.user u WHERE u.user_name = :username " +
                 "AND (:status IS NULL OR p.status = :status) " +
-                "AND (:endTime IS NULL OR p.endTime = :endTime)"+
-                "AND (:programName IS NULL OR p.name like %:programName%)" )
+                "AND (:endTime IS NULL OR p.endTime = :endTime)" +
+                "AND (:programName IS NULL OR p.name like %:programName%)" +
+                "ORDER BY p.create_time DESC")
         Page<Program> findByUserAndFilters(String username,
                                            String status,
                                            LocalDate endTime,
@@ -26,5 +27,7 @@
 
         @Query("SELECT p FROM Program p WHERE p.id = :id")
         Program findByProgramId(int id);
-        
+
+        @Query("SELECT p FROM Program p JOIN p.user u WHERE u.user_name = :username")
+      List<Program> findByUserName(String username);
     }
