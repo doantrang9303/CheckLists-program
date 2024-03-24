@@ -14,6 +14,7 @@ spring:
     url: "jdbc:mysql://localhost:3306/checklist"
     username: "root"
     password: "23012003aA@"
+
   jpa:
     show-sql: true
     hibernate:
@@ -27,3 +28,6 @@ springdoc:
     enabled: true
     path: /swagger-ui.html
 
+logging:
+  level:
+    root: info
