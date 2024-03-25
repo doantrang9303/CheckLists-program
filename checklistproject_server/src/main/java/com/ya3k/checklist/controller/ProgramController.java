@@ -11,7 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.servers.Servers;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
+import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Slf4j
 
 @RestController
 @RequestMapping("/programs")
@@ -72,9 +72,11 @@ public class ProgramController {
             }
 
             ProgramDto savedProgram = programService.createProgram(programDto, user_name);
+            log.info("Create program is successful. New program is: {}",savedProgram);
             return ResponseEntity.ok(savedProgram);
 
         } catch (Exception e) {
+            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
 
@@ -103,6 +105,7 @@ public class ProgramController {
             int totalPage = programsList.getTotalPages();
             int totalElements = (int) programsList.getTotalElements();
             List<ProgramResponse> programs = programsList.getContent();
+            log.info("List program: {}",programs);
 
             return ResponseEntity.ok(ProgramListResponse.builder()
                     .programResponseList(programs)
@@ -110,6 +113,7 @@ public class ProgramController {
                     .total(totalElements)
                     .build());
         } catch (Exception e) {
+            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -132,10 +136,12 @@ public class ProgramController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Program not found");
             } else {
                 ProgramDto program = programService.deleteById(id);
+                log.info("delete "+"{}"+" successfull",findProgram.getName());
                 return ResponseEntity.status(HttpStatus.OK).body(findProgram.getName() + " deleted successfully");
 
             }
         } catch (Exception e) {
+            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
