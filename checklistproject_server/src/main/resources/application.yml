@@ -13,7 +13,7 @@ spring:
   datasource:
     url: "jdbc:mysql://localhost:3306/checklist"
     username: "root"
-    password: "dongloi123"
+    password: "23012003aA@"
   jpa:
     show-sql: true
     hibernate:

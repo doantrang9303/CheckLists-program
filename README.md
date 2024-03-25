@@ -1,6 +1,5 @@
 # CheckLists program
 
-
 ## PREPARE
 
 ### **Install Docker**
