@@ -59,6 +59,7 @@ public class KeyCloakService {
         return jsonNode.get("active").asBoolean();
     }
 
+
 //    public Boolean introspectToken(String token) throws Exception {
 //
 //        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
