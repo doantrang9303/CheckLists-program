@@ -10,18 +10,26 @@ import com.ya3k.checklist.repository.TasksRepository;
 import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import com.ya3k.checklist.service.serviceinterface.TasksService;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -205,5 +213,53 @@ public class TaskServiceImpl implements TasksService {
         return null;
     }
 
+    public void inportTask(MultipartFile file, int programId) {
+        try {
+
+            try (InputStream inputStream = file.getInputStream()) {
+                Workbook workbook = new XSSFWorkbook(inputStream);
+                Sheet datatypeSheet = workbook.getSheetAt(0);
+                Iterator<Row> iterator = datatypeSheet.iterator();
+
+                // Skip header row if needed
+                if (iterator.hasNext()) {
+                    iterator.next(); // Skip header row
+                }
+
+                while (iterator.hasNext()) {
+                    Row currentRow = iterator.next();
+                    Tasks task = new Tasks();
+                    if (currentRow.getCell(0) ==null){
+                        continue;
+                    }
+
+                    Cell taskNameCell = currentRow.getCell(1);
+                    task.setTaskName(taskNameCell.getStringCellValue());
+
+                    Program program = new Program();
+                    program.setId(programId);
+                    task.setProgram(program);
+
+                    Cell statusCell = currentRow.getCell(2);
+                    task.setStatus(statusCell.getStringCellValue());
+
+                    Cell createTimeCell = currentRow.getCell(3);
+                    LocalDateTime createTime = LocalDateTime.parse(createTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                    task.setCreateTime(createTime);
+
+                    Cell endTimeCell = currentRow.getCell(4);
+                    LocalDate endTime = LocalDate.parse(endTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    task.setEndTime(endTime);
+
+                    tasksRepository.save(task);
+                }
+
+                workbook.close();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
 
 }

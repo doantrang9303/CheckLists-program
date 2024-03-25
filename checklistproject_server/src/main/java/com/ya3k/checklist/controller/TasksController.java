@@ -25,6 +25,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -148,6 +151,13 @@ public class TasksController {
             log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+    @PostMapping("/importTasksFromExcel")
+    public ResponseEntity<Tasks> importTasksFromExcel(@RequestParam(name = "program_id") int programId,@RequestParam("file") MultipartFile filePath) throws IOException {
+
+        tasksService.inportTask(filePath,programId);
+        return ResponseEntity.ok().build();
+
     }
 
     //update task
