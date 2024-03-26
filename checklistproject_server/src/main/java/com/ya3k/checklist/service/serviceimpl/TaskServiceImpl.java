@@ -83,6 +83,8 @@ public class TaskServiceImpl implements TasksService {
                 }else {
                     tasks.setEndTime(taskDto.getEndTime());
                 }
+            }else{
+                throw new IllegalArgumentException(String.join("\n", errorsMess));
             }
 
 

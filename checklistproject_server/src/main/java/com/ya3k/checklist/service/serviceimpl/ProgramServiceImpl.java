@@ -27,9 +27,8 @@ import java.util.List;
 public class ProgramServiceImpl implements ProgramService {
 
 
-
     private final ProgramRepository programRepository;
-private final TasksRepository tasksRepository;
+    private final TasksRepository tasksRepository;
     private final UserRepository urepo;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -44,13 +43,13 @@ private final TasksRepository tasksRepository;
 
 
     @Override
-    public ProgramDto createProgram(ProgramDto programDto,String userName) {
+    public ProgramDto createProgram(ProgramDto programDto, String userName) {
         Program program = ProgramMapper.mapDtoToProgram(programDto);
         Users user = urepo.findByUser(userName);
         program.setUser(user);
         if (programDto.getName() != null) {
             String trimmedName = programDto.getName().trim();
-                program.setName(trimmedName);
+            program.setName(trimmedName);
         }
 
         if (program.getStatus() == null || program.getStatus().isEmpty())
@@ -61,7 +60,9 @@ private final TasksRepository tasksRepository;
         program.setCreate_time(LocalDateTime.now());
 
 
-        if (programDto.getEndTime() != null) {
+        if (programDto.getEndTime() == null) {
+            program.setEndTime(LocalDate.now());
+        }else{
             program.setEndTime(programDto.getEndTime());
         }
 
