@@ -116,8 +116,7 @@ const TaskPage = (props) => {
     const [selectedStatus, setSelectedStatus] = useState('');
 
 
-
-
+    
 
     // Thêm state mới để lưu trữ trang hiện tại của danh sách chương trình khi lọc theo trạng thái
     const [currentPageFiltered, setCurrentPageFiltered] = useState(1);
@@ -159,7 +158,7 @@ const TaskPage = (props) => {
     const getTaskListExport = (event, done) => {
         let result = []
         if (listTasks && listTasks.length > 0) {
-            result.push(["Task", "Create Time", "End Time", "Status"])
+            result.push(["name", "status", "create_time", "end_time"])
             listTasks.map((item, index) => {
                 let arr = [];
                 arr[0] = item.task_name;
@@ -172,22 +171,24 @@ const TaskPage = (props) => {
             done();
         }
     }
-
-    const handleImportCSV = (event) => {
+    const handleImportExcel = async (event) => {
         if (event.target && event.target.files && event.target.files[0]) {
-            let file = event.target.files[0];
-            if (file.type !== "text/csv") {
-                toast.error("Only accept csv files ... ")
+            const file = event.target.files[0];
+            if (file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+                toast.error('Only accept Excel files (.xlsx) ...');
                 return;
             }
-            Papa.parse(file, {
-                complete: function (results) {
-                    console.log("Finished:", results.data)
-                }
-            })
-        }
 
-    }
+            try {
+                const response = await TaskService.importFile(file, id);
+                console.log('Data imported successfully:', response.data);
+                toast.success('Data imported successfully!');
+            } catch (error) {
+                console.error('Failed to import data:', error);
+                toast.error('Failed to import data. Please try again.');
+            }
+        }
+    };
     ////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////Edit Task////////////////////////////////////
     const handleEditClick = (task) => {
@@ -213,15 +214,7 @@ const TaskPage = (props) => {
                         />
                     </div>
                 </li>
-                {/* <li style={{ display: 'inline-block' }}>
-                <Button style={{ width: '140px' }}
-                    type="button"
-                    className="text-center btn btn-custom1 btn-outline-dark btn-lg fs-6 ms-2"
-   
-                >
-                    Deadline
-                </Button>
-            </li> */}
+
                 <li style={{ display: 'inline-block', marginLeft: "10px" }}>
                     <Form.Select aria-label="Default select example" className="status" onChange={handleSelectedStatus}>
                         <option value="">Filter by Status</option>
@@ -230,7 +223,7 @@ const TaskPage = (props) => {
                     </Form.Select>
                 </li>
                 <li style={{ display: 'inline-block', marginLeft: 'auto' }}>
-                    <Button style={{ width: '125px' , color: 'white' }}
+                    <Button style={{ width: '125px', color:'white' }}
                         type="button"
                         className="btn btn-info"
                         onClick={handleCreateTaskClick}
@@ -258,17 +251,12 @@ const TaskPage = (props) => {
                         ><i className="fa-solid fa-file-arrow-down"></i>Export
                         </CSVLink>
 
-                        {/* <Button style={{ marginLeft:"10px" }}
-                    type="button"
-                    className="btn btn-success"                       
-                >
-                    Import
-                </Button> */}
-                        <label htmlFor='test' className='btn btn-success' style={{ marginLeft: "10px" }}>
+
+                        <label htmlFor='fileInput' className='btn btn-success' style={{ marginLeft: "10px" }}>
                             Import
                         </label>
-                        <input id="test" type="file" hidden
-                            onChange={(event) => handleImportCSV(event)}
+                        <input id="fileInput" type="file" hidden
+                            onChange={(event) => handleImportExcel(event, id)}
                         />
 
                     </div>
@@ -309,6 +297,7 @@ const TaskPage = (props) => {
                                     return search.toLowerCase() === '' ? item : (item.task_name.toLowerCase().includes(search) ||
                                         search.toLowerCase() === '' ? item : (formatDate(item.end_time).includes(search)));
                                 }).map((item) => {
+
                                     return (
                                         <tr key={item.id}>
                                             <th>

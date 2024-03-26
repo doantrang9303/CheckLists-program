@@ -18,13 +18,29 @@ const deleteTask = (taskId) => {
 const editTask = (taskId, updatedTaskData) => {
   return axios.put(`/tasks/update/${taskId}`, updatedTaskData);
 };
-const filterTaskByStatus = (status, id, page ) => {
-  return axios.get(`/tasks/${id}?status=${status}&page=${page}`); 
+const filterTaskByStatus = (status, id, page) => {
+  return axios.get(`/tasks/${id}?status=${status}&page=${page}`);
 }
 
-const importFile = (program_id) => { 
-  return axios.post(`/tasks/importTasksFromExcel?program_id=${program_id}`)
-}
+// const importFile = (program_id) => { 
+//   return axios.post(`/tasks/importTasksFromExcel?program_id=${program_id}`)
+// }
+const importFile = async (file, program_id) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await axios.post(`/tasks/importTasksFromExcel?program_id=${program_id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
 const TaskService = {
   fetchAllTask,

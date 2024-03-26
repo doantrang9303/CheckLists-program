@@ -35,35 +35,35 @@ const TablePrograms = (props) => {
         }
     };
     const deleteSelectedPrograms = async () => {
-            const confirmDelete = await Swal.fire({
-                title: 'Are you sure?',
-                text: 'You won\'t be able to revert this!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
-            });
-            if (confirmDelete.isConfirmed) {
-                for (const programId of selectedPrograms) {
-                    await ProgramSerivce.deleteProgram(programId);
-                }
-                if (listPrograms.length === 1 && currentPage === 1) {
-                    setListPrograms([]);
-                    setTotalPrograms(0);
-                    setTotalPage(0);
-                } else {
-                    getPrograms(currentPage, auth.userData?.profile.preferred_username);
-                }
-                setSelectedPrograms([]); // Clear selected programs after deletion
-                Swal.fire(
-                    'Deleted!',
-                    'Your program has been deleted.',
-                    'success'
-                );
+        const confirmDelete = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        });
+        if (confirmDelete.isConfirmed) {
+            for (const programId of selectedPrograms) {
+                await ProgramSerivce.deleteProgram(programId);
             }
-         
-    };  
+            if (listPrograms.length === 1 && currentPage === 1) {
+                setListPrograms([]);
+                setTotalPrograms(0);
+                setTotalPage(0);
+            } else {
+                getPrograms(currentPage, auth.userData?.profile.preferred_username);
+            }
+            setSelectedPrograms([]); // Clear selected programs after deletion
+            Swal.fire(
+                'Deleted!',
+                'Your program has been deleted.',
+                'success'
+            );
+        }
+
+    };
     ///////////////////Delete//////////////////////////////
     const handleCheckAll = (event) => {
         const isChecked = event.target.checked;
@@ -188,18 +188,18 @@ const TablePrograms = (props) => {
                         </Form.Select>
                     </li>
                     <li style={{ display: 'inline-block', marginLeft: 'auto' }}>
-                        <Button style={{ width: '125px', color: 'white'  }}
-                            type="button"
-                            className="text-center btn btn-outline-dark  btn-info btn-lg fs-6 ms-2"
-                            onClick={handleCreateProgramClick}
-                        >
-                            Create new
-                        </Button>
+                    <Button style={{ width: '125px', color:'white' }}
+                        type="button"
+                        className="btn btn-info "
+                        onClick={handleCreateProgramClick}
+                    >
+                        Create Task
+                    </Button>
                     </li>
                     <li style={{ display: 'inline-block' }}>
-                        <Button style={{ width: '125px', color: 'white' }}
+                        <Button style={{ width: '125px', color:'white' }}
                             type="button"
-                            className="text-center btn  btn-outline-dark btn-danger btn-lg fs-6 ms-2"
+                            className=" btn-danger  ms-2 "
                             onClick={deleteSelectedPrograms}
                         >
                             Delete
