@@ -16,6 +16,7 @@ function CreateTask({ onClose }) { // Thay đổi tên hàm thành CreateTask
     const [endTime, setEndDate] = useState(null);
     const [validated, setValidated] = useState(false); // Add validated state
     const { id } = useParams();
+    const [errorMessage, setErrorMessage] = useState('');
 
     const handleClose = () => {
         setShow(false);
@@ -39,9 +40,11 @@ function CreateTask({ onClose }) { // Thay đổi tên hàm thành CreateTask
             .then(response => {
                 console.log('Task created successfully:', response.data);
                 handleClose();
+            
             })
             .catch(error => {
                 console.error('Error creating task:', error);
+                setErrorMessage('The syntax is wrong, date should be in the future or task should have more than 3 words. Please try again.');
             });
     };
     return (
@@ -50,6 +53,7 @@ function CreateTask({ onClose }) { // Thay đổi tên hàm thành CreateTask
                 <Modal.Title>New Task</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                 <Form noValidate validated={validated} onSubmit={handleSaveChanges}> {/* Add noValidate and validated props */}
                     <Row>
                         <Col md={7}>
@@ -78,7 +82,7 @@ function CreateTask({ onClose }) { // Thay đổi tên hàm thành CreateTask
                                     placeholderText="YYYY/MM/DD"
                                     className="form-control"
                                     required // Add required attribute
-                    
+
                                 />
                                 <Form.Control.Feedback type="invalid">
                                     Please provide a valid end date.

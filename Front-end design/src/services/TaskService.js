@@ -18,12 +18,21 @@ const deleteTask = (taskId) => {
 const editTask = (taskId, updatedTaskData) => {
   return axios.put(`/tasks/update/${taskId}`, updatedTaskData);
 };
+const filterTaskByStatus = (status, id, page ) => {
+  return axios.get(`/tasks/${id}?status=${status}&page=${page}`); 
+}
+
+const importFile = (program_id) => { 
+  return axios.post(`/tasks/importTasksFromExcel?program_id=${program_id}`)
+}
 
 const TaskService = {
   fetchAllTask,
   createTask,
   deleteTask,
   editTask,
+  filterTaskByStatus,
+  importFile
 };
 
 export default TaskService;

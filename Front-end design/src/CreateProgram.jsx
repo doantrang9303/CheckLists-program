@@ -15,7 +15,7 @@ function CreateProgram({ onClose }) {
   const [endDate, setEndDate] = useState(null);
   const [validated, setValidated] = useState(false); // State for form validation
   const auth = useAuth(); 
-
+  const [errorMessage, setErrorMessage] = useState('');
   const handleClose = () => {
     setShow(false);
     onClose();
@@ -39,6 +39,7 @@ function CreateProgram({ onClose }) {
         })
         .catch(error => {
           console.error('Error creating program:', error);
+          setErrorMessage('The syntax is wrong, date should be in the future or task should have more than 3 words. Please try again.');
         });
     }
     setValidated(true);
@@ -50,6 +51,7 @@ function CreateProgram({ onClose }) {
         <Modal.Title>New Program</Modal.Title>
       </Modal.Header>
       <Modal.Body>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         <Form noValidate validated={validated}>
           <Row>
             <Col md={7}>
