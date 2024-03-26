@@ -53,9 +53,9 @@ private final TasksRepository tasksRepository;
                 program.setName(trimmedName);
         }
 
-        if (program.getStatus() == null || program.getStatus().isEmpty())
+        if (program.getStatus() == null || program.getStatus().isEmpty()){
             program.setStatus(StatusEnum.IN_PROGRESS.getStatus());
-        else program.setStatus(program.getStatus());
+        }
 
         //set create time
         program.setCreate_time(LocalDateTime.now());
@@ -112,7 +112,6 @@ private final TasksRepository tasksRepository;
         } else {
             program.setStatus(StatusEnum.IN_PROGRESS.getStatus());
         }
-
         programRepository.save(program);
         // Publish program status change event
         eventPublisher.publishEvent(new ProgramEventHandle(this, program));

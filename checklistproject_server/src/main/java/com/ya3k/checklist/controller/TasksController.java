@@ -66,7 +66,7 @@ public class TasksController {
             TasksDto createdTask = tasksService.createTask(taskDto, programId);
             log.info("Create task is successful. New task is: {}",createdTask);
             programservice.autoUpdateStatusByTaskStatus(createdTask.getId());
-
+            log.info("Update status of program by task status is successful");
             return ResponseEntity.ok(createdTask);
         } catch (IllegalArgumentException e) {
             log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
