@@ -60,9 +60,10 @@ private final TasksRepository tasksRepository;
         //set create time
         program.setCreate_time(LocalDateTime.now());
 
-
         if (programDto.getEndTime() != null) {
             program.setEndTime(programDto.getEndTime());
+        }else{
+            throw new IllegalArgumentException("End time is required.");
         }
 
         Program savedProgram = programRepository.save(program);

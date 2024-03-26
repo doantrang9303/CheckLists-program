@@ -92,6 +92,8 @@ public class TaskServiceImpl implements TasksService {
                 }else {
                     tasks.setEndTime(taskDto.getEndTime());
                 }
+            }else{
+                errorsMess.add("End time is required");
             }
 
 
