@@ -1,7 +1,8 @@
 import axios from './customize-axios';
 
+//moi sua
 const fetchAllTask = (page, id) => {
-  return axios.get(`/tasks/${id}`, page);
+  return axios.get(`/tasks/${id}?page=${page}`);
 }
 
 const createTask = (taskData, programId) => {
