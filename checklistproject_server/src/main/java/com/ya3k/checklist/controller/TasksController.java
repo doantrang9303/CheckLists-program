@@ -68,11 +68,8 @@ public class TasksController {
 
             return ResponseEntity.ok(createdTask);
         } catch (IllegalArgumentException e) {
+            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Program not found");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
         }
     }
 
