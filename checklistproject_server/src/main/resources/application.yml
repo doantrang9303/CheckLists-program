@@ -6,9 +6,9 @@ front-end:
 back-end:
   url: "http://localhost:9292"
 keycloak:
-  client-id: "myclient"
-  client-secret: "EXbUdVCyKJ5NUitgZi5CBINt85dkoNlx"
-  introspect-url: "http://localhost:8080/realms/react-test/protocol/openid-connect/token/introspect"
+  client-id: "auth-client"
+  client-secret: "T1lrAs44N7wsk1mfZxag54IXMO8NOOa1"
+  introspect-url: "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspect"
 
 spring:
   datasource:
@@ -38,7 +38,7 @@ spring:
 cron expression: '0 0 * * * ? '   # sau 1 hour gui mail 1 lan
   #Co the chon cai dat send mail theo nhung moc thoi gian sau:
   # cron expression: '0 0 20 ? * MON'     :  8h moi toi thu 2 se gui mail 1 lan
-  # cron expression: '0 0 20 ? * MON-FRI' :  8h moi toi thu 2-thu 6 se gui mail 1 lan
+# cron expression: '0 0 20 ? * MON-FRI' :  8h moi toi thu 2-thu 6 se gui mail 1 lan
 springdoc:
   api-docs:
     enabled: true
@@ -51,3 +51,4 @@ springdoc:
 logging:
   level:
     root: info
+
