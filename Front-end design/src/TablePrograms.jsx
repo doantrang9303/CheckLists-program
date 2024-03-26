@@ -9,6 +9,9 @@ import { useAuth } from 'oidc-react';
 import { format } from 'date-fns'; // Import định dạng ngày tháng từ date-fns
 import ReactPaginate from 'react-paginate';
 import { Link } from 'react-router-dom';
+import { debounce } from 'lodash';
+import 'react-toastify/dist/ReactToastify.css';
+import Swal from 'sweetalert2';
 
 
 const TablePrograms = (props) => {
@@ -32,24 +35,40 @@ const TablePrograms = (props) => {
         }
     };
     const deleteSelectedPrograms = async () => {
-        for (const programId of selectedPrograms) {
-            await ProgramSerivce.deleteProgram(programId);
-        }
-        if (listPrograms.length === 1 && currentPage === 1) {
-            setListPrograms([]);
-            setTotalPrograms(0);
-            setTotalPage(0);
-        } else {
-            getPrograms(currentPage, auth.userData?.profile.preferred_username);
-        }
-        setSelectedPrograms([]); // Clear selected programs after deletion
-    };
+            const confirmDelete = await Swal.fire({
+                title: 'Are you sure?',
+                text: 'You won\'t be able to revert this!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            });
+            if (confirmDelete.isConfirmed) {
+                for (const programId of selectedPrograms) {
+                    await ProgramSerivce.deleteProgram(programId);
+                }
+                if (listPrograms.length === 1 && currentPage === 1) {
+                    setListPrograms([]);
+                    setTotalPrograms(0);
+                    setTotalPage(0);
+                } else {
+                    getPrograms(currentPage, auth.userData?.profile.preferred_username);
+                }
+                setSelectedPrograms([]); // Clear selected programs after deletion
+                Swal.fire(
+                    'Deleted!',
+                    'Your program has been deleted.',
+                    'success'
+                );
+            }
+         
+    };  
     ///////////////////Delete//////////////////////////////
     const handleCheckAll = (event) => {
-        const checkboxes = document.querySelectorAll('.CheckOption input[type="checkbox"]');
-        checkboxes.forEach((checkbox) => {
-            checkbox.checked = event.target.checked;
-        });
+        const isChecked = event.target.checked;
+        const updatedSelectedPrograms = isChecked ? listPrograms.map(program => program.id) : [];
+        setSelectedPrograms(updatedSelectedPrograms);
     };
 
     const handleCreateProgramClick = () => {
@@ -93,62 +112,94 @@ const TablePrograms = (props) => {
     const getPrograms = async (page, username) => {
 
         let res = await ProgramSerivce.fetchAllProgram(page, username);
-        setTotalPrograms(res.total)
-        setListPrograms(res.program_list)
-        setTotalPage(res.total_page);
+        if (res && res.program_list) {
+            setTotalPrograms(res.total);
+            setListPrograms(res.program_list);
+            setTotalPage(res.total_page);
+        }
     }
-    const handlePageClick = (event) => {
-        console.log("event lib: ", event)
-        const nextPage = + event.selected + 1;
-        setCurrentPage(nextPage); // Update currentPage state
-        getPrograms(nextPage, auth.userData?.profile.preferred_username);
-        const newStartingId = (nextPage - 1) * 10 + 1; // Tính toán ID bắt đầu của trang mới
-        setStartingId(newStartingId); // Cập nhật ID bắt đầu
-        setCounter(newStartingId); // Cập nhật counter
-    }
+
+    const [search, setSearch] = useState('');
+    console.log(search)
+    const [selectedStatus, setSelectedStatus] = useState('');
+
+    // Thêm state mới để lưu trữ trang hiện tại của danh sách chương trình khi lọc theo trạng thái
+    const [currentPageFiltered, setCurrentPageFiltered] = useState(1);
+
+    const handleSearchChange = (event) => {
+        setSearch(event.target.value); // Cập nhật giá trị tìm kiếm
+        setCurrentPageFiltered(1); // Cập nhật trang về 1
+    };
+
+    // Hàm mới để lấy dữ liệu chương trình với trang và trạng thái lọc
+    const getProgramsFiltered = async (page, username, status) => {
+        try {
+            let res;
+            if (status != "") {
+                res = await ProgramSerivce.filterProgramByStatus(status, username, page);
+            }
+            else {
+                res = await ProgramSerivce.fetchAllProgram(page, username);
+            }
+            if (res && res.program_list) {
+                setTotalPrograms(res.total);
+                setListPrograms(res.program_list);
+                setTotalPage(res.total_page);
+            }
+        } catch (error) {
+            console.error("Error filtering programs by status:", error);
+        }
+    };
+    // Hàm xử lý phân trang khi thay đổi trang hoặc trạng thái lọc
+    const handlePageChangeFiltered = (selectedPage) => {
+        setCurrentPageFiltered(selectedPage + 1); // Cập nhật trang hiện tại
+        getProgramsFiltered(selectedPage + 1, auth.userData?.profile.preferred_username, selectedStatus); // Gọi hàm để lấy dữ liệu mới
+    };
+    // Thêm sự kiện onChange cho dropdown lọc trạng thái để gọi hàm lọc chương trình mới
+    const handleSelectedStatus = (event) => {
+        setSelectedStatus(event.target.value);
+        setCurrentPageFiltered(1); // Reset trang về 1 khi thay đổi trạng thái lọc
+        getProgramsFiltered(1, auth.userData?.profile.preferred_username, event.target.value); // Gọi hàm để lấy dữ liệu mới khi thay đổi trạng thái lọc
+    };
+
     return (
         <>
             <nav className="p-3 bg-light">
 
                 <ul style={{ display: 'flex', whiteSpace: 'nowrap' }}>
                     <li style={{ display: 'inline-block' }}>
-                        <Button style={{ width: '150px' }}
-                            type="button"
-                            className="text-center btn btn-custom1 btn-outline-dark btn-lg fs-6 ms-2"
-
-                        >
-                            Name Program
-                        </Button>
+                        <div>
+                            <input
+                                className='form-control'
+                                placeholder='Filter by Name-DeadLine'
+                                // onChange={debounce((event) => setSearch(event.target.value), 200)}
+                                onChange={debounce(handleSearchChange, 200)} // Sử dụng hàm handleSearchChange
+                            />
+                        </div>
                     </li>
                     <li style={{ display: 'inline-block' }}>
-                        <Button style={{ width: '140px' }}
-                            type="button"
-                            className="text-center btn btn-custom1 btn-outline-dark btn-lg fs-6 ms-2"
 
-                        >
-                            Deadline
-                        </Button>
                     </li>
                     <li style={{ display: 'inline-block' }}>
-                        <DropdownButton id="dropdown-basic-button" title="Status" className=" outline-dark    ms-2"
-                        >
-                            <Dropdown.Item href="#/action-1">Done</Dropdown.Item>
-                            <Dropdown.Item href="#/action-2">Not Done</Dropdown.Item>
-                        </DropdownButton>
+                        <Form.Select aria-label="Default select example" className="status" onChange={handleSelectedStatus} >
+                            <option value="">Filter by Status</option>
+                            <option value="In_progress">IN_PROGRESS</option>
+                            <option value="Completed">COMPLETED</option>
+                        </Form.Select>
                     </li>
                     <li style={{ display: 'inline-block', marginLeft: 'auto' }}>
-                        <Button style={{ width: '125px' }}
+                        <Button style={{ width: '125px', color: 'white'  }}
                             type="button"
-                            className="text-center btn btn-custom1 btn-outline-dark btn-lg fs-6 ms-2"
+                            className="text-center btn btn-outline-dark  btn-info btn-lg fs-6 ms-2"
                             onClick={handleCreateProgramClick}
                         >
                             Create new
                         </Button>
                     </li>
                     <li style={{ display: 'inline-block' }}>
-                        <Button style={{ width: '125px' }}
+                        <Button style={{ width: '125px', color: 'white' }}
                             type="button"
-                            className="text-center btn btn-custom1 btn-outline-dark btn-lg fs-6 ms-2"
+                            className="text-center btn  btn-outline-dark btn-danger btn-lg fs-6 ms-2"
                             onClick={deleteSelectedPrograms}
                         >
                             Delete
@@ -156,7 +207,6 @@ const TablePrograms = (props) => {
                     </li>
 
                 </ul>
-
 
                 {showCreateProgram && <CreateProgram onClose={handleCloseCreateProgram} />}
                 {listPrograms.length === 0 && currentPage === 1 ? (
@@ -184,9 +234,12 @@ const TablePrograms = (props) => {
                             </thead>
                             <tbody>
                                 {listPrograms && listPrograms.length > 0 &&
-                                    listPrograms.map((item, index) => {
+                                    listPrograms.filter((item) => {
+                                        return search.toLowerCase() === '' ? item : (item.name.toLowerCase().includes(search) ||
+                                            search.toLowerCase() === '' ? item : (formatDate(item.end_time).includes(search)));
+                                    }).map((item) => {
                                         return (
-                                            <tr key={`programs-${index}`}>
+                                            <tr key={item.id}>
                                                 <th>
                                                     <Form className="CheckOption" style={{ display: 'flex', justifyContent: 'center' }}>
                                                         <Form.Check
@@ -196,10 +249,10 @@ const TablePrograms = (props) => {
                                                         />
                                                     </Form>
                                                 </th>
-                                                <td><Link to={`/TaskPage/${item.id}`} className='nav-link'>{item.name}</Link></td>
-                                                <td><Link to={`/TaskPage/${item.id}`} className='nav-link'>{formatDate(item.create_time)}</Link></td>
-                                                <td><Link to={`/TaskPage/${item.id}`} className='nav-link'>{formatDate(item.end_time)}</Link></td>
-                                                <td><Link to={`/TaskPage/${item.id}`} className='nav-link'>{item.status}</Link></td>
+                                                <td><Link to={`/TaskPage/${item.id}/${item.name}/${item.end_time}`} className='nav-link'>{item.name}</Link></td>
+                                                <td><Link to={`/TaskPage/${item.id}/${item.name}/${item.end_time}`} className='nav-link'>{formatDate(item.create_time)}</Link></td>
+                                                <td><Link to={`/TaskPage/${item.id}/${item.name}/${item.end_time}`} className='nav-link'>{formatDate(item.end_time)}</Link></td>
+                                                <td><Link to={`/TaskPage/${item.id}/${item.name}/${item.end_time}`} className='nav-link'>{item.status}</Link></td>
                                             </tr>
                                         )
                                     })
@@ -209,7 +262,8 @@ const TablePrograms = (props) => {
                         <ReactPaginate
                             breakLabel="..."
                             nextLabel="next >"
-                            onPageChange={handlePageClick}
+                            onPageChange={(selectedPage) => handlePageChangeFiltered(selectedPage.selected)}
+                            // onPageChange={handlePageClick}
                             pageRangeDisplayed={5}
                             pageCount={totalPage}
                             previousLabel="< previous"

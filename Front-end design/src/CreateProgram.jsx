@@ -9,47 +9,65 @@ import 'react-datepicker/dist/react-datepicker.css'; // Import styles
 import ProgramService from './services/ProgramService';
 import { useAuth } from 'oidc-react';  
 
-
 function CreateProgram({ onClose }) {
   const [show, setShow] = useState(true);
   const [programName, setProgramName] = useState(''); // State for program name
   const [endDate, setEndDate] = useState(null);
+  const [validated, setValidated] = useState(false); // State for form validation
   const auth = useAuth(); 
+  const [errorMessage, setErrorMessage] = useState('');
   const handleClose = () => {
     setShow(false);
     onClose();
   };
 
-  const handleSaveChanges = () => {
-    const programData = {
-      name: programName,
-      endtime: endDate
-    };
+  const handleSaveChanges = (event) => {
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    } else {
+      const programData = {
+        name: programName,
+        endtime: endDate
+      };
   
-    ProgramService.createProgram(programData, auth.userData?.profile.preferred_username)
-      .then(response => {
-        console.log('Program created successfully:', response.data);
-        handleClose();
-      })
-      .catch(error => {
-        console.error('Error creating program:', error);
-      });
+      ProgramService.createProgram(programData, auth.userData?.profile.preferred_username)
+        .then(response => {
+          console.log('Program created successfully:', response.data);
+          handleClose();
+        })
+        .catch(error => {
+          console.error('Error creating program:', error);
+          setErrorMessage('The syntax is wrong, date should be in the future or task should have more than 3 words. Please try again.');
+        });
+    }
+    setValidated(true);
   };
+
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
         <Modal.Title>New Program</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Form>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+        <Form noValidate validated={validated}>
           <Row>
             <Col md={7}>
               <Form.Group className="mb-3" controlId="Input1">
                 <Form.Label>Name Program</Form.Label>
-                <Form.Control type="Title" placeholder="Program Name" autoFocus 
-                value = {programName} 
-                onChange={e=>setProgramName(e.target.value)} // Update programName state
+                <Form.Control 
+                  type="Title" 
+                  placeholder="Program Name" 
+                  autoFocus 
+                  value={programName} 
+                  onChange={e => setProgramName(e.target.value)} // Update programName state
+                  required // Add required attribute
                 />
+                <Form.Control.Feedback type="invalid">
+                  Please provide a program name.
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
             <Col md={5}>
@@ -58,10 +76,14 @@ function CreateProgram({ onClose }) {
                 <DatePicker
                   selected={endDate} // Changed prop name
                   onChange={date => setEndDate(date)} // Changed prop name
-                  dateFormat="dd/MM/yyyy" // Changed date format
-                  placeholderText="DD/MM/YYYY" // Changed placeholder
+                  dateFormat="yyyy/MM/dd" // Changed date format
+                  placeholderText="YYYY/MM/DD" // Changed placeholder
                   className="form-control" // Added Bootstrap class
+                  required // Add required attribute
                 />
+                <Form.Control.Feedback type="invalid">
+                  Please provide a valid end date.
+                </Form.Control.Feedback>
               </Form.Group>
             </Col>
           </Row>
@@ -80,5 +102,3 @@ function CreateProgram({ onClose }) {
 }
 
 export default CreateProgram;
-
-     

@@ -23,7 +23,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <Routes>
         <Route path={"/"} element={<App />} >
-        <Route path={"TaskPage/:id"} element={<TaskPage />} />
+        <Route path={"TaskPage/:id/:name/:endate"} element={<TaskPage />} />
         <Route index element={<TablePrograms />} />
         </Route>
       </Routes>
