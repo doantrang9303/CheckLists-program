@@ -1,6 +1,7 @@
 package com.ya3k.checklist.service.serviceinterface;
 
 import com.ya3k.checklist.dto.TasksDto;
+import com.ya3k.checklist.dto.response.taskresponse.ImportResponse;
 import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,6 @@ public interface TasksService {
     TasksDto findByTaskId(int id);
 
     TasksDto updateTask(Integer taskId, TasksDto updatedTaskDto);
-    public void inportTask(MultipartFile file , int programId);
+    public ImportResponse inportTask(MultipartFile file , int programId);
 
 }

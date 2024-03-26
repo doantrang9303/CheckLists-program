@@ -2,6 +2,7 @@ package com.ya3k.checklist.controller;
 
 import com.ya3k.checklist.Enum.StatusEnum;
 import com.ya3k.checklist.dto.TasksDto;
+import com.ya3k.checklist.dto.response.taskresponse.ImportResponse;
 import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Tasks;
 import com.ya3k.checklist.repository.ProgramRepository;
@@ -153,10 +154,10 @@ public class TasksController {
         }
     }
     @PostMapping("/importTasksFromExcel")
-    public ResponseEntity<Tasks> importTasksFromExcel(@RequestParam(name = "program_id") int programId,@RequestParam("file") MultipartFile filePath) throws IOException {
+    public ResponseEntity<ImportResponse> importTasksFromExcel(@RequestParam(name = "program_id") int programId, @RequestParam("file") MultipartFile filePath) throws IOException {
 
-        tasksService.inportTask(filePath,programId);
-        return ResponseEntity.ok().build();
+        ImportResponse response = tasksService.inportTask(filePath,programId);
+        return ResponseEntity.ok().body(response);
 
     }
 
