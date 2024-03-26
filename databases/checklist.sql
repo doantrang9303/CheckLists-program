@@ -3,17 +3,8 @@ use checklist;
  
 CREATE TABLE users (
   user_id INT PRIMARY KEY AUTO_INCREMENT,
-  user_name VARCHAR(255) NOT NULL
-);
-
-
-CREATE TABLE user_info (
-  full_name VARCHAR(255),
-  phone_number VARCHAR(255),
-  email VARCHAR(255),
-  address VARCHAR(255),
-  user_id INT,
-  FOREIGN KEY (user_id) REFERENCES users(user_id)
+  user_name VARCHAR(255) NOT NULL,
+  email VARCHAR(50) 
 );
 
 
