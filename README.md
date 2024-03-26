@@ -28,7 +28,7 @@ Fill in the following values:
 
 On the next form fill in the following values:
 
-<img width="488" alt="image" src="https://github.com/doantrang9303/keycloak-containers-demo/assets/133722717/3e96a841-2697-4ce7-8b76-0b8d543803e1">
+<img width="388" alt="image" src="https://github.com/doantrang9303/CheckLists-program/assets/133722717/e9583a1d-4af5-4a2a-a788-d9bc42707cc8">
 
 
 
@@ -74,9 +74,10 @@ and choose `application.yml ` and change info match your system
 
 ### Setting for Front-end
 
-Open file .env in ` CheckLists-program\Front-end\website\my-react-app` folder and change config keycloak suitable for your local computer:
+Open file .env in ` CheckLists-program\Front-end design` folder and change config keycloak suitable for your local computer:
    
-  <img width="551" alt="image" src="https://github.com/doantrang9303/keycloak-containers-demo/assets/133722717/d40e8fd5-41f2-4e75-86ef-e1d72d4749fb">
+<img width="442" alt="image" src="https://github.com/doantrang9303/CheckLists-program/assets/133722717/b0d9defe-ab9a-4267-b35c-18a18665a0ec">
+
 
 
 
@@ -109,16 +110,14 @@ Access the project through your web browser at http://localhost:9292
 
 #### Start Front-end:  
 
-1. Open another terminal and navigate to ` CheckLists-program\Front-end\website\my-react-app` folder
+1. Open another terminal and navigate to ` CheckLists-program\Front-end design` folder
   
 2. Run the command below if you are running the application for the first time:
      `npm install`
-   
-3. Install library:  `npm install oidc-react axios`
       
-4. Run the npm command below to start the application:
-    `npm run dev`
-    -> click  http://localhost:5173/ 
+3. Run the npm command below to start the application:
+    `npm start`
+    -> click  http://localhost:3000/ 
 
 
 

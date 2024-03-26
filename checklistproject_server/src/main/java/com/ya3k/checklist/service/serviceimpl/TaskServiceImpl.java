@@ -2,6 +2,7 @@ package com.ya3k.checklist.service.serviceimpl;
 
 import com.ya3k.checklist.Enum.StatusEnum;
 import com.ya3k.checklist.dto.TasksDto;
+import com.ya3k.checklist.dto.response.taskresponse.ImportResponse;
 import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Tasks;
 import com.ya3k.checklist.mapper.TasksMapper;
@@ -10,18 +11,26 @@ import com.ya3k.checklist.repository.TasksRepository;
 import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import com.ya3k.checklist.service.serviceinterface.TasksService;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,7 +93,7 @@ public class TaskServiceImpl implements TasksService {
                     tasks.setEndTime(taskDto.getEndTime());
                 }
             }else{
-                throw new IllegalArgumentException(String.join("\n", errorsMess));
+                errorsMess.add("End time is required");
             }
 
 
@@ -207,5 +216,102 @@ public class TaskServiceImpl implements TasksService {
         return null;
     }
 
+    public ImportResponse inportTask(MultipartFile file, int programId) {
+        try {
+            String msg = "";
+            int countAll = 0;
+            int countSaved = 0;
+            try (InputStream inputStream = file.getInputStream()) {
+                Workbook workbook = new XSSFWorkbook(inputStream);
+                Sheet datatypeSheet = workbook.getSheetAt(0);
+                Iterator<Row> iterator = datatypeSheet.iterator();
+
+                // Skip header row if needed
+                if (iterator.hasNext()) {
+                    iterator.next(); // Skip header row
+                }
+
+                while (iterator.hasNext()) {
+                    String subMsg = "";
+                    countAll++;
+                    Row currentRow = iterator.next();
+                    Tasks task = new Tasks();
+                    if (currentRow.getCell(0) ==null){
+                        continue;
+                    }
+
+                    Cell taskNameCell = currentRow.getCell(1);
+                    task.setTaskName(taskNameCell.getStringCellValue());
+
+                    Program program = new Program();
+                    program.setId(programId);
+                    task.setProgram(program);
+
+                    Cell statusCell = currentRow.getCell(2);
+                    if (statusCell==null){
+                        subMsg +=  "Row " + countAll + " is have error. Status not allow null!\n";
+
+                    }else {
+                        if (statusCell.getStringCellValue().trim().equalsIgnoreCase("COMPLETED") || statusCell.getStringCellValue().trim().equalsIgnoreCase("IN_PROGRESS")){
+                            task.setStatus(statusCell.getStringCellValue());
+
+                        }else {
+                            subMsg +=  "Row " + countAll+ " is have error. Status is invalid!\n";
+
+                        }
+                    }
+
+                    Cell createTimeCell = currentRow.getCell(3);
+
+                    if (createTimeCell== null){
+                        LocalDateTime createTime = LocalDateTime.now();
+                        task.setCreateTime(createTime);
+
+                    }else {
+
+                        LocalDateTime createTime = LocalDateTime.parse(createTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                        if (createTime.isBefore(LocalDateTime.now())){
+                            subMsg +=  "Row " + countAll+ " is have error. Create time must be after today!\n";
+                            task.setCreateTime(createTime);
+
+                        }else {
+                            task.setCreateTime(createTime);
+                        }
+
+
+                    }
+
+
+                    Cell endTimeCell = currentRow.getCell(4);
+                    if (endTimeCell== null){
+
+                        subMsg +=  "Row " +countAll+ " is have error. Endtime not allow null!\n";
+                    }else {
+
+                        LocalDate endTime = LocalDate.parse(endTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        if (endTime.isBefore(task.getCreateTime().toLocalDate())){
+                            subMsg +=  "Row " + countAll + " is have error. Endtime not allow before create time!\n";
+                        }
+
+                        task.setEndTime(endTime);
+
+                    }
+                    if (subMsg.isEmpty()){
+                        tasksRepository.save(task);
+                        countSaved++;
+                    }
+                    msg += subMsg;
+                }
+
+                workbook.close();
+            }
+            msg = countAll==countSaved?"Saved all rows successfully":msg;
+            return new ImportResponse(msg ,countAll,countSaved);
+        }catch (Exception e){
+            e.printStackTrace();
+            return new ImportResponse(e.getMessage(), 0,0);
+        }
+
+    }
 
 }

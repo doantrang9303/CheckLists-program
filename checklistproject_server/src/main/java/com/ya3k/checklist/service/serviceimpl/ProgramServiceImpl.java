@@ -27,8 +27,9 @@ import java.util.List;
 public class ProgramServiceImpl implements ProgramService {
 
 
+
     private final ProgramRepository programRepository;
-    private final TasksRepository tasksRepository;
+private final TasksRepository tasksRepository;
     private final UserRepository urepo;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -43,27 +44,26 @@ public class ProgramServiceImpl implements ProgramService {
 
 
     @Override
-    public ProgramDto createProgram(ProgramDto programDto, String userName) {
+    public ProgramDto createProgram(ProgramDto programDto,String userName) {
         Program program = ProgramMapper.mapDtoToProgram(programDto);
         Users user = urepo.findByUser(userName);
         program.setUser(user);
         if (programDto.getName() != null) {
             String trimmedName = programDto.getName().trim();
-            program.setName(trimmedName);
+                program.setName(trimmedName);
         }
 
-        if (program.getStatus() == null || program.getStatus().isEmpty())
+        if (program.getStatus() == null || program.getStatus().isEmpty()){
             program.setStatus(StatusEnum.IN_PROGRESS.getStatus());
-        else program.setStatus(program.getStatus());
+        }
 
         //set create time
         program.setCreate_time(LocalDateTime.now());
 
-
-        if (programDto.getEndTime() == null) {
-            program.setEndTime(LocalDate.now());
-        }else{
+        if (programDto.getEndTime() != null) {
             program.setEndTime(programDto.getEndTime());
+        }else{
+            throw new IllegalArgumentException("End time is required.");
         }
 
         Program savedProgram = programRepository.save(program);
@@ -113,7 +113,6 @@ public class ProgramServiceImpl implements ProgramService {
         } else {
             program.setStatus(StatusEnum.IN_PROGRESS.getStatus());
         }
-
         programRepository.save(program);
         // Publish program status change event
         eventPublisher.publishEvent(new ProgramEventHandle(this, program));

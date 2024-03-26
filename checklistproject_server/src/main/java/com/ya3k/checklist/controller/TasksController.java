@@ -2,6 +2,7 @@ package com.ya3k.checklist.controller;
 
 import com.ya3k.checklist.Enum.StatusEnum;
 import com.ya3k.checklist.dto.TasksDto;
+import com.ya3k.checklist.dto.response.taskresponse.ImportResponse;
 import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Tasks;
 import com.ya3k.checklist.repository.ProgramRepository;
@@ -24,12 +25,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-
+@Slf4j
 @RestController
 @RequestMapping("/tasks")
 @CrossOrigin(origins = "${front-end.url}",
@@ -60,14 +64,13 @@ public class TasksController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
             }
             TasksDto createdTask = tasksService.createTask(taskDto, programId);
+            log.info("Create task is successful. New task is: {}",createdTask);
             programservice.autoUpdateStatusByTaskStatus(createdTask.getId());
+            log.info("Update status of program by task status is successful");
             return ResponseEntity.ok(createdTask);
         } catch (IllegalArgumentException e) {
+            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Program not found");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
         }
     }
 
@@ -107,7 +110,7 @@ public class TasksController {
             int totalElements = (int) tasksList.getTotalElements();
 
             List<TasksResponse> tasks = tasksList.getContent();
-
+            log.info("Program "+"{} "+"have list task: "+"{}",programId,tasks);
             return ResponseEntity.ok(TasksListResponse.builder()
                     .tasksResponseList(tasks)
                     .totalPage(totalPages)
@@ -115,6 +118,7 @@ public class TasksController {
                     .build());
 
         } catch (Exception e) {
+            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -136,13 +140,22 @@ public class TasksController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
             } else {
                 TasksDto task = tasksService.deleteById(id);
+                log.info("Delete "+"{}"+" successfull",findTask.getTaskName());
                 return ResponseEntity.status(HttpStatus.OK).body(findTask.getTaskName() + " deleted successfully");
 
             }
 
         } catch (Exception e) {
+            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+    @PostMapping("/importTasksFromExcel")
+    public ResponseEntity<ImportResponse> importTasksFromExcel(@RequestParam(name = "program_id") int programId, @RequestParam("file") MultipartFile filePath) throws IOException {
+
+        ImportResponse response = tasksService.inportTask(filePath,programId);
+        return ResponseEntity.ok().body(response);
+
     }
 
     //update task
@@ -182,12 +195,15 @@ public class TasksController {
                 if (!Objects.equals(findTask.getEndTime(), updatedTask.getEndTime())) {
                     updateMessage += "End Time updated: " + findTask.getEndTime() + " to " + updatedTask.getEndTime() + ".\n";
                 }
-
+                if(!updateMessage.isEmpty()){
+                    log.info("Update success. New task is: {}",findTask);
+                }
                 return ResponseEntity.status(HttpStatus.OK).body(updateMessage.isEmpty() ?
                         "No changes were made to the task" : updateMessage);
             }
 
         } catch (Exception e) {
+            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
