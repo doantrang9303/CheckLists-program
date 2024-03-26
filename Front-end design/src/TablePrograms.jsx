@@ -177,7 +177,7 @@ const TablePrograms = (props) => {
                             />
                         </div>
                     </li>
-                    <li style={{ display: 'inline-block' }}>
+                    <li style={{ display: 'inline-block' , marginLeft: '10px' }}>
 
                     </li>
                     <li style={{ display: 'inline-block' }}>
@@ -188,13 +188,15 @@ const TablePrograms = (props) => {
                         </Form.Select>
                     </li>
                     <li style={{ display: 'inline-block', marginLeft: 'auto' }}>
+
                     <Button style={{ width: '125px', color:'white' }}
                         type="button"
                         className="btn btn-info "
                         onClick={handleCreateProgramClick}
                     >
-                        Create Task
+                        Create Program
                     </Button>
+
                     </li>
                     <li style={{ display: 'inline-block' }}>
                         <Button style={{ width: '125px', color:'white' }}
@@ -210,10 +212,10 @@ const TablePrograms = (props) => {
 
                 {showCreateProgram && <CreateProgram onClose={handleCloseCreateProgram} />}
                 {listPrograms.length === 0 && currentPage === 1 ? (
-                    <p>There are no Program</p>
+                    <h3 style={{textAlign: "center"}}>There are no Program</h3>
                 ) :
                     <>
-                        <table className="table caption-top bg-white rounded">
+                        <table className="table table-hover caption-top bg-white rounded">
                             <thead>
                                 <tr>
                                     <th scope="col">

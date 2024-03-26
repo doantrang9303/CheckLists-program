@@ -269,10 +269,10 @@ const TaskPage = (props) => {
                 <th colSpan="2" style={{ paddingLeft: '2rem' }}>Deadline: {endate}</th>
             </tr>
             {listTasks.length === 0 && currentPage === 1 ? (
-                <p style={{ display: 'flex', justifyContent: 'center' }} >There are no Task</p>
+                <h3 style={{textAlign: "center"}} >There are no Task</h3>
             ) :
                 <>
-                    <table className="table caption-top bg-white rounded">
+                    <table className="table table-hover caption-top bg-white rounded ">
 
                         <thead>
                             <tr>
