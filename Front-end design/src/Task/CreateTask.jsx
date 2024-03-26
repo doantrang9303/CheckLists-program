@@ -12,8 +12,9 @@ import { useParams } from 'react-router-dom';
 
 function CreateTask({ onClose }) { // Thay đổi tên hàm thành CreateTask
     const [show, setShow] = useState(true);
-    const [task_name, setTaskName] = useState(''); // Thay đổi tên state thành taskName
-    const [end_time, setEndDate] = useState(null);
+    const [taskName, setTaskName] = useState(''); // Thay đổi tên state thành taskName
+    const [endTime, setEndDate] = useState(null);
+    const [validated, setValidated] = useState(false); // Add validated state
     const { id } = useParams();
 
     const handleClose = () => {
@@ -21,10 +22,17 @@ function CreateTask({ onClose }) { // Thay đổi tên hàm thành CreateTask
         onClose();
     };
 
-    const handleSaveChanges = () => {
+    const handleSaveChanges = (e) => {
+        const form = e.currentTarget;
+        if (form.checkValidity() === false) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        setValidated(true);
+
         const taskData = {
-            task_name: task_name, // Thay đổi key thành name
-            end_time: end_time
+            task_name: taskName, // Thay đổi key thành name
+            end_time: endTime
         };
 
         TaskService.createTask(taskData, id)
@@ -42,30 +50,43 @@ function CreateTask({ onClose }) { // Thay đổi tên hàm thành CreateTask
                 <Modal.Title>New Task</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form>
+                <Form noValidate validated={validated} onSubmit={handleSaveChanges}> {/* Add noValidate and validated props */}
                     <Row>
                         <Col md={7}>
                             <Form.Group className="mb-3" controlId="Input1">
                                 <Form.Label>Name Task</Form.Label> {/* Thay đổi nhãn thành "Name Task" */}
-                                <Form.Control type="Title" placeholder="Task Name" autoFocus
-                                    value={task_name}
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Task Name"
+                                    autoFocus
+                                    value={taskName}
                                     onChange={e => setTaskName(e.target.value)} // Cập nhật state taskName
+                                    required // Add required attribute
                                 />
+                                <Form.Control.Feedback type="invalid">
+                                    Please provide a task name.
+                                </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
                         <Col md={5}>
                             <Form.Group className="mb-3" controlId="Input4">
                                 <Form.Label>Date End</Form.Label>
-                                <DatePicker
-                                    selected={end_time}
+                                <DatePicker defaultValue={null}
+                                    selected={endTime}
                                     onChange={date => setEndDate(date)}
-                                    dateFormat="dd/MM/yyyy"
-                                    placeholderText="DD/MM/YYYY"
+                                    dateFormat="yyyy/MM/dd"
+                                    placeholderText="YYYY/MM/DD"
                                     className="form-control"
+                                    required // Add required attribute
+                    
                                 />
+                                <Form.Control.Feedback type="invalid">
+                                    Please provide a valid end date.
+                                </Form.Control.Feedback>
                             </Form.Group>
                         </Col>
                     </Row>
+
                 </Form>
             </Modal.Body>
             <Modal.Footer>

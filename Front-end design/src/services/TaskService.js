@@ -14,10 +14,16 @@ const createTask = (taskData, programId) => {
 const deleteTask = (taskId) => {
   return axios.delete(`/tasks/delete/${taskId}`);
 }
+
+const editTask = (taskId, updatedTaskData) => {
+  return axios.put(`/tasks/update/${taskId}`, updatedTaskData);
+};
+
 const TaskService = {
   fetchAllTask,
   createTask,
-  deleteTask
+  deleteTask,
+  editTask,
 };
 
 export default TaskService;

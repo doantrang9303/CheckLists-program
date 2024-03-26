@@ -10,21 +10,27 @@ import { format } from 'date-fns';
 import { useAuth } from 'oidc-react';
 import CreateTask from './CreateTask';
 import ReactPaginate from 'react-paginate';
+import EditTask from './EditTask';
+import Swal from 'sweetalert2';
 
 const TaskPage = (props) => {
     const [showCreateTask, setShowCreateTask] = useState(false);
+    const [showEditTask, setShowEditTask] = useState(false);
     const [counter, setCounter] = useState(1); // Biến đếm cho ID
     const [startingId, setStartingId] = useState(1); // ID bắt đầu
     const [listTasks, setListTasks] = useState([]);
     const [totalTasks, setTotalTasks] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
     const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
+    const [selectedTask, setSelectedTask] = useState(null);
     const formatDate = (dateString) => {
         return format(new Date(dateString), 'yyyy/MM/dd'); // Định dạng ngày tháng
     };
     const auth = useAuth();
     const [refresh, setRefresh] = useState(false);
     const { id } = useParams();
+    const [programName, setProgramName] = useState("");
+    const [isCheckAllChecked, setIsCheckAllChecked] = useState(false);
 
     const getTasks = async (page, id) => {
         let res = await TaskService.fetchAllTask(page, id);
@@ -41,10 +47,11 @@ const TaskPage = (props) => {
     }, [auth.isLoading, auth.userData, refresh, id])
     ////////////////////////////////Delete Task///////////////////////////////////
     const handleCheckAll = (event) => {
-        const checkboxes = document.querySelectorAll('.CheckOption input[type="checkbox"]');
-        checkboxes.forEach((checkbox) => {
-            checkbox.checked = event.target.checked;
-        });
+        const isChecked = event.target.checked;
+        setIsCheckAllChecked(isChecked); // Cập nhật trạng thái của checkbox master
+
+        const updatedSelectedTasks = isChecked ? listTasks.map(task => task.id) : [];
+        setSelectedTasks(updatedSelectedTasks); // Cập nhật trạng thái của tất cả các checkbox con
     };
 
     const [selectedTasks, setSelectedTasks] = useState([]);
@@ -57,17 +64,35 @@ const TaskPage = (props) => {
         }
     };
     const deleteSelectedTasks = async () => {
-        for (const taskId of selectedTasks) {
-            await TaskService.deleteTask(taskId);
+        // Hàm này sẽ hiển thị hộp thoại xác nhận khi người dùng nhấn nút "Delete"
+        const confirmDelete = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        });
+        // Nếu người dùng chọn "OK", thì tiếp tục xóa các task được chọn
+        if (confirmDelete.isConfirmed) {
+            for (const taskId of selectedTasks) {
+                await TaskService.deleteTask(taskId);
+            }
+            if (listTasks.length === 1 && currentPage === 1) {
+                setListTasks([]);
+                setTotalTasks(0);
+                setTotalPage(0);
+            } else {
+                getTasks(currentPage, id);
+            }
+            setSelectedTasks([]); // Clear selected programs after deletion
+            Swal.fire(
+                'Deleted!',
+                'Your Task has been deleted.',
+                'success'
+            );
         }
-        if (listTasks.length === 1 && currentPage === 1) {
-            setListTasks([]);
-            setTotalTasks(0);
-            setTotalPage(0);
-        } else {
-            getTasks(currentPage, id);
-        }
-        setSelectedTasks([]); // Clear selected programs after deletion
     };
     //////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////Create Task///////////////////////////////////
@@ -92,6 +117,17 @@ const TaskPage = (props) => {
         setStartingId(newStartingId); // Cập nhật ID bắt đầu
         setCounter(newStartingId); // Cập nhật counter
     }
+    ////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////Edit Task////////////////////////////////////
+    const handleEditClick = (task) => {
+        setSelectedTask(task); // Set selected task when a row is clicked
+        setShowEditTask(true); // Open edit modal
+    };
+    const handleCloseEditTask = () => {
+        setShowEditTask(false); // Hide edit modal
+        setCurrentPage(1);
+        getTasks(currentPage, id)
+    };
     ////////////////////////////////////////////////////////////////////////////////
     return (
         <nav className="p-3 bg-light">
@@ -144,15 +180,16 @@ const TaskPage = (props) => {
                     <Button style={{ width: '125px' }}
                         type="button"
                         className="text-center btn btn-custom1 btn-outline-dark btn-lg fs-6 ms-2"
-                        
+
                     >
                         Import File
                     </Button>
                 </li>
             </ul>
             {showCreateTask && <CreateTask onClose={handleCloseCreateTask} />}
+            {showEditTask && <EditTask task={selectedTask} onClose={handleCloseEditTask} />}
             {listTasks.length === 0 && currentPage === 1 ? (
-                <p>There are no Task</p>
+                <p style={{ display: 'flex', justifyContent: 'center' }} >There are no Task</p>
             ) :
                 <>
                     <table className="table caption-top bg-white rounded">
@@ -182,7 +219,7 @@ const TaskPage = (props) => {
                             {listTasks && listTasks.length > 0 &&
                                 listTasks.map((item, index) => {
                                     return (
-                                        <tr key={`tasks-${index}`}>
+                                        <tr key={`tasks-${index}`} >
                                             <th>
                                                 <Form className="CheckOption" style={{ display: 'flex', justifyContent: 'center' }}>
                                                     <Form.Check
@@ -192,10 +229,10 @@ const TaskPage = (props) => {
                                                     />
                                                 </Form>
                                             </th>
-                                            <td style={{ textAlign: 'center' }} >{item.task_name}</td> {/* Thay thế dòng này */}
-                                            <td style={{ textAlign: 'center' }}>{formatDate(item.create_time)}</td>
-                                            <td style={{ textAlign: 'center' }}>{formatDate(item.end_time)}</td>
-                                            <td style={{ textAlign: 'center' }}>{item.status}</td>
+                                            <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{item.task_name}</td> {/* Thay thế dòng này */}
+                                            <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{formatDate(item.create_time)}</td>
+                                            <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{formatDate(item.end_time)}</td>
+                                            <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{item.status}</td>
                                         </tr>
                                     )
                                 })
@@ -224,17 +261,7 @@ const TaskPage = (props) => {
                     />
                 </>
             }
-            <li style={{ display: 'flex', justifyContent: 'center' }}>
-                <Link to="/" style={{ textDecoration: 'none', width: '150px' }}>
-                    <Button
-                        type="button"
-                        className="text-center btn btn-custom1 btn-outline-dark btn-lg fs-6 ms-2 mb-2"
-                        style={{ width: '100%', cursor: 'pointer' }}
-                    >
-                        Go back
-                    </Button>
-                </Link>
-            </li>
+
         </nav>
     );
 }

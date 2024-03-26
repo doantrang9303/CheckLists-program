@@ -9,6 +9,7 @@ import { useAuth } from 'oidc-react';
 import { format } from 'date-fns'; // Import định dạng ngày tháng từ date-fns
 import ReactPaginate from 'react-paginate';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 
 const TablePrograms = (props) => {
@@ -32,26 +33,41 @@ const TablePrograms = (props) => {
         }
     };
     const deleteSelectedPrograms = async () => {
-        for (const programId of selectedPrograms) {
-            await ProgramSerivce.deleteProgram(programId);
+        const confirmDelete = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'You won\'t be able to revert this!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        });
+        if (confirmDelete.isConfirmed) {
+            for (const programId of selectedPrograms) {
+                await ProgramSerivce.deleteProgram(programId);
+            }
+            if (listPrograms.length === 1 && currentPage === 1) {
+                setListPrograms([]);
+                setTotalPrograms(0);
+                setTotalPage(0);
+            } else {
+                getPrograms(currentPage, auth.userData?.profile.preferred_username);
+            }
+            setSelectedPrograms([]); // Clear selected programs after deletion
+            Swal.fire(
+                'Deleted!',
+                'Your program has been deleted.',
+                'success'
+            );
         }
-        if (listPrograms.length === 1 && currentPage === 1) {
-            setListPrograms([]);
-            setTotalPrograms(0);
-            setTotalPage(0);
-        } else {
-            getPrograms(currentPage, auth.userData?.profile.preferred_username);
-        }
-        setSelectedPrograms([]); // Clear selected programs after deletion
     };
     ///////////////////Delete//////////////////////////////
     const handleCheckAll = (event) => {
-        const checkboxes = document.querySelectorAll('.CheckOption input[type="checkbox"]');
-        checkboxes.forEach((checkbox) => {
-            checkbox.checked = event.target.checked;
-        });
+        const isChecked = event.target.checked;
+        const updatedSelectedPrograms = isChecked ? listPrograms.map(program => program.id) : [];
+        setSelectedPrograms(updatedSelectedPrograms);
     };
-
+    
     const handleCreateProgramClick = () => {
         setShowCreateProgram(true);
     };
