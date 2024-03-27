@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import CreateProgram from './CreateProgram';
 import Form from 'react-bootstrap/Form';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import ProgramSerivce from './services/ProgramService';
 import { useAuth } from 'oidc-react';
 import { format } from 'date-fns'; // Import định dạng ngày tháng từ date-fns
@@ -18,12 +16,9 @@ const TablePrograms = (props) => {
     const [showCreateProgram, setShowCreateProgram] = useState(false);
     const [refresh, setRefresh] = useState(false);
     const auth = useAuth();
-    const [counter, setCounter] = useState(1); // Biến đếm cho ID
-    const [startingId, setStartingId] = useState(1); // ID bắt đầu
     const formatDate = (dateString) => {
         return format(new Date(dateString), 'yyyy/MM/dd'); // Định dạng ngày tháng
     };
-
     // Function click event to delete//////////////////////////////////////////////////
     const [selectedPrograms, setSelectedPrograms] = useState([]);
     // Function to handle the click event of the "checkbox-all"
@@ -62,7 +57,6 @@ const TablePrograms = (props) => {
                 'success'
             );
         }
-
     };
     ///////////////////Delete//////////////////////////////
     const handleCheckAll = (event) => {
@@ -70,11 +64,9 @@ const TablePrograms = (props) => {
         const updatedSelectedPrograms = isChecked ? listPrograms.map(program => program.id) : [];
         setSelectedPrograms(updatedSelectedPrograms);
     };
-
     const handleCreateProgramClick = () => {
         setShowCreateProgram(true);
     };
-
     const handleCloseCreateProgram = () => {
         setShowCreateProgram(false);
         // Refresh the data on the current page
