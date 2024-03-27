@@ -189,7 +189,7 @@ const TablePrograms = (props) => {
                     </li>
                     <li style={{ display: 'inline-block', marginLeft: 'auto' }}>
 
-                    <Button style={{ width: '125px', color:'white' }}
+                    <Button style={{ width: '180px', color:'white' }}
                         type="button"
                         className="btn btn-info "
                         onClick={handleCreateProgramClick}
