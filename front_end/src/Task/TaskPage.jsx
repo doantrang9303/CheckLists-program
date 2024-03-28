@@ -14,6 +14,8 @@ import { debounce, identity } from "lodash";
 import { CSVLink } from "react-csv";
 import { toast } from "react-toastify";
 import "./TaskPage.css";
+import * as XLSX from "xlsx";
+
 const TaskPage = (props) => {
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [showEditTask, setShowEditTask] = useState(false);
@@ -166,21 +168,56 @@ const TaskPage = (props) => {
     };
 
     //------------Export---------------------------
-    const [dataExport, setDataExport] = useState([]);
-    const getTaskListExport = (event, done) => {
-        let result = [];
-        if (listTasks && listTasks.length > 0) {
-            result.push(["name", "status", "create_time", "end_time"]);
-            listTasks.map((item, index) => {
-                let arr = [];
-                arr[0] = item.task_name;
-                arr[1] = formatDate(item.create_time);
-                arr[2] = formatDate(item.end_time);
-                arr[3] = item.status;
-                result.push(arr);
+
+    const handleExportExcel = async () => {
+        try {
+            let allTasks = []; // Array to store tasks from all pages
+
+            // Fetch tasks from each page and concatenate them to allTasks array
+            for (let page = 1; page <= totalPage; page++) {
+                const response = await TaskService.fetchAllTask(page, id);
+                allTasks = allTasks.concat(response.task_list);
+            }
+
+            // Convert tasks to exportable format
+            let result = allTasks.map((task) => ({
+                name: task.task_name,
+                status: task.status,
+                create_time: formatDate(task.create_time),
+                end_time: formatDate(task.end_time),
+            }));
+
+            // Create Excel workbook and sheet
+            const ws = XLSX.utils.json_to_sheet(result);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Tasks");
+
+            // Convert workbook to array buffer
+            const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+
+            // Create Blob from array buffer
+            const blob = new Blob([wbout], {
+                type: "application/octet-stream",
             });
-            setDataExport(result);
-            done();
+
+            // Create URL for Blob
+            const url = URL.createObjectURL(blob);
+
+            // Create anchor element to trigger download
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "Task-list.xlsx";
+
+            // Trigger click on anchor element
+            a.click();
+
+            // Cleanup
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 0);
+        } catch (error) {
+            console.error("Error exporting tasks:", error);
+            toast.error("Failed to export data. Please try again.");
         }
     };
 
@@ -207,6 +244,7 @@ const TaskPage = (props) => {
             }
         }
     };
+
     ////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////Edit Task////////////////////////////////////
     const handleEditClick = (task) => {
@@ -265,16 +303,15 @@ const TaskPage = (props) => {
                 </li>
                 <li style={{ display: "inline-block", marginRight: "10px" }}>
                     <div>
-                        <CSVLink
-                            filename={"Task-list.csv"}
+                        <Button
+                            style={{ width: "125px" }}
+                            type="button"
                             className="btn btn-primary"
-                            data={dataExport}
-                            asyncOnClick={true}
-                            onClick={getTaskListExport}
+                            onClick={handleExportExcel}
                         >
-                            <i className="fa-solid fa-file-arrow-down"></i>
+                            <i className="fa-solid fa-file-arrow-down"></i>{" "}
                             Export
-                        </CSVLink>
+                        </Button>
 
                         <label
                             htmlFor="fileInput"
