@@ -6,6 +6,7 @@ import com.ya3k.checklist.entity.Program;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -40,7 +41,7 @@ public class TasksDto {
     @JsonProperty("create_time")
     private LocalDateTime createTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @PastOrPresent(message = "end_time must be in the present or past.")
+    @FutureOrPresent(message = "end_time must be in the present or future.")
     @JsonProperty("end_time")
     private LocalDate endTime;
 }

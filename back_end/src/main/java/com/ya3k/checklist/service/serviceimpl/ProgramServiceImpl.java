@@ -113,8 +113,6 @@ public class ProgramServiceImpl implements ProgramService {
         // Update program status if all tasks are completed
         if (allTasksCompleted) {
             program.setStatus(StatusEnum.COMPLETED.getStatus());
-        } else {
-            program.setStatus(StatusEnum.IN_PROGRESS.getStatus());
         }
         programRepository.save(program);
         // Publish program status change event
