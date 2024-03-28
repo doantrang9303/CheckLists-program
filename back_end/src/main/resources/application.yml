@@ -22,23 +22,7 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-  mail:
-    properties:
-      mail:
-        smtp:
-          auth=true:
-          starttls:
-            enable=true:
-            required=true:
-    username: "projectbygroup1@gmail.com"
-    port: 587
-    host: "smtp.gmail.com"
-    password: "memx qifl jhbw hacz"
 
-cron expression: '0 0 * * * ? '   # sau 1 hour gui mail 1 lan
-  #Co the chon cai dat send mail theo nhung moc thoi gian sau:
-  # cron expression: '0 0 20 ? * MON'     :  8h moi toi thu 2 se gui mail 1 lan
-# cron expression: '0 0 20 ? * MON-FRI' :  8h moi toi thu 2-thu 6 se gui mail 1 lan
 springdoc:
   api-docs:
     enabled: true
