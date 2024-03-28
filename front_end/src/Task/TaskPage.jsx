@@ -10,10 +10,10 @@ import CreateTask from './CreateTask';
 import ReactPaginate from 'react-paginate';
 import EditTask from './EditTask';
 import Swal from 'sweetalert2';
-import { debounce } from 'lodash';
+import { debounce, identity } from 'lodash';
 import { CSVLink } from 'react-csv';
 import { toast } from 'react-toastify';
-
+import './TaskPage.css'; 
 const TaskPage = (props) => {
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [showEditTask, setShowEditTask] = useState(false);
@@ -117,6 +117,25 @@ const TaskPage = (props) => {
 
     // Thêm state mới để lưu trữ trang hiện tại của danh sách chương trình khi lọc theo trạng thái
     const [currentPageFiltered, setCurrentPageFiltered] = useState(1);
+  
+
+// Hàm xử lý khi thay đổi giá trị của trường nhập liệu "Filter by Name-DeadLine"
+const handleFilterByName = debounce(async (event) => {
+    const { value } = event.target;
+    setSearch(value); // Cập nhật giá trị của state search với giá trị mới từ trường nhập liệu
+    setCurrentPageFiltered(1); // Reset trang về 1 khi thay đổi giá trị của trường nhập liệu
+    try {
+        // Gọi hàm lấy dữ liệu chương trình với trang, tên người dùng, và tên chương trình
+        const res = await TaskService.filterTaskByName(value, id, currentPage);
+        if (res && res.task_list) {
+            setTotalTasks(res.total);
+            setListTasks(res.task_list);
+            setTotalPage(res.total_page);
+        }
+    } catch (error) {
+        console.error("Error filtering programs by name:", error);
+    }
+}, 200);
 
     // Hàm mới để lấy dữ liệu chương trình với trang và trạng thái lọc
     const getTasksFiltered = async (page, id, status) => {
@@ -150,7 +169,7 @@ const TaskPage = (props) => {
     };
 
 
-
+    //------------Export---------------------------
     const [dataExport, setDataExport] = useState([]);
     const getTaskListExport = (event, done) => {
         let result = []
@@ -168,6 +187,8 @@ const TaskPage = (props) => {
             done();
         }
     }
+    
+    //------------Import---------------------------
     const handleImportExcel = async (event) => {
         if (event.target && event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -180,6 +201,7 @@ const TaskPage = (props) => {
                 const response = await TaskService.importFile(file, id);
                 console.log('Data imported successfully:', response.data);
                 toast.success('Data imported successfully!');
+                getTasks(currentPage, id)
             } catch (error) {
                 console.error('Failed to import data:', error);
                 toast.error('Failed to import data. Please try again.');
@@ -207,7 +229,7 @@ const TaskPage = (props) => {
                         <input
                             className='form-control'
                             placeholder='Filter by Name-DeadLine'
-                            onChange={debounce((event) => setSearch(event.target.value), 200)}
+                            onChange={debounce(handleFilterByName, 200)} // Sử dụng hàm handleSearchChange
                         />
                     </div>
                 </li>
@@ -288,36 +310,29 @@ const TaskPage = (props) => {
                                 <th colSpan="1" style={{ textAlign: 'center' }}>Status</th>
                             </tr>
                         </thead>
+                
+                    
                         <tbody>
-                            {listTasks && listTasks.length > 0 &&
-                                listTasks.filter((item) => {
-                                    return search.toLowerCase() === '' ? item : (item.task_name.toLowerCase().includes(search) ||
-                                        search.toLowerCase() === '' ? item : (formatDate(item.end_time).includes(search)));
-                                }).map((item) => {
-
-                                    return (
-                                        <tr key={item.id}>
-                                            <th>
-                                                <Form className="CheckOption" style={{ display: 'flex', justifyContent: 'center' }}>
-                                                    <Form.Check
-                                                        type="checkbox"
-                                                        onChange={() => toggleTaskSelection(item.id)}
-                                                        checked={selectedTasks.includes(item.id)}
-                                                    />
-                                                </Form>
-                                            </th>
-                                            <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{item.task_name}</td> {/* Thay thế dòng này */}
+                {listTasks.map((item) => (
+                    <tr key={item.id}>
+                        <th>
+                            <Form className="CheckOption" style={{ display: 'flex', justifyContent: 'center' }}>
+                                <Form.Check
+                                    type="checkbox"
+                                    onChange={() => toggleTaskSelection(item.id)}
+                                    checked={selectedTasks.includes(item.id)}
+                                />
+                            </Form>
+                        </th>
+                        <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{item.task_name}</td> {/* Thay thế dòng này */}
                                             <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{formatDate(item.create_time)}</td>
                                             <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{formatDate(item.end_time)}</td>
                                             <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{item.status}</td>
                                         </tr>
-                                    )
-                                })
-                            }
-
-
-                        </tbody>
+                ))}
+            </tbody>
                     </table>
+                    <div className="pagination-container">
                     <ReactPaginate
                         breakLabel="..."
                         nextLabel="next >"
@@ -336,6 +351,7 @@ const TaskPage = (props) => {
                         containerClassName="pagination justify-content-center" // Thêm lớp justify-content-center để căn giữa
                         activeClassName="active"
                     />
+                    </div>
                 </>
             }
 

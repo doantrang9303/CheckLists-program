@@ -28,11 +28,20 @@ const filterProgramByStatus = (status, username, page) => {
       }
     });
 }
+const filterProgramByName = (program_name, username, page) => {
+  return axios.get(`/programs?program_name=${program_name}&page=${page}`,
+    {
+      headers: {
+        'user_name': username || ''
+      }
+    });
+}
 const ProgramService = {
   fetchAllProgram,
   createProgram,
   deleteProgram,
-  filterProgramByStatus
+  filterProgramByStatus,
+  filterProgramByName
 }
 
 export default ProgramService;

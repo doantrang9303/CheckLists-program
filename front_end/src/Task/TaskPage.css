@@ -1,0 +1,38 @@
+.pagination-container {
+    position: fixed;
+    bottom: 20px; /* Điều chỉnh vị trí nếu cần */
+    left: 50%; /* Đặt ở giữa trang */
+    transform: translateX(-50%);
+    z-index: 1000; /* Đảm bảo thanh phân trang hiển thị trên tất cả các phần khác */
+    background-color: white; /* Màu nền */
+    padding: 0; /* Khoảng cách giữa các phần tử trong thanh phân trang */
+    border-radius: 5px; /* Bo tròn góc */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+}
+
+.pagination-container ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination-container ul li {
+    margin: 0 0px;
+}
+
+.pagination-container ul li a {
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    color: #333;
+}
+
+.pagination-container ul li.active a {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
