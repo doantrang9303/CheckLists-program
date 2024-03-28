@@ -6,7 +6,8 @@ import Navbar from './Navbar';
 import { AuthProvider } from 'oidc-react';
 import TokenUpdater from './TokenUpdater';
 import { Outlet } from 'react-router-dom';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const oidcConfig = {
   onSignIn: async (userData) => {
@@ -30,7 +31,7 @@ function App() {
       <TokenUpdater />
       <div className='d-flex bg-light vh-100'>
         <div className='w-auto'>
-    
+        <ToastContainer />
         </div>
         <div className='col'>
           <Navbar />

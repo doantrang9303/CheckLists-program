@@ -17,9 +17,6 @@ const callApi = async () => {
                 'Authorization': `Bearer ${accessToken}` // Include the access token in the Authorization header
             }
         })
-
-///sangaksgjaasdasiodhasoasod
-
         alert(response.data);
         // Handle your response data
     } catch (error) {

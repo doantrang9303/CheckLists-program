@@ -1,8 +1,6 @@
 // TaskPage.js
 import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Form from 'react-bootstrap/Form';
 import TaskService from '../services/TaskService';
 import { useParams } from 'react-router-dom'; // Import useParams hook
@@ -12,9 +10,8 @@ import CreateTask from './CreateTask';
 import ReactPaginate from 'react-paginate';
 import EditTask from './EditTask';
 import Swal from 'sweetalert2';
-import Papa from "papaparse";
 import { debounce } from 'lodash';
-import { CSVLink, CSVDownload } from 'react-csv';
+import { CSVLink } from 'react-csv';
 import { toast } from 'react-toastify';
 
 const TaskPage = (props) => {
