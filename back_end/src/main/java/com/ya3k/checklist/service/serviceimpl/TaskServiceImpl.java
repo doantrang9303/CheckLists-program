@@ -195,7 +195,6 @@ public class TaskServiceImpl implements TasksService {
                     } else if (endTime.isAfter(tasks.getProgram().getEndTime())) {
                         errorsMess.add("Tasks End time must be before program end time");
                     }
-
                     tasks.setEndTime(endTime);
                 } catch (DateTimeParseException e) {
                     errorsMess.add("End time must be in the format YYYY-MM-DD");

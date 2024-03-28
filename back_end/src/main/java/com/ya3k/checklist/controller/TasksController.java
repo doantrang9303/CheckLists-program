@@ -242,7 +242,14 @@ public class TasksController {
                         "No changes were made to the task" : updateMessage);
             }
 
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e){
+            log.error("Invalid argument: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            log.error("Task not found: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
+        }
+        catch (Exception e) {
             log.error("An error occurred while processing the request: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }
