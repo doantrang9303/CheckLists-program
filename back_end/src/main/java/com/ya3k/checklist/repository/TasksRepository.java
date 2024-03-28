@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface TasksRepository extends JpaRepository<Tasks, Integer> {
@@ -19,12 +20,15 @@ public interface TasksRepository extends JpaRepository<Tasks, Integer> {
             "WHERE p.id = :programId " +
             "AND (:status IS NULL OR t.status = :status)" +
             "AND (:taskName IS NULL OR t.taskName like %:taskName%)" +
-            "AND (:endTime IS NULL OR t.endTime = :endTime)"+
+            "AND (:endTime IS NULL OR t.endTime = :endTime)" +
             "ORDER BY t.createTime DESC")
-    Page<Tasks> findByProgramIdAndFilter(int programId, String status, String taskName, LocalDate endTime , Pageable pageable);
+    Page<Tasks> findByProgramIdAndFilter(int programId, String status, String taskName, LocalDate endTime, Pageable pageable);
 
     Tasks deleteById(int id);
 
     @Query("SELECT t FROM Tasks t WHERE t.id = :id")
     Tasks findByTasksId(int id);
+
+    @Query("SELECT t FROM Tasks t WHERE t.endTime < :currentDate AND t.status = 'IN_PROGRESS'")
+    List<Tasks> findByEndTimeGreaterThan(LocalDate currentDate);
 }

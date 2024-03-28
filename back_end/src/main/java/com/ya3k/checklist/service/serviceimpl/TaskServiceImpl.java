@@ -88,10 +88,10 @@ public class TaskServiceImpl implements TasksService {
                     errorsMess.add("End time must be in the future");
                 } else if (tasks.getEndTime().isAfter(programs.getEndTime())) {
                     errorsMess.add("Tasks End time must be before program end time");
-                }else {
+                } else {
                     tasks.setEndTime(taskDto.getEndTime());
                 }
-            }else{
+            } else {
                 errorsMess.add("End time is required");
             }
 
@@ -235,7 +235,7 @@ public class TaskServiceImpl implements TasksService {
                     countAll++;
                     Row currentRow = iterator.next();
                     Tasks task = new Tasks();
-                    if (currentRow.getCell(0) ==null){
+                    if (currentRow.getCell(0) == null) {
                         continue;
                     }
 
@@ -247,33 +247,33 @@ public class TaskServiceImpl implements TasksService {
                     task.setProgram(program);
 
                     Cell statusCell = currentRow.getCell(2);
-                    if (statusCell==null){
-                        subMsg +=  "Row " + countAll + " is have error. Status not allow null!\n";
+                    if (statusCell == null) {
+                        subMsg += "Row " + countAll + " is have error. Status not allow null!\n";
 
-                    }else {
-                        if (statusCell.getStringCellValue().trim().equalsIgnoreCase("COMPLETED") || statusCell.getStringCellValue().trim().equalsIgnoreCase("IN_PROGRESS")){
+                    } else {
+                        if (statusCell.getStringCellValue().trim().equalsIgnoreCase("COMPLETED") || statusCell.getStringCellValue().trim().equalsIgnoreCase("IN_PROGRESS")) {
                             task.setStatus(statusCell.getStringCellValue());
 
-                        }else {
-                            subMsg +=  "Row " + countAll+ " is have error. Status is invalid!\n";
+                        } else {
+                            subMsg += "Row " + countAll + " is have error. Status is invalid!\n";
 
                         }
                     }
 
                     Cell createTimeCell = currentRow.getCell(3);
 
-                    if (createTimeCell== null){
+                    if (createTimeCell == null) {
                         LocalDateTime createTime = LocalDateTime.now();
                         task.setCreateTime(createTime);
 
-                    }else {
+                    } else {
 
                         LocalDateTime createTime = LocalDateTime.parse(createTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                        if (createTime.isBefore(LocalDateTime.now())){
-                            subMsg +=  "Row " + countAll+ " is have error. Create time must be after today!\n";
+                        if (createTime.isBefore(LocalDateTime.now())) {
+                            subMsg += "Row " + countAll + " is have error. Create time must be after today!\n";
                             task.setCreateTime(createTime);
 
-                        }else {
+                        } else {
                             task.setCreateTime(createTime);
                         }
 
@@ -282,20 +282,20 @@ public class TaskServiceImpl implements TasksService {
 
 
                     Cell endTimeCell = currentRow.getCell(4);
-                    if (endTimeCell== null){
+                    if (endTimeCell == null) {
 
-                        subMsg +=  "Row " +countAll+ " is have error. Endtime not allow null!\n";
-                    }else {
+                        subMsg += "Row " + countAll + " is have error. Endtime not allow null!\n";
+                    } else {
 
                         LocalDate endTime = LocalDate.parse(endTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                        if (endTime.isBefore(task.getCreateTime().toLocalDate())){
-                            subMsg +=  "Row " + countAll + " is have error. Endtime not allow before create time!\n";
+                        if (endTime.isBefore(task.getCreateTime().toLocalDate())) {
+                            subMsg += "Row " + countAll + " is have error. Endtime not allow before create time!\n";
                         }
 
                         task.setEndTime(endTime);
 
                     }
-                    if (subMsg.isEmpty()){
+                    if (subMsg.isEmpty()) {
                         tasksRepository.save(task);
                         countSaved++;
                     }
@@ -304,13 +304,16 @@ public class TaskServiceImpl implements TasksService {
 
                 workbook.close();
             }
-            msg = countAll==countSaved?"Saved all rows successfully":msg;
-            return new ImportResponse(msg ,countAll,countSaved);
-        }catch (Exception e){
+            msg = countAll == countSaved ? "Saved all rows successfully" : msg;
+            return new ImportResponse(msg, countAll, countSaved);
+        } catch (Exception e) {
             e.printStackTrace();
-            return new ImportResponse(e.getMessage(), 0,0);
+            return new ImportResponse(e.getMessage(), 0, 0);
         }
 
     }
+
+
+
 
 }

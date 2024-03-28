@@ -1,5 +1,6 @@
 package com.ya3k.checklist.config;
 
+import com.ya3k.checklist.interceptor.LoggingInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
