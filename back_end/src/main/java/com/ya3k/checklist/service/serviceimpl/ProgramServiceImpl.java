@@ -131,6 +131,7 @@ public class ProgramServiceImpl implements ProgramService {
     *: The day of the week (any day of the week).
     */
     @Scheduled(cron = "0 1 0 * * *") // Runs at 24:01 (12:01 AM) every day
+//@Scheduled(fixedRate = 60000)
     @Override
     public void updateProgramStatusBaseOnDeadline() {
         LocalDate currentDate = LocalDate.now();
