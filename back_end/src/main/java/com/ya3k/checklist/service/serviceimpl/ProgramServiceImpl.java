@@ -27,9 +27,8 @@ import java.util.List;
 public class ProgramServiceImpl implements ProgramService {
 
 
-
     private final ProgramRepository programRepository;
-private final TasksRepository tasksRepository;
+    private final TasksRepository tasksRepository;
     private final UserRepository urepo;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -44,16 +43,16 @@ private final TasksRepository tasksRepository;
 
 
     @Override
-    public ProgramDto createProgram(ProgramDto programDto,String userName) {
+    public ProgramDto createProgram(ProgramDto programDto, String userName) {
         Program program = ProgramMapper.mapDtoToProgram(programDto);
         Users user = urepo.findByUser(userName);
         program.setUser(user);
         if (programDto.getName() != null) {
             String trimmedName = programDto.getName().trim();
-                program.setName(trimmedName);
+            program.setName(trimmedName);
         }
 
-        if (program.getStatus() == null || program.getStatus().isEmpty()){
+        if (program.getStatus() == null || program.getStatus().isEmpty()) {
             program.setStatus(StatusEnum.IN_PROGRESS.getStatus());
         }
 
@@ -62,7 +61,7 @@ private final TasksRepository tasksRepository;
 
         if (programDto.getEndTime() != null) {
             program.setEndTime(programDto.getEndTime());
-        }else{
+        } else {
             throw new IllegalArgumentException("End time is required.");
         }
 

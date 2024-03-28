@@ -32,7 +32,15 @@ springdoc:
     path: /swagger-ui.html
 
 
+#logging:
+#  level:
+#    root: info
+#
+# Logging configuration
 logging:
+  pattern:
+    console: " [%thread] %d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"
   level:
-    root: info
+    root: INFO
+
 
