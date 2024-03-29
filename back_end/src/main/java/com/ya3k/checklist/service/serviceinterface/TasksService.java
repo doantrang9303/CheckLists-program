@@ -13,15 +13,18 @@ public interface TasksService {
 
     TasksDto createTask(TasksDto taskDto, Integer programId);
 
+
     Page<TasksResponse> listTasksOfProgram(int programId, Pageable pageable);
 
     Page<TasksResponse> findByProgramIdAndFilter(int programId, String status, String taskName, LocalDate endTime, Pageable pageable);
+
+    TasksDto updateTask(Integer taskId, TasksDto updatedTaskDto);
 
     TasksDto deleteById(int id);
 
     TasksDto findByTaskId(int id);
 
-    TasksDto updateTask(Integer taskId, TasksDto updatedTaskDto);
-    public ImportResponse inportTask(MultipartFile file , int programId);
+
+    public ImportResponse inportTask(MultipartFile file, int programId);
 
 }
