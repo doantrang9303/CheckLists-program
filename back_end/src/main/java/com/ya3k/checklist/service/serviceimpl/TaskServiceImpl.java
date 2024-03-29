@@ -107,6 +107,7 @@ public class TaskServiceImpl implements TasksService {
         return null;
     }
 
+
     @Override
     public Page<TasksResponse> listTasksOfProgram(int programId, Pageable pageable) {
         Optional<Program> programs = programRepository.findById(programId);
@@ -120,44 +121,11 @@ public class TaskServiceImpl implements TasksService {
     }
 
     @Override
-    public Page<TasksResponse> findByProgramIdAndFilter(int programId, String status, String taskName, LocalDate endTime, Pageable pageable) {
-        Optional<Program> programs = programRepository.findById(programId);
-
-        if (programs.isEmpty()) {
-            throw new IllegalArgumentException("Program not existed");
-        }
-
-        Page<Tasks> tasks = tasksRepository.findByProgramIdAndFilter(programId, status, taskName, endTime, pageable);
-
-        return tasks.map(TasksResponse::fromTasks);
-    }
-
-    @Override
-    public TasksDto deleteById(int id) {
-        Tasks tasks = tasksRepository.deleteById(id);
-        if (tasks != null) {
-            return TasksMapper.tasksToDto(tasks);
-        }
-        return null;
-    }
-
-    @Override
-    public TasksDto findByTaskId(int id) {
-        Tasks tasks = tasksRepository.findByTasksId(id);
-        if (tasks != null) {
-            return TasksMapper.tasksToDto(tasks);
-        }
-        return null;
-    }
-
-
-    @Override
     public TasksDto updateTask(Integer taskId, TasksDto updatedTaskDto) {
 
 //        Tasks tasks = tasksRepository.findByTasksId(taskId);
         Tasks tasks = tasksRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found"));
         List<String> errorsMess = new ArrayList<>();
-
         if (tasks != null) {
             // Update name with trimmed spaces and validate length
             if (updatedTaskDto.getTaskName() != null) {
@@ -172,12 +140,13 @@ public class TaskServiceImpl implements TasksService {
             } else {
                 tasks.setTaskName(tasks.getTaskName());
             }
+
             //update status
             if (updatedTaskDto.getStatus() != null &&
                     !updatedTaskDto.getStatus().isEmpty() &&
                     !updatedTaskDto.getStatus().isBlank()) {
                 String status = updatedTaskDto.getStatus().toUpperCase();
-                if (StatusEnum.IN_PROGRESS.toString().equals(status) || StatusEnum.COMPLETED.toString().equals(status)) {
+                if (StatusEnum.IN_PROGRESS.toString().equals(status) || StatusEnum.COMPLETED.toString().equals(status) || StatusEnum.MISS_DEADLINE.toString().equals(status)) {
                     tasks.setStatus(status);
                 } else {
                     errorsMess.add("Status must be IN_PROGRESS or COMPLETED");
@@ -213,6 +182,38 @@ public class TaskServiceImpl implements TasksService {
         }
         return null;
     }
+
+    @Override
+    public Page<TasksResponse> findByProgramIdAndFilter(int programId, String status, String taskName, LocalDate endTime, Pageable pageable) {
+        Optional<Program> programs = programRepository.findById(programId);
+
+        if (programs.isEmpty()) {
+            throw new IllegalArgumentException("Program not existed");
+        }
+
+        Page<Tasks> tasks = tasksRepository.findByProgramIdAndFilter(programId, status, taskName, endTime, pageable);
+
+        return tasks.map(TasksResponse::fromTasks);
+    }
+
+    @Override
+    public TasksDto deleteById(int id) {
+        Tasks tasks = tasksRepository.deleteById(id);
+        if (tasks != null) {
+            return TasksMapper.tasksToDto(tasks);
+        }
+        return null;
+    }
+
+    @Override
+    public TasksDto findByTaskId(int id) {
+        Tasks tasks = tasksRepository.findByTasksId(id);
+        if (tasks != null) {
+            return TasksMapper.tasksToDto(tasks);
+        }
+        return null;
+    }
+
 
     public ImportResponse inportTask(MultipartFile file, int programId) {
         try {
@@ -311,8 +312,6 @@ public class TaskServiceImpl implements TasksService {
         }
 
     }
-
-
 
 
 }

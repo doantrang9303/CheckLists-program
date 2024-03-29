@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -76,9 +75,6 @@ public class ProgramServiceImpl implements ProgramService {
     public Page<ProgramResponse> findByUserAndFilters(String username, String status, LocalDate endTime, String programName, Pageable pageable) {
         Page<Program> programs = programRepository.findByUserAndFilters(username, status, endTime, programName, pageable);
 
-//        if (programs.isEmpty()) {
-//            throw new IllegalArgumentException("There are no programs with the given filters.");
-//        }
         return programs.map(ProgramResponse::fromProgram);
     }
 
@@ -102,6 +98,7 @@ public class ProgramServiceImpl implements ProgramService {
     }
 
 
+    //auto update status of program base on task status
     @Override
     public void autoUpdateStatusByTaskStatus(int taskId) {
         Tasks tasks = tasksRepository.findByTasksId(taskId);
@@ -109,11 +106,11 @@ public class ProgramServiceImpl implements ProgramService {
         Program program = tasks.getProgram();
         List<Tasks> allTasks = program.getListTask();
         boolean allTasksCompleted = allTasks.stream().allMatch(t -> StatusEnum.COMPLETED.getStatus().equals(t.getStatus()));
-
         // Update program status if all tasks are completed
         if (allTasksCompleted) {
             program.setStatus(StatusEnum.COMPLETED.getStatus());
         }
+        
         programRepository.save(program);
         // Publish program status change event
         eventPublisher.publishEvent(new ProgramEventHandle(this, program));
@@ -128,13 +125,15 @@ public class ProgramServiceImpl implements ProgramService {
     *: The month (any month).
     *: The day of the week (any day of the week).
     */
+    //update program status base on deadline
     @Scheduled(cron = "0 1 0 * * *") // Runs at 24:01 (12:01 AM) every day
-//@Scheduled(fixedRate = 60000)
+    //@Scheduled(fixedRate = 60000)
     @Override
     public void updateProgramStatusBaseOnDeadline() {
         LocalDate currentDate = LocalDate.now();
         List<Tasks> tasksList = tasksRepository.findByEndTimeGreaterThan(currentDate);
 
+        //if no task found
         if (tasksList.isEmpty()) {
             log.debug("No task found");
             return;
