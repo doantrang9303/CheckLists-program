@@ -270,10 +270,14 @@ const TaskPage = (props) => {
                 <th colSpan="2" style={{ paddingLeft: '2rem' }}>Deadline: {endate}</th>
             </tr>
             {listTasks.length === 0 && currentPage === 1 ? (
-                <p style={{ display: 'flex', justifyContent: 'center' }} >There are no Task</p>
+                <h3 style={{textAlign: "center"}} >There are no Task</h3>
             ) :
                 <>
+<<<<<<< HEAD:Front-end/src/Task/TaskPage.jsx
                     <table className="table caption-top bg-white rounded table-striped">
+=======
+                    <table className="table table-hover caption-top bg-white rounded ">
+>>>>>>> fdd64f0f4ea1d63f89b252a39a6eb29c0fa6a6ca:Front-end design/src/Task/TaskPage.jsx
 
                         <thead>
                             <tr>

@@ -166,7 +166,7 @@ const TablePrograms = (props) => {
                             />
                         </div>
                     </li>
-                    <li style={{ display: 'inline-block' }}>
+                    <li style={{ display: 'inline-block' , marginLeft: '10px' }}>
 
                     </li>
                     <li style={{ display: 'inline-block' }}>
@@ -177,6 +177,7 @@ const TablePrograms = (props) => {
                         </Form.Select>
                     </li>
                     <li style={{ display: 'inline-block', marginLeft: 'auto' }}>
+<<<<<<< HEAD:Front-end/src/TablePrograms.jsx
                         <Button style={{ width: '125px', color: 'white' }}
                             type="button"
                             className="btn btn-info "
@@ -184,6 +185,17 @@ const TablePrograms = (props) => {
                         >
                             Create Task
                         </Button>
+=======
+
+                    <Button style={{ width: '125px', color:'white' }}
+                        type="button"
+                        className="btn btn-info "
+                        onClick={handleCreateProgramClick}
+                    >
+                        Create Program
+                    </Button>
+
+>>>>>>> fdd64f0f4ea1d63f89b252a39a6eb29c0fa6a6ca:Front-end design/src/TablePrograms.jsx
                     </li>
                     <li style={{ display: 'inline-block' }}>
                         <Button style={{ width: '125px', color: 'white' }}
@@ -200,10 +212,14 @@ const TablePrograms = (props) => {
 
                 {showCreateProgram && <CreateProgram onClose={handleCloseCreateProgram} />}
                 {listPrograms.length === 0 && currentPage === 1 ? (
-                    <p>There are no Program</p>
+                    <h3 style={{textAlign: "center"}}>There are no Program</h3>
                 ) :
                     <>
+<<<<<<< HEAD:Front-end/src/TablePrograms.jsx
                         <table className="table caption-top bg-white rounded table-striped">
+=======
+                        <table className="table table-hover caption-top bg-white rounded">
+>>>>>>> fdd64f0f4ea1d63f89b252a39a6eb29c0fa6a6ca:Front-end design/src/TablePrograms.jsx
                             <thead>
                                 <tr>
                                     <th scope="col">
