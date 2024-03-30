@@ -17,5 +17,6 @@ public interface ProgramService {
     ProgramDto findByProgramId(int id);
 
     void autoUpdateStatusByTaskStatus(int taskId);
+    void updateProgramStatusBaseOnDeadline();
 
 }

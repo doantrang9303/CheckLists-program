@@ -10,7 +10,6 @@ public class ProgramStatusChangeListener implements ApplicationListener<ProgramE
     @Override
     public void onApplicationEvent(ProgramEventHandle event) {
         Program program = event.getProgram();
-
         //send mess
         System.out.println("Program " +program.getName() + " status: " + program.getStatus());
     }

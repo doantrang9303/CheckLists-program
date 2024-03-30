@@ -54,24 +54,37 @@ public class TasksController {
     @Operation(summary = "Add New Tasks", description = "Add New Tasks")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Add New Tasks Successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid Body")
+            @ApiResponse(responseCode = "400", description = "Invalid Body"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
 
     @PostMapping("/add")
     public ResponseEntity<?> createTask(@Valid @RequestBody TasksDto taskDto, @RequestHeader(name = "program_id") Integer programId) {
+        log.debug("Received request to create a new task");
         try {
             if (programId < 1) {
+                log.error("Program ID must be greater than 0");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
             }
+
             TasksDto createdTask = tasksService.createTask(taskDto, programId);
+            //log
+            log.debug("Create task is successful. New task is: {}",createdTask);
             log.info("Create task is successful. New task is: {}",createdTask);
+
             programservice.autoUpdateStatusByTaskStatus(createdTask.getId());
+            //log
+            log.debug("Update status of program by task status is successful");
             log.info("Update status of program by task status is successful");
             return ResponseEntity.ok(createdTask);
-        } catch (IllegalArgumentException e) {
-            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
+        }  catch (IllegalArgumentException e) {
+            log.error("Invalid argument: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }catch (Exception e) {
+            log.error("An error occurred while processing the request: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }
+
     }
 
 
@@ -81,7 +94,9 @@ public class TasksController {
     @Operation(summary = "Get Tasks", description = "Get all Tasks of programs with program ID and filter by status, task name, end time")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Get Tasks Successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid Body")
+            @ApiResponse(responseCode = "400", description = "Invalid Body"),
+            @ApiResponse(responseCode = "404", description = "Tasks Not Found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     @GetMapping("/{program_id}")
     public ResponseEntity<?> filterTasksOfProgram(
@@ -93,6 +108,7 @@ public class TasksController {
             @RequestParam(name = "size", defaultValue = "10") int size
     ) {
         try {
+            log.debug("Received request to get tasks of program with program ID: " + programId);
             if (page < 1 || size < 1) {
                 page = 1;
                 size = 10;
@@ -101,6 +117,7 @@ public class TasksController {
 
 //            int programId = (int) session.getAttribute("program_id");
             if (programId < 1) {
+                log.error("Program ID must be greater than 0");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
             }
 
@@ -111,6 +128,7 @@ public class TasksController {
 
             List<TasksResponse> tasks = tasksList.getContent();
             log.info("Program "+"{} "+"have list task: "+"{}",programId,tasks);
+            log.debug("Program "+"{} "+"have list task: "+"{}",programId,tasks);
             return ResponseEntity.ok(TasksListResponse.builder()
                     .tasksResponseList(tasks)
                     .totalPage(totalPages)
@@ -118,42 +136,54 @@ public class TasksController {
                     .build());
 
         } catch (Exception e) {
-            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            log.error("An error occurred while processing the request: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }
+
     }
 
     @Operation(summary = "Delete Tasks", description = "Delete Tasks by Tasks ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Delete Tasks Successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid Tasks ID"),
-            @ApiResponse(responseCode = "404", description = "Tasks Not Found")
+            @ApiResponse(responseCode = "404", description = "Tasks Not Found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteTask(@PathVariable int id) {
+
         if (id < 1) {
+            log.error("Task ID must be greater than 0");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Task ID must be greater than 0");
         }
         try {
+            log.debug("Received request to delete task with task ID: " + id);
+            log.info("Received request to delete task with task ID: " + id);
             TasksDto findTask = tasksService.findByTaskId(id);
             if (findTask == null) {
+                log.debug("Task not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
             } else {
                 TasksDto task = tasksService.deleteById(id);
+                log.debug("Delete "+"{}"+" successfull",findTask.getTaskName());
                 log.info("Delete "+"{}"+" successfull",findTask.getTaskName());
                 return ResponseEntity.status(HttpStatus.OK).body(findTask.getTaskName() + " deleted successfully");
 
             }
 
         } catch (Exception e) {
-            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            log.error("An error occurred while processing the request: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }
+
     }
     @PostMapping("/importTasksFromExcel")
     public ResponseEntity<ImportResponse> importTasksFromExcel(@RequestParam(name = "program_id") int programId, @RequestParam("file") MultipartFile filePath) throws IOException {
-
+        log.debug("Received request to import tasks from excel file");
+        log.info("Received request to import tasks from excel file");
         ImportResponse response = tasksService.inportTask(filePath,programId);
+        log.debug("Import tasks from excel file successfully");
+        log.info("Import tasks from excel file successfully");
         return ResponseEntity.ok().body(response);
 
     }
@@ -171,41 +201,59 @@ public class TasksController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Update Tasks Successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid Tasks ID"),
-            @ApiResponse(responseCode = "404", description = "Tasks Not Found")
+            @ApiResponse(responseCode = "404", description = "Tasks Not Found"),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateTask(@PathVariable int id, @RequestBody @Valid TasksDto updatedTaskDto) {
         if (id < 1) {
+            log.error("Task ID must be greater than 0");
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Task ID must be greater than 0");
         }
         try {
+            log.debug("Received request to update task with task ID: " + id);
+            log.info("Received request to update task with task ID: " + id);
             TasksDto findTask = tasksService.findByTaskId(id);
             if (findTask == null) {
+                log.error("Task not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
             } else {
                 String updateMessage = ""; // Initialize update message
                 TasksDto updatedTask = tasksService.updateTask(id, updatedTaskDto);
 
                 if (!Objects.equals(findTask.getTaskName(), updatedTask.getTaskName())) {
+                    log.debug("Update success. New task is: {}",findTask);
                     updateMessage += "Task Name updated: " + findTask.getTaskName() + " to " + updatedTask.getTaskName() + ".\n ";
                 }
                 if (!Objects.equals(findTask.getStatus(), updatedTask.getStatus())) {
+                    log.debug("Update success. New task is: {}",findTask);
                     updateMessage += "Status updated: " + findTask.getStatus() + " to " + updatedTask.getStatus() + ".\n";
                 }
                 if (!Objects.equals(findTask.getEndTime(), updatedTask.getEndTime())) {
+                    log.debug("Update success. New task is: {}",findTask);
                     updateMessage += "End Time updated: " + findTask.getEndTime() + " to " + updatedTask.getEndTime() + ".\n";
                 }
                 if(!updateMessage.isEmpty()){
+                    log.debug("Update success. New task is: {}",findTask);
                     log.info("Update success. New task is: {}",findTask);
                 }
                 return ResponseEntity.status(HttpStatus.OK).body(updateMessage.isEmpty() ?
                         "No changes were made to the task" : updateMessage);
             }
 
-        } catch (Exception e) {
-            log.error("Xảy ra lỗi trong quá trình xử lý yêu cầu: " + e.getMessage(), e);
+        } catch (IllegalArgumentException e){
+            log.error("Invalid argument: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            log.error("Task not found: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
         }
+        catch (Exception e) {
+            log.error("An error occurred while processing the request: " + e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+        }
+
     }
 
     //    @PostMapping("/add")
