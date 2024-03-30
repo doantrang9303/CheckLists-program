@@ -2,9 +2,18 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from './Navbar';
 import { AuthProvider } from 'oidc-react';
+<<<<<<<< HEAD:Front-end/src/App.jsx
 import { useNavigate, Outlet } from 'react-router-dom';
 
 const getOidcConfig = (navigate) => ({
+========
+import TokenUpdater from './TokenUpdater';
+import { Outlet } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+const oidcConfig = {
+>>>>>>>> origin/sang-fe:front_end/src/App.jsx
   onSignIn: async (userData) => {
     console.log('user data', userData);
     localStorage.setItem('access_token', userData.access_token);
@@ -31,7 +40,7 @@ function App() {
       {/* <TokenUpdater /> */}
       <div className='d-flex bg-light vh-100'>
         <div className='w-auto'>
-    
+        <ToastContainer />
         </div>
         <div className='col'>
           <Navbar />

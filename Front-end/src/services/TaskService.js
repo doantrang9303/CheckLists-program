@@ -1,7 +1,8 @@
 import axios from './customize-axios';
 
+//moi sua
 const fetchAllTask = (page, id) => {
-  return axios.get(`/tasks/${id}`, page);
+  return axios.get(`/tasks/${id}?page=${page}`);
 }
 
 const createTask = (taskData, programId) => {
@@ -21,10 +22,9 @@ const editTask = (taskId, updatedTaskData) => {
 const filterTaskByStatus = (status, id, page) => {
   return axios.get(`/tasks/${id}?status=${status}&page=${page}`);
 }
-
-// const importFile = (program_id) => { 
-//   return axios.post(`/tasks/importTasksFromExcel?program_id=${program_id}`)
-// }
+const filterTaskByName = (name, id, page) => {
+  return axios.get(`/tasks/${id}?task_name=${name}&page=${page}`);
+}
 const importFile = async (file, program_id) => {
   try {
     const formData = new FormData();
@@ -48,6 +48,7 @@ const TaskService = {
   deleteTask,
   editTask,
   filterTaskByStatus,
+  filterTaskByName,
   importFile
 };
 
