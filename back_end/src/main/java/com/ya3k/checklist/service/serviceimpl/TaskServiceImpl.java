@@ -80,8 +80,6 @@ public class TaskServiceImpl implements TasksService {
             if (tasks.getStatus() == null || tasks.getStatus().isEmpty() || tasks.getStatus().isBlank()) {
                 tasks.setStatus(StatusEnum.IN_PROGRESS.getStatus());
             }
-
-
             //set create time
             tasks.setCreateTime(LocalDateTime.now());
 
