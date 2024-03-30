@@ -2,30 +2,24 @@ import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import CreateProgram from './CreateProgram';
 import Form from 'react-bootstrap/Form';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import ProgramSerivce from './services/ProgramService';
 import { useAuth } from 'oidc-react';
-import { format } from 'date-fns'; // Import định dạng ngày tháng từ date-fns
+import { format } from 'date-fns'; 
 import ReactPaginate from 'react-paginate';
 import { Link } from 'react-router-dom';
 import { debounce } from 'lodash';
-import 'react-toastify/dist/ReactToastify.css';
 import Swal from 'sweetalert2';
-
 
 const TablePrograms = (props) => {
     const [showCreateProgram, setShowCreateProgram] = useState(false);
-    const [refresh, setRefresh] = useState(false);
     const auth = useAuth();
-    const [counter, setCounter] = useState(1); // Biến đếm cho ID
-    const [startingId, setStartingId] = useState(1); // ID bắt đầu
     const formatDate = (dateString) => {
-        return format(new Date(dateString), 'yyyy/MM/dd'); // Định dạng ngày tháng
+        return format(new Date(dateString), 'yyyy/MM/dd'); 
     };
 
     // Function click event to delete//////////////////////////////////////////////////
     const [selectedPrograms, setSelectedPrograms] = useState([]);
+    const [isDeleteButtonEnabled, setIsDeleteButtonEnabled] = useState(false);
     // Function to handle the click event of the "checkbox-all"
     const toggleProgramSelection = (programId) => {
         if (selectedPrograms.includes(programId)) {
@@ -64,6 +58,9 @@ const TablePrograms = (props) => {
         }
 
     };
+    useEffect(() => {
+        setIsDeleteButtonEnabled(selectedPrograms.length > 0);
+    }, [selectedPrograms]);
     ///////////////////Delete//////////////////////////////
     const handleCheckAll = (event) => {
         const isChecked = event.target.checked;
@@ -82,24 +79,17 @@ const TablePrograms = (props) => {
         getPrograms(currentPage, auth.userData?.profile.preferred_username)
 
     };
-    const [selectedOption, setSelectedOption] = useState(""); // State to track selected option
-
-    const handleSelectChange = (event) => {
-        setSelectedOption(event.target.value); // Update selected option
-    };
     const [listPrograms, setListPrograms] = useState([]);
     const [totalPrograms, setTotalPrograms] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
+    const [currentPage, setCurrentPage] = useState(1); 
     /////////////////useEffect////////////////
     useEffect(() => {
         if (!auth.isLoading && !!auth.userData) {
-            console.log(auth);
-            console.log(auth.userData?.profile);
             getPrograms(currentPage, auth.userData?.profile.preferred_username);
 
         }
-    }, [auth.isLoading, auth.userData, refresh])
+    }, [auth.isLoading, auth.userData])
 
     useEffect(() => {
         if (listPrograms.length === 0 && currentPage > 1) {
@@ -120,7 +110,6 @@ const TablePrograms = (props) => {
     }
 
     const [search, setSearch] = useState('');
-    console.log(search)
     const [selectedStatus, setSelectedStatus] = useState('');
 
     // Thêm state mới để lưu trữ trang hiện tại của danh sách chương trình khi lọc theo trạng thái
@@ -188,19 +177,20 @@ const TablePrograms = (props) => {
                         </Form.Select>
                     </li>
                     <li style={{ display: 'inline-block', marginLeft: 'auto' }}>
-                    <Button style={{ width: '125px', color:'white' }}
-                        type="button"
-                        className="btn btn-info "
-                        onClick={handleCreateProgramClick}
-                    >
-                        Create Task
-                    </Button>
+                        <Button style={{ width: '125px', color: 'white' }}
+                            type="button"
+                            className="btn btn-info "
+                            onClick={handleCreateProgramClick}
+                        >
+                            Create Task
+                        </Button>
                     </li>
                     <li style={{ display: 'inline-block' }}>
-                        <Button style={{ width: '125px', color:'white' }}
+                        <Button style={{ width: '125px', color: 'white' }}
                             type="button"
                             className=" btn-danger  ms-2 "
                             onClick={deleteSelectedPrograms}
+                            disabled={!isDeleteButtonEnabled}
                         >
                             Delete
                         </Button>
@@ -213,7 +203,7 @@ const TablePrograms = (props) => {
                     <p>There are no Program</p>
                 ) :
                     <>
-                        <table className="table caption-top bg-white rounded">
+                        <table className="table caption-top bg-white rounded table-striped">
                             <thead>
                                 <tr>
                                     <th scope="col">
@@ -252,7 +242,9 @@ const TablePrograms = (props) => {
                                                 <td><Link to={`/TaskPage/${item.id}/${item.name}/${item.end_time}`} className='nav-link'>{item.name}</Link></td>
                                                 <td><Link to={`/TaskPage/${item.id}/${item.name}/${item.end_time}`} className='nav-link'>{formatDate(item.create_time)}</Link></td>
                                                 <td><Link to={`/TaskPage/${item.id}/${item.name}/${item.end_time}`} className='nav-link'>{formatDate(item.end_time)}</Link></td>
-                                                <td><Link to={`/TaskPage/${item.id}/${item.name}/${item.end_time}`} className='nav-link'>{item.status}</Link></td>
+                                                <td style={{ color: item.status === "IN_PROGRESS" ? 'red' : 'green' }}>
+                                                    <Link to={`/TaskPage/${item.id}/${item.name}/${item.end_time}`} className='nav-link'>{item.status}</Link>
+                                                </td>
                                             </tr>
                                         )
                                     })

@@ -1,10 +1,10 @@
 import React from 'react';
-import './Navbar.css'
+import './Navbar.css';
 import { useAuth } from 'oidc-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 function Navbar() {
     const auth = useAuth();
-    const { id } = useParams();
+   
 
     const handleSignOut = () => {
         localStorage.removeItem('access_token');
@@ -15,14 +15,14 @@ function Navbar() {
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-custom1">
             <div className="container-fluid">
-            {id && (<Link to="/" style={{ textDecoration: 'none', width: '150px' }}>
-                    <img src="https://cdn.iconscout.com/icon/free/png-256/free-back-159-386746.png?f=webp" width="40" height="40" />
+           <Link to="/" style={{ textDecoration: 'none', width: '150px' }}>
+                    <img src="https://fptplayboxdongnai.com/wp-content/uploads/2020/04/icon-home-cam-400x400.png" width="50" height="50" />
                 </Link>
-            )}
+        
                 <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                     <div className="d-flex align-items-center">
                         <span className="brand-name fs-6"> {`${auth.userData?.profile.given_name} ${auth.userData?.profile.family_name}`}</span>
-                        <button type="button" className="m-2 btn btn-custom btn-outline-dark btn-sm" onClick={handleSignOut}>Log out</button>
+                        <button type="button" className="m-2 btn btn-secondary btn-sm" onClick={handleSignOut}>Log out</button>
                     </div>
                 </ul>
             </div>

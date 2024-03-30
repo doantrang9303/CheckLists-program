@@ -1,8 +1,6 @@
 // TaskPage.js
 import React, { useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Form from 'react-bootstrap/Form';
 import TaskService from '../services/TaskService';
 import { useParams } from 'react-router-dom'; // Import useParams hook
@@ -12,7 +10,6 @@ import CreateTask from './CreateTask';
 import ReactPaginate from 'react-paginate';
 import EditTask from './EditTask';
 import Swal from 'sweetalert2';
-import Papa from "papaparse";
 import { debounce } from 'lodash';
 import { CSVLink, CSVDownload } from 'react-csv';
 import { toast } from 'react-toastify';
@@ -20,8 +17,6 @@ import { toast } from 'react-toastify';
 const TaskPage = (props) => {
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [showEditTask, setShowEditTask] = useState(false);
-    const [counter, setCounter] = useState(1); // Biến đếm cho ID
-    const [startingId, setStartingId] = useState(1); // ID bắt đầu
     const [listTasks, setListTasks] = useState([]);
     const [totalTasks, setTotalTasks] = useState(0);
     const [totalPage, setTotalPage] = useState(0);
@@ -33,6 +28,7 @@ const TaskPage = (props) => {
     const auth = useAuth();
     const [refresh, setRefresh] = useState(false);
     const { id, name, endate } = useParams();
+
 
     const [isCheckAllChecked, setIsCheckAllChecked] = useState(false);
 
@@ -59,6 +55,7 @@ const TaskPage = (props) => {
     };
 
     const [selectedTasks, setSelectedTasks] = useState([]);
+    const [isDeleteButtonEnabled, setIsDeleteButtonEnabled] = useState(false);
     // Function to handle the click event of the "checkbox-all"
     const toggleTaskSelection = (taskId) => {
         if (selectedTasks.includes(taskId)) {
@@ -98,6 +95,9 @@ const TaskPage = (props) => {
             );
         }
     };
+    useEffect(() => {
+        setIsDeleteButtonEnabled(selectedTasks.length > 0);
+    }, [selectedTasks]);
     //////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////Create Task///////////////////////////////////
     const handleCreateTaskClick = () => {
@@ -116,7 +116,7 @@ const TaskPage = (props) => {
     const [selectedStatus, setSelectedStatus] = useState('');
 
 
-    
+
 
     // Thêm state mới để lưu trữ trang hiện tại của danh sách chương trình khi lọc theo trạng thái
     const [currentPageFiltered, setCurrentPageFiltered] = useState(1);
@@ -223,7 +223,7 @@ const TaskPage = (props) => {
                     </Form.Select>
                 </li>
                 <li style={{ display: 'inline-block', marginLeft: 'auto' }}>
-                    <Button style={{ width: '125px', color:'white' }}
+                    <Button style={{ width: '125px', color: 'white' }}
                         type="button"
                         className="btn btn-info"
                         onClick={handleCreateTaskClick}
@@ -236,6 +236,7 @@ const TaskPage = (props) => {
                         type="button"
                         className="btn btn-danger"
                         onClick={deleteSelectedTasks}
+                        disabled={!isDeleteButtonEnabled}
                     >
                         Delete
                     </Button>
@@ -272,7 +273,7 @@ const TaskPage = (props) => {
                 <p style={{ display: 'flex', justifyContent: 'center' }} >There are no Task</p>
             ) :
                 <>
-                    <table className="table caption-top bg-white rounded">
+                    <table className="table caption-top bg-white rounded table-striped">
 
                         <thead>
                             <tr>
@@ -312,7 +313,7 @@ const TaskPage = (props) => {
                                             <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{item.task_name}</td> {/* Thay thế dòng này */}
                                             <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{formatDate(item.create_time)}</td>
                                             <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{formatDate(item.end_time)}</td>
-                                            <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{item.status}</td>
+                                            <td style={{ textAlign: 'center', color: item.status === "IN_PROGRESS" ? 'red' : 'green' }} onClick={() => handleEditClick(item)}>{item.status}</td>
                                         </tr>
                                     )
                                 })

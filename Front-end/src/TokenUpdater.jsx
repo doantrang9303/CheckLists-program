@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { useAuth } from 'oidc-react';
 
 const TokenUpdater = () => {
@@ -6,19 +6,19 @@ const TokenUpdater = () => {
   const [storedToken, setStoredToken] = useState(localStorage.getItem('access_token'));
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const intervalId = setInterval(() => {
       const currentToken = auth.userData?.access_token;
       if (currentToken && currentToken !== storedToken) {
-        console.log('Token has changed, updating local storage.');
         localStorage.setItem('access_token', currentToken);
         setStoredToken(currentToken);
       }
-    }, 10000); // Check every 10000ms (10 second)
+    }, 10000); // Check every 10 seconds
 
-    return () => clearInterval(interval); 
-  }, [storedToken, auth.userData]);
+    return () => clearInterval(intervalId); // Cleanup on unmount
+  }, [auth.userData, storedToken]);
 
+  // This component doesn't render anything, so return null
   return null; 
-
 };
+
 export default TokenUpdater;

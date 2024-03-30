@@ -7,14 +7,11 @@ import Col from 'react-bootstrap/Col';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import TaskService from '../services/TaskService';
-import { useParams } from 'react-router-dom';
-
 function EditTask({ task, onClose }) {
     const [show, setShow] = useState(true);
     const [taskName, setTaskName] = useState('');
     const [endTime, setEndTime] = useState(null);
     const [status, setStatus] = useState('');
-    const { id } = useParams();
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {

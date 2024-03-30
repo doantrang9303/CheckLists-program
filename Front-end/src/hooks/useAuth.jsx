@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
       clientId: import.meta.env.VITE_KEYCLOAK_CLIENT,
     };
    const keycloak = new Keycloak(keycloakConfig);
-    keycloak.init({ onLoad: 'login-required', checkLoginIframe: false }).then(authenticated => {
+    keycloak.init({ onLoad: 'login-required', checkLoginIframe: false  }).then(authenticated => {
       console.log('1', keycloak);
       console.log('2', authenticated);
       console.log('3', keycloak.tokenParsed?.access_token)
