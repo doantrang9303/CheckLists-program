@@ -39,6 +39,7 @@ public class TasksDto {
     private String status;
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonProperty("create_time")
+    @CreatedDate
     private LocalDateTime createTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @FutureOrPresent(message = "end_time must be in the present or future.")

@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class TaskServiceImpl implements TasksService {
     private final TasksRepository tasksRepository;
@@ -157,8 +158,11 @@ public class TaskServiceImpl implements TasksService {
             if (updatedTaskDto.getEndTime() != null) {
                 String endTimeString = updatedTaskDto.getEndTime().toString();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+
                 try {
                     LocalDate endTime = LocalDate.parse(endTimeString, formatter);
+                    LocalDateTime createTime = tasks.getCreateTime();
                     if (endTime.isBefore(LocalDate.now())) {
                         errorsMess.add("End time must be in the future");
                     } else if (endTime.isAfter(tasks.getProgram().getEndTime())) {
@@ -166,7 +170,7 @@ public class TaskServiceImpl implements TasksService {
                     }
                     tasks.setEndTime(endTime);
                 } catch (DateTimeParseException e) {
-                    errorsMess.add("End time must be in the format YYYY-MM-DD");
+                    errorsMess.add(e.getMessage());
                 }
             }
 
