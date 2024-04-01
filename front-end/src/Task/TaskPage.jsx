@@ -1,18 +1,18 @@
 // TaskPage.js
-import React, { useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import TaskService from '../services/TaskService';
-import { useParams } from 'react-router-dom'; // Import useParams hook
-import { format } from 'date-fns';
-import { useAuth } from 'oidc-react';
-import CreateTask from './CreateTask';
-import ReactPaginate from 'react-paginate';
-import EditTask from './EditTask';
-import Swal from 'sweetalert2';
-import { debounce } from 'lodash';
-import { CSVLink, CSVDownload } from 'react-csv';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
+import TaskService from "../services/TaskService";
+import { useParams } from "react-router-dom"; // Import useParams hook
+import { format } from "date-fns";
+import { useAuth } from "oidc-react";
+import CreateTask from "./CreateTask";
+import ReactPaginate from "react-paginate";
+import EditTask from "./EditTask";
+import Swal from "sweetalert2";
+import { debounce } from "lodash";
+import { CSVLink, CSVDownload } from "react-csv";
+import { toast } from "react-toastify";
 import "./TaskPage.css";
 import * as XLSX from "xlsx";
 
@@ -25,33 +25,33 @@ const TaskPage = (props) => {
     const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
     const [selectedTask, setSelectedTask] = useState(null);
     const formatDate = (dateString) => {
-        return format(new Date(dateString), 'yyyy/MM/dd'); // Định dạng ngày tháng
+        return format(new Date(dateString), "yyyy/MM/dd"); // Định dạng ngày tháng
     };
     const auth = useAuth();
     const { id, name, endate } = useParams();
-
 
     const [isCheckAllChecked, setIsCheckAllChecked] = useState(false);
 
     const getTasks = async (page, id) => {
         let res = await TaskService.fetchAllTask(page, id);
-        setTotalTasks(res.total)
-        setListTasks(res.task_list)
+        setTotalTasks(res.total);
+        setListTasks(res.task_list);
         setTotalPage(res.total_page);
-
-    }
+    };
     useEffect(() => {
         if (!auth.isLoading && !!auth.userData) {
             console.log(currentPage);
             getTasks(currentPage, id);
         }
-    }, [auth.isLoading, auth.userData, id])
+    }, [auth.isLoading, auth.userData, id]);
     ////////////////////////////////Delete Task///////////////////////////////////
     const handleCheckAll = (event) => {
         const isChecked = event.target.checked;
         setIsCheckAllChecked(isChecked); // Cập nhật trạng thái của checkbox master
 
-        const updatedSelectedTasks = isChecked ? listTasks.map(task => task.id) : [];
+        const updatedSelectedTasks = isChecked
+            ? listTasks.map((task) => task.id)
+            : [];
         setSelectedTasks(updatedSelectedTasks); // Cập nhật trạng thái của tất cả các checkbox con
     };
 
@@ -60,7 +60,7 @@ const TaskPage = (props) => {
     // Function to handle the click event of the "checkbox-all"
     const toggleTaskSelection = (taskId) => {
         if (selectedTasks.includes(taskId)) {
-            setSelectedTasks(selectedTasks.filter(id => id !== taskId));
+            setSelectedTasks(selectedTasks.filter((id) => id !== taskId));
         } else {
             setSelectedTasks([...selectedTasks, taskId]);
         }
@@ -68,13 +68,13 @@ const TaskPage = (props) => {
     const deleteSelectedTasks = async () => {
         // Hàm này sẽ hiển thị hộp thoại xác nhận khi người dùng nhấn nút "Delete"
         const confirmDelete = await Swal.fire({
-            title: 'Are you sure?',
-            text: 'You won\'t be able to revert this!',
-            icon: 'warning',
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
         });
         // Nếu người dùng chọn "OK", thì tiếp tục xóa các task được chọn
         if (confirmDelete.isConfirmed) {
@@ -89,11 +89,7 @@ const TaskPage = (props) => {
                 getTasks(currentPage, id);
             }
             setSelectedTasks([]); // Clear selected programs after deletion
-            Swal.fire(
-                'Deleted!',
-                'Your Task has been deleted.',
-                'success'
-            );
+            Swal.fire("Deleted!", "Your Task has been deleted.", "success");
         }
     };
     useEffect(() => {
@@ -109,7 +105,7 @@ const TaskPage = (props) => {
         setShowCreateTask(false);
         // Refresh the data on the current page
         setCurrentPage(1);
-        getTasks(currentPage, id)
+        getTasks(currentPage, id);
     };
     ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////Paging//////////////////////////////////////
@@ -258,12 +254,11 @@ const TaskPage = (props) => {
     const handleCloseEditTask = () => {
         setShowEditTask(false); // Hide edit modal
         setCurrentPage(1);
-        getTasks(currentPage, id)
+        getTasks(currentPage, id);
     };
     ////////////////////////////////////////////////////////////////////////////////
     return (
         <nav className="p-3 bg-light">
-
             <ul style={{ display: "flex", whiteSpace: "nowrap" }}>
                 <li style={{ display: "inline-block" }}>
                     <div>
@@ -286,8 +281,9 @@ const TaskPage = (props) => {
                         <option value="Completed">COMPLETED</option>
                     </Form.Select>
                 </li>
-                <li style={{ display: 'inline-block', marginLeft: 'auto' }}>
-                    <Button style={{ width: '125px', color: 'white' }}
+                <li style={{ display: "inline-block", marginLeft: "auto" }}>
+                    <Button
+                        style={{ width: "125px", color: "white" }}
                         type="button"
                         className="btn btn-info"
                         onClick={handleCreateTaskClick}
@@ -295,8 +291,9 @@ const TaskPage = (props) => {
                         Create Task
                     </Button>
                 </li>
-                <li style={{ display: 'inline-block', margin: "0 10px" }}>
-                    <Button style={{ width: '125px' }}
+                <li style={{ display: "inline-block", margin: "0 10px" }}>
+                    <Button
+                        style={{ width: "125px" }}
                         type="button"
                         className="btn btn-danger"
                         onClick={deleteSelectedTasks}
@@ -334,10 +331,20 @@ const TaskPage = (props) => {
                 </li>
             </ul>
             {showCreateTask && <CreateTask onClose={handleCloseCreateTask} />}
-            {showEditTask && <EditTask task={selectedTask} onClose={handleCloseEditTask} />}
+            {showEditTask && (
+                <EditTask task={selectedTask} onClose={handleCloseEditTask} />
+            )}
             <tr>
-                <th colSpan="3" style={{ fontSize: '25px', paddingLeft: '3rem' }}>   Program: {name} </th>
-                <th colSpan="2" style={{ paddingLeft: '2rem' }}>Deadline: {endate}</th>
+                <th
+                    colSpan="3"
+                    style={{ fontSize: "25px", paddingLeft: "3rem" }}
+                >
+                    {" "}
+                    Program: {name}{" "}
+                </th>
+                <th colSpan="2" style={{ paddingLeft: "2rem" }}>
+                    Deadline: {endate}
+                </th>
             </tr>
             {listTasks.length === 0 && currentPage === 1 ? (
                 <h3 style={{ textAlign: "center" }}>There are no Task</h3>
@@ -345,11 +352,16 @@ const TaskPage = (props) => {
                 <>
                     <div className="table-wrapper">
                         <table className="table caption-top bg-white rounded table-striped">
-
                             <thead>
                                 <tr>
                                     <th colSpan="1">
-                                        <Form className="ClickAll" style={{ display: 'flex', justifyContent: 'center' }}>
+                                        <Form
+                                            className="ClickAll"
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "center",
+                                            }}
+                                        >
                                             <Form.Check
                                                 type="checkbox"
                                                 id="check-all"
@@ -357,28 +369,96 @@ const TaskPage = (props) => {
                                             />
                                         </Form>
                                     </th>
-                                    <th colSpan="1" style={{ textAlign: 'center' }}>Task</th>
-                                    <th colSpan="1" style={{ textAlign: 'center' }}>Create Date</th>
-                                    <th colSpan="1" style={{ textAlign: 'center' }}>Deadline</th>
-                                    <th colSpan="1" style={{ textAlign: 'center' }}>Status</th>
+                                    <th
+                                        colSpan="1"
+                                        style={{ textAlign: "center" }}
+                                    >
+                                        Task
+                                    </th>
+                                    <th
+                                        colSpan="1"
+                                        style={{ textAlign: "center" }}
+                                    >
+                                        Create Date
+                                    </th>
+                                    <th
+                                        colSpan="1"
+                                        style={{ textAlign: "center" }}
+                                    >
+                                        Deadline
+                                    </th>
+                                    <th
+                                        colSpan="1"
+                                        style={{ textAlign: "center" }}
+                                    >
+                                        Status
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {listTasks.map((item) => (
                                     <tr key={item.id}>
                                         <th>
-                                            <Form className="CheckOption" style={{ display: 'flex', justifyContent: 'center' }}>
+                                            <Form
+                                                className="CheckOption"
+                                                style={{
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                }}
+                                            >
                                                 <Form.Check
                                                     type="checkbox"
-                                                    onChange={() => toggleTaskSelection(item.id)}
-                                                    checked={selectedTasks.includes(item.id)}
+                                                    onChange={() =>
+                                                        toggleTaskSelection(
+                                                            item.id
+                                                        )
+                                                    }
+                                                    checked={selectedTasks.includes(
+                                                        item.id
+                                                    )}
                                                 />
                                             </Form>
                                         </th>
-                                        <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{item.task_name}</td> {/* Thay thế dòng này */}
-                                        <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{formatDate(item.create_time)}</td>
-                                        <td style={{ textAlign: 'center' }} onClick={() => handleEditClick(item)}>{formatDate(item.end_time)}</td>
-                                        <td style={{ textAlign: 'center', color: item.status === "IN_PROGRESS" ? 'red' : 'green' }} onClick={() => handleEditClick(item)}>{item.status}</td>
+                                        <td
+                                            style={{ textAlign: "center" }}
+                                            onClick={() =>
+                                                handleEditClick(item)
+                                            }
+                                        >
+                                            {item.task_name}
+                                        </td>{" "}
+                                        {/* Thay thế dòng này */}
+                                        <td
+                                            style={{ textAlign: "center" }}
+                                            onClick={() =>
+                                                handleEditClick(item)
+                                            }
+                                        >
+                                            {formatDate(item.create_time)}
+                                        </td>
+                                        <td
+                                            style={{ textAlign: "center" }}
+                                            onClick={() =>
+                                                handleEditClick(item)
+                                            }
+                                        >
+                                            {formatDate(item.end_time)}
+                                        </td>
+                                        <td
+                                            style={{
+                                                textAlign: "center",
+                                                color:
+                                                    item.status ===
+                                                    "IN_PROGRESS"
+                                                        ? "red"
+                                                        : "green",
+                                            }}
+                                            onClick={() =>
+                                                handleEditClick(item)
+                                            }
+                                        >
+                                            {item.status}
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
