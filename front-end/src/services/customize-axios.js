@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const instance = axios.create({ 
-    baseURL: 'http://localhost:9292'
+    baseURL: process.env.REACT_APP_API_SSO_VERIFY_ACCESS_TOKEN
 });
 
 //Add a response interceptor 
