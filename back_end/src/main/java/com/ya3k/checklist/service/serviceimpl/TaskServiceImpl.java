@@ -253,8 +253,10 @@ public class TaskServiceImpl implements TasksService {
                     } else {
                         if (statusCell.getStringCellValue().trim().equalsIgnoreCase("COMPLETED") || statusCell.getStringCellValue().trim().equalsIgnoreCase("IN_PROGRESS")) {
                             task.setStatus(statusCell.getStringCellValue());
+
                         } else {
                             subMsg += "Row " + countAll + " is have error. Status is invalid!\n";
+
                         }
                     }
 
@@ -270,9 +272,11 @@ public class TaskServiceImpl implements TasksService {
                         if (createTime.isBefore(LocalDateTime.now())) {
                             subMsg += "Row " + countAll + " is have error. Create time must be after today!\n";
                             task.setCreateTime(createTime);
+
                         } else {
                             task.setCreateTime(createTime);
                         }
+
 
                     }
 
@@ -293,7 +297,6 @@ public class TaskServiceImpl implements TasksService {
                     }
                     if (subMsg.isEmpty()) {
                         tasksRepository.save(task);
-
                         countSaved++;
                     }
                     msg += subMsg;

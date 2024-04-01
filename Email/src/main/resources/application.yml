@@ -1,0 +1,31 @@
+server:
+  port: 9000
+
+spring:
+  datasource:
+    url: "jdbc:sqlserver://ThinkPad:1433;encrypt=true;trustServerCertificate=true;databaseName=test"
+    username: "sa"
+    password: "trang"
+
+  mail:
+    properties:
+      mail:
+        smtp:
+          auth=true:
+          starttls:
+            enable=true:
+            required=true:
+    username: "projectbygroup1@gmail.com"
+    port: 587
+    host: "smtp.gmail.com"
+    password: "memx qifl jhbw hacz"
+
+cron expression: '0 0/2 * * * ? '   # sau 1 hour gui mail 1 lan
+#Co the chon cai dat send mail theo nhung moc thoi gian sau:
+# cron expression: '0 30 20 ? * FRI'     :  8h30 moi toi thu 6 se gui mail 1 lan
+# cron expression: '0 0 20 ? * MON-FRI' :  8h moi toi thu 2-thu 6 se gui mail 1 lan
+
+logging:
+  level:
+    root: info
+
