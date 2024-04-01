@@ -24,7 +24,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Slf4j
 @Service
 public class ProgramServiceImpl implements ProgramService {
 
@@ -110,7 +109,7 @@ public class ProgramServiceImpl implements ProgramService {
         if (allTasksCompleted) {
             program.setStatus(StatusEnum.COMPLETED.getStatus());
         }
-        
+
         programRepository.save(program);
         // Publish program status change event
         eventPublisher.publishEvent(new ProgramEventHandle(this, program));
@@ -126,8 +125,8 @@ public class ProgramServiceImpl implements ProgramService {
     *: The day of the week (any day of the week).
     */
     //update program status base on deadline
-    @Scheduled(cron = "0 1 0 * * *") // Runs at 24:01 (12:01 AM) every day
-    //@Scheduled(fixedRate = 60000)
+    //    @Scheduled(fixedRate = 60000)
+    @Scheduled(cron = "0 1 0 * * *") // Run at 12:01 AM every day
     @Override
     public void updateProgramStatusBaseOnDeadline() {
         LocalDate currentDate = LocalDate.now();
@@ -135,12 +134,10 @@ public class ProgramServiceImpl implements ProgramService {
 
         //if no task found
         if (tasksList.isEmpty()) {
-            log.debug("No task found");
             return;
         }
         //update status for tasks
         for (Tasks task : tasksList) {
-            log.debug("Task {} is missing deadline", task.getId());
             task.setStatus(StatusEnum.MISS_DEADLINE.getStatus());
             tasksRepository.save(task);
         }
@@ -149,7 +146,6 @@ public class ProgramServiceImpl implements ProgramService {
         for (Tasks task : tasksList) {
             Program program = programRepository.findById(task.getProgram().getId()).orElse(null);
             if (program != null && program.getStatus().equals(StatusEnum.IN_PROGRESS.getStatus())) {
-                log.debug("Program {} is missing deadline", program.getId());
                 program.setStatus(StatusEnum.MISS_DEADLINE.getStatus());
                 programRepository.save(program);
             }

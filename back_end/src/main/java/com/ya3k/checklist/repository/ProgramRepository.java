@@ -5,10 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public interface ProgramRepository extends JpaRepository<Program, Integer> {
 
@@ -28,6 +26,4 @@ public interface ProgramRepository extends JpaRepository<Program, Integer> {
     @Query("SELECT p FROM Program p WHERE p.id = :id")
     Program findByProgramId(int id);
 
-    @Query("SELECT p FROM Program p JOIN p.user u WHERE u.user_name = :username")
-    List<Program> findByUserName(String username);
 }
