@@ -217,7 +217,7 @@ const TablePrograms = (props) => {
                             className="btn btn-info "
                             onClick={handleCreateProgramClick}
                         >
-                            Create Task
+                            Create Program
                         </Button>
                     </li>
                     <li style={{ display: "inline-block" }}>
@@ -325,8 +325,11 @@ const TablePrograms = (props) => {
                                                 style={{
                                                     color:
                                                         item.status ===
-                                                        "IN_PROGRESS"
+                                                        "MISS_DEADLINE"
                                                             ? "red"
+                                                            : item.status ===
+                                                              "IN_PROGRESS"
+                                                            ? "orange"
                                                             : "green",
                                                 }}
                                             >
