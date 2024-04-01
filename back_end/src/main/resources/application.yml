@@ -7,14 +7,14 @@ back-end:
   url: "http://localhost:9292"
 keycloak:
   client-id: "myclient"
-  client-secret: "EXbUdVCyKJ5NUitgZi5CBINt85dkoNlx"
+  client-secret: "8VtXYqfCAvNrilCOZkAott9ZJYSbfFwf"
   introspect-url: "http://localhost:8080/realms/react-test/protocol/openid-connect/token/introspect"
 
 spring:
   datasource:
-    url: "jdbc:mysql://localhost:3306/checklist"
+    url: "jdbc:mysql://127.0.0.1:3307/checklist"
     username: "root"
-    password: "23012003aA@"
+    password: "admin123"
   jpa:
     show-sql: true
     hibernate:
