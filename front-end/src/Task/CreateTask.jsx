@@ -38,7 +38,7 @@ function CreateTask({ onClose }) {
             task_name: taskName, // Thay đổi key thành name
             end_time: formattedEndTime,
 
-
+        }
         TaskService.createTask(taskData, id)
             .then((response) => {
                 console.log("Task created successfully:", response.data);

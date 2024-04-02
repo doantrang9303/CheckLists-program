@@ -29,6 +29,6 @@ public interface TasksRepository extends JpaRepository<Tasks, Integer> {
     @Query("SELECT t FROM Tasks t WHERE t.id = :id")
     Tasks findByTasksId(int id);
 
-    @Query("SELECT t FROM Tasks t WHERE t.endTime < :currentDate AND t.status = 'IN_PROGRESS' ")
+    @Query("SELECT t FROM Tasks t WHERE t.endTime < :currentDate AND t.status = 'IN_PROGRESS' OR t.status = 'MISS_DEADLINE'")
     List<Tasks> findByEndTimeGreaterThan(LocalDate currentDate);
 }
