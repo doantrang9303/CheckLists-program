@@ -224,13 +224,22 @@ const TaskPage = (props) => {
 
     //------------Import--------------------------
     const [importProgress, setImportProgress] = useState(0);
+    const [isImporting, setIsImporting] = useState(false); // State để kiểm soát việc hiển thị ProgressBar
+    const [importError, setImportError] = useState(null);
     const handleImportExcel = async (event) => {
+        // Hiển thị ProgressBar khi bắt đầu import
+        setIsImporting(true);
+        setImportProgress(0); // Đặt tiến độ về 0% khi bắt đầu import
+        setImportError(""); // Xóa thông báo lỗi cũ (nếu có)
+
         if (event.target && event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
             if (
                 file.type !==
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             ) {
+                // Ẩn ProgressBar nếu có lỗi
+                setIsImporting(false);
                 toast.error("Only accept Excel files (.xlsx) ...");
                 return;
             }
@@ -250,32 +259,33 @@ const TaskPage = (props) => {
                     // Chuyển đổi dữ liệu từ sheet thành mảng các đối tượng
                     const excelData = XLSX.utils.sheet_to_json(firstSheet);
 
-                    const totalData = excelData.length;
-
-                    // Tiến hành import dữ liệu và cập nhật tiến độ
-                    let processedData = 0;
-                    const intervalId = setInterval(() => {
-                        if (processedData < totalData) {
-                            setImportProgress(
-                                (processedData / totalData) * 100
+                    // Kiểm tra từng task trong dữ liệu Excel
+                    for (const task of excelData) {
+                        // Kiểm tra điều kiện Endtime của task
+                        if (task.end_time > endate) {
+                            // Ẩn ProgressBar nếu có lỗi
+                            setIsImporting(false);
+                            toast.error(
+                                "Endtime of task must not be after Endtime of Program"
                             );
-                            processedData++;
-                        } else {
-                            clearInterval(intervalId);
+                            return; // Dừng quá trình import nếu có lỗi
                         }
-                    }, 1000);
+                    }
 
+                    // Nếu không có lỗi, tiến hành import dữ liệu
                     const response = await TaskService.importFile(file, id);
                     console.log("Data imported successfully:", response.data);
                     toast.success("Data imported successfully!");
                     getTasks(currentPage, id);
-                    setImportProgress(100); // Đặt tiến độ về 100% khi import hoàn tất
                 };
 
                 reader.readAsArrayBuffer(file);
             } catch (error) {
                 console.error("Failed to import data:", error);
                 toast.error("Failed to import data. Please try again.");
+                // Ẩn ProgressBar nếu có lỗi
+                setIsImporting(false);
+                setImportError("Failed to import data. Please try again.");
             }
         }
     };
@@ -363,12 +373,12 @@ const TaskPage = (props) => {
     //         }
     //     }
     // };
-    //     <ProgressBar
-    //     animated
-    //     now={importProgress}
-    //     label={`${importProgress}%`}
-    //     style={{ marginTop: "10px" }}
-    // />
+    <ProgressBar
+        animated
+        now={importProgress}
+        label={`${importProgress}%`}
+        style={{ marginTop: "10px" }}
+    />;
     ////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////Edit Task////////////////////////////////////
     const handleEditClick = (task) => {
@@ -451,12 +461,14 @@ const TaskPage = (props) => {
                             hidden
                             onChange={(event) => handleImportExcel(event, id)}
                         />
-                        <ProgressBar
-                            animated
-                            now={importProgress}
-                            label={`${importProgress}%`}
-                            style={{ marginTop: "10px" }}
-                        />
+                        {isImporting && (
+                            <ProgressBar
+                                animated
+                                now={importProgress}
+                                label={`${importProgress}%`}
+                                style={{ marginTop: "10px" }}
+                            />
+                        )}
                     </div>
                 </li>
             </ul>
