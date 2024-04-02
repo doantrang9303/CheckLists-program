@@ -1,12 +1,7 @@
 package com.ya3k.checklist.controller;
 
-import com.ya3k.checklist.Enum.StatusEnum;
 import com.ya3k.checklist.dto.TasksDto;
 import com.ya3k.checklist.dto.response.taskresponse.ImportResponse;
-import com.ya3k.checklist.entity.Program;
-import com.ya3k.checklist.entity.Tasks;
-import com.ya3k.checklist.repository.ProgramRepository;
-import com.ya3k.checklist.repository.TasksRepository;
 import com.ya3k.checklist.dto.response.taskresponse.TasksListResponse;
 import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
@@ -17,8 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,9 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+
 @Slf4j
 @RestController
 @RequestMapping("/tasks")
@@ -69,18 +62,18 @@ public class TasksController {
 
             TasksDto createdTask = tasksService.createTask(taskDto, programId);
             //log
-            log.debug("Create task is successful. New task is: {}",createdTask);
-            log.info("Create task is successful. New task is: {}",createdTask);
+            log.debug("Create task is successful. New task is: {}", createdTask);
+            log.info("Create task is successful. New task is: {}", createdTask);
 
             programservice.autoUpdateStatusByTaskStatus(createdTask.getId());
             //log
             log.debug("Update status of program by task status is successful");
             log.info("Update status of program by task status is successful");
             return ResponseEntity.ok(createdTask);
-        }  catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             log.error("Invalid argument: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error("An error occurred while processing the request: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }
@@ -127,8 +120,8 @@ public class TasksController {
             int totalElements = (int) tasksList.getTotalElements();
 
             List<TasksResponse> tasks = tasksList.getContent();
-            log.info("Program "+"{} "+"have list task: "+"{}",programId,tasks);
-            log.debug("Program "+"{} "+"have list task: "+"{}",programId,tasks);
+            log.info("Program " + "{} " + "have list task: " + "{}", programId, tasks);
+            log.debug("Program " + "{} " + "have list task: " + "{}", programId, tasks);
             return ResponseEntity.ok(TasksListResponse.builder()
                     .tasksResponseList(tasks)
                     .totalPage(totalPages)
@@ -164,9 +157,9 @@ public class TasksController {
                 log.debug("Task not found");
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
             } else {
-                TasksDto task = tasksService.deleteById(id);
-                log.debug("Delete "+"{}"+" successfull",findTask.getTaskName());
-                log.info("Delete "+"{}"+" successfull",findTask.getTaskName());
+                tasksService.deleteById(id);
+                log.debug("Delete " + "{}" + " successfull", findTask.getTaskName());
+                log.info("Delete " + "{}" + " successfull", findTask.getTaskName());
                 return ResponseEntity.status(HttpStatus.OK).body(findTask.getTaskName() + " deleted successfully");
 
             }
@@ -177,11 +170,12 @@ public class TasksController {
         }
 
     }
+
     @PostMapping("/importTasksFromExcel")
     public ResponseEntity<ImportResponse> importTasksFromExcel(@RequestParam(name = "program_id") int programId, @RequestParam("file") MultipartFile filePath) throws IOException {
         log.debug("Received request to import tasks from excel file");
         log.info("Received request to import tasks from excel file");
-        ImportResponse response = tasksService.inportTask(filePath,programId);
+        ImportResponse response = tasksService.inportTask(filePath, programId);
         log.debug("Import tasks from excel file successfully");
         log.info("Import tasks from excel file successfully");
         return ResponseEntity.ok().body(response);
@@ -223,33 +217,32 @@ public class TasksController {
                 TasksDto updatedTask = tasksService.updateTask(id, updatedTaskDto);
 
                 if (!Objects.equals(findTask.getTaskName(), updatedTask.getTaskName())) {
-                    log.debug("Update success. New task is: {}",findTask);
+                    log.debug("Update success. New task is: {}", findTask);
                     updateMessage += "Task Name updated: " + findTask.getTaskName() + " to " + updatedTask.getTaskName() + ".\n ";
                 }
                 if (!Objects.equals(findTask.getStatus(), updatedTask.getStatus())) {
-                    log.debug("Update success. New task is: {}",findTask);
+                    log.debug("Update success. New task is: {}", findTask);
                     updateMessage += "Status updated: " + findTask.getStatus() + " to " + updatedTask.getStatus() + ".\n";
                 }
                 if (!Objects.equals(findTask.getEndTime(), updatedTask.getEndTime())) {
-                    log.debug("Update success. New task is: {}",findTask);
+                    log.debug("Update success. New task is: {}", findTask);
                     updateMessage += "End Time updated: " + findTask.getEndTime() + " to " + updatedTask.getEndTime() + ".\n";
                 }
-                if(!updateMessage.isEmpty()){
-                    log.debug("Update success. New task is: {}",findTask);
-                    log.info("Update success. New task is: {}",findTask);
+                if (!updateMessage.isEmpty()) {
+                    log.debug("Update success. New task is: {}", findTask);
+                    log.info("Update success. New task is: {}", findTask);
                 }
                 return ResponseEntity.status(HttpStatus.OK).body(updateMessage.isEmpty() ?
                         "No changes were made to the task" : updateMessage);
             }
 
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             log.error("Invalid argument: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (EntityNotFoundException e) {
             log.error("Task not found: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("An error occurred while processing the request: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }

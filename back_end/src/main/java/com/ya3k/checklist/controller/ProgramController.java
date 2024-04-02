@@ -9,26 +9,21 @@ import com.ya3k.checklist.dto.response.programresponse.ProgramResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.servers.Servers;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
-
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -40,7 +35,7 @@ import java.util.stream.Collectors;
 public class ProgramController {
     ProgramRepository repo;
     UserRepository urepo;
-    private ProgramService programService;
+    private final ProgramService programService;
 
     @Autowired
     public ProgramController(ProgramRepository repo, UserRepository urepo, ProgramService programService) {
@@ -157,7 +152,7 @@ public class ProgramController {
             } else {
 
 
-                ProgramDto program = programService.deleteById(id);
+                programService.deleteById(id);
                 log.debug("delete " + "{}" + " successfully", findProgram.getName());
                 log.info("delete " + "{}" + " successfully", findProgram.getName());
                 return ResponseEntity.status(HttpStatus.OK).body(findProgram.getName() + " deleted successfully");
@@ -170,24 +165,5 @@ public class ProgramController {
 
     }
 
-    //    @PostMapping("/add")
-//    public ResponseEntity<?> createProgram(@RequestBody Program program, @RequestHeader String user_name) {
-//        if(user_name==null || user_name.isEmpty()){
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username is empty");
-//        }
-//        Users user = urepo.findByUser(user_name);
-//        if(user==null){
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User Not Found");
-//        }
-//
-//        program.setUser(user);
-//        if (program.getStatus() == null || program.getStatus().isEmpty())
-//            //set default status to IN_PROGRESS
-//            program.setStatus(StatusEnum.IN_PROGRESS.getStatus());
-//        else program.setStatus(program.getStatus());
-//        program.setCreate_time(LocalDateTime.now());
-//        Program savedProgram = repo.save(program);
-//        return ResponseEntity.ok(savedProgram);
-//    }
-
+   
 }

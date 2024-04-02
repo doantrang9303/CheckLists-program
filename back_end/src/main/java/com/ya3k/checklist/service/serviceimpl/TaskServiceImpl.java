@@ -18,7 +18,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,14 +39,12 @@ public class TaskServiceImpl implements TasksService {
     private final TasksRepository tasksRepository;
     private final ProgramRepository programRepository;
 
-    private final ApplicationEventPublisher eventPublisher;
     private final ProgramService programService;
 
     @Autowired
-    public TaskServiceImpl(TasksRepository tasksRepository, ProgramRepository programRepository, ApplicationEventPublisher eventPublisher, ProgramService programService) {
+    public TaskServiceImpl(TasksRepository tasksRepository, ProgramRepository programRepository, ProgramService programService) {
         this.programRepository = programRepository;
         this.tasksRepository = tasksRepository;
-        this.eventPublisher = eventPublisher;
         this.programService = programService;
     }
 
@@ -84,18 +81,23 @@ public class TaskServiceImpl implements TasksService {
             //set create time
             tasks.setCreateTime(LocalDateTime.now());
 
+            //set end time
             if (taskDto.getEndTime() != null) {
-                if (tasks.getEndTime().isBefore(LocalDate.now())) {
-                    errorsMess.add("End time must be in the future");
-                } else if (tasks.getEndTime().isAfter(programs.getEndTime())) {
-                    errorsMess.add("Tasks End time must be before program end time");
-                } else {
-                    tasks.setEndTime(taskDto.getEndTime());
+                String endTimeString = taskDto.getEndTime().toString();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                try {
+                    LocalDate endTime = LocalDate.parse(endTimeString, formatter);
+                    if (endTime.isBefore(LocalDate.now())) {
+                        errorsMess.add("End time must be in the future");
+                    } else if (endTime.isAfter(tasks.getProgram().getEndTime())) {
+                        errorsMess.add("Tasks End time must be before program end time");
+                    }
+                    System.out.println(endTime);
+                    tasks.setEndTime(endTime);
+                } catch (DateTimeParseException e) {
+                    errorsMess.add(e.getMessage());
                 }
-            } else {
-                errorsMess.add("End time is required");
             }
-
 
             //print error message
             if (!errorsMess.isEmpty()) {
@@ -158,11 +160,8 @@ public class TaskServiceImpl implements TasksService {
             if (updatedTaskDto.getEndTime() != null) {
                 String endTimeString = updatedTaskDto.getEndTime().toString();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-
                 try {
                     LocalDate endTime = LocalDate.parse(endTimeString, formatter);
-                    LocalDateTime createTime = tasks.getCreateTime();
                     if (endTime.isBefore(LocalDate.now())) {
                         errorsMess.add("End time must be in the future");
                     } else if (endTime.isAfter(tasks.getProgram().getEndTime())) {

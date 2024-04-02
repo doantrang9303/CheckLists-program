@@ -153,7 +153,6 @@ public class ProgramServiceImpl implements ProgramService {
             return;
         }
 
-
         //update status for tasks
         for (Tasks task : tasksList) {
             log.debug("Task {} is missed deadline", task.getTaskName());

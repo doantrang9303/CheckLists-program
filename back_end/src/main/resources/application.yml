@@ -6,9 +6,9 @@ front-end:
 back-end:
   url: "http://localhost:9292"
 keycloak:
-  client-id: "myclient"
-  client-secret: "EXbUdVCyKJ5NUitgZi5CBINt85dkoNlx"
-  introspect-url: "http://localhost:8080/realms/react-test/protocol/openid-connect/token/introspect"
+  client-id: "auth-client"
+  client-secret: "T1lrAs44N7wsk1mfZxag54IXMO8NOOa1"
+  introspect-url: "http://localhost:8080/realms/ya3ktest/protocol/openid-connect/token/introspect"
 
 spring:
   datasource:
