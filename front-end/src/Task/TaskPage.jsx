@@ -11,12 +11,11 @@ import ReactPaginate from "react-paginate";
 import EditTask from "./EditTask";
 import Swal from "sweetalert2";
 import { debounce } from "lodash";
-import { CSVLink, CSVDownload } from "react-csv";
-import { toast } from "react-toastify";
 import "./TaskPage.css";
 import * as XLSX from "xlsx";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ProgressBar from "react-bootstrap/ProgressBar";
-
 const TaskPage = (props) => {
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [showEditTask, setShowEditTask] = useState(false);
