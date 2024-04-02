@@ -8,6 +8,7 @@ import DatePicker from 'react-datepicker'; // Import DatePicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import styles
 import ProgramService from './services/ProgramService';
 import { useAuth } from 'oidc-react';  
+import { format } from 'date-fns';
 
 function CreateProgram({ onClose }) {
   const [show, setShow] = useState(true);
@@ -27,9 +28,10 @@ function CreateProgram({ onClose }) {
       event.preventDefault();
       event.stopPropagation();
     } else {
+      const formattedEndTime = endDate ? format(endDate, 'yyyy-MM-dd') : null;
       const programData = {
         name: programName,
-        endtime: endDate
+        endtime: formattedEndTime
       };
   
       ProgramService.createProgram(programData, auth.userData?.profile.preferred_username)
