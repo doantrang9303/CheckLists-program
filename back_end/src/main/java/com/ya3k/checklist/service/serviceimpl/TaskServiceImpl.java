@@ -3,6 +3,7 @@ package com.ya3k.checklist.service.serviceimpl;
 import com.ya3k.checklist.Enum.StatusEnum;
 import com.ya3k.checklist.dto.TasksDto;
 import com.ya3k.checklist.dto.response.taskresponse.ImportResponse;
+import com.ya3k.checklist.dto.response.taskresponse.ProcessResponse;
 import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Tasks;
 import com.ya3k.checklist.mapper.TasksMapper;
@@ -22,8 +23,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.InputStream;
+import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -219,6 +222,7 @@ public class TaskServiceImpl implements TasksService {
 
 
     public ImportResponse inportTask(MultipartFile file, int programId) {
+        SseEmitter emitter = new SseEmitter();
         try {
             String msg = "";
             int countAll = 0;
@@ -232,22 +236,44 @@ public class TaskServiceImpl implements TasksService {
                 if (iterator.hasNext()) {
                     iterator.next(); // Skip header row
                 }
-
                 while (iterator.hasNext()) {
-                    String subMsg = "";
-                    countAll++;
                     Row currentRow = iterator.next();
                     Tasks task = new Tasks();
-                    if (currentRow.getCell(0) == null) {
-                        continue;
+                    Cell NoNumber = currentRow.getCell(0);
+                    if (NoNumber== null) {
+                        break;
                     }
 
+                    countAll++;
+                }
+
+                iterator = datatypeSheet.iterator();
+
+                // Skip header row if needed
+                if (iterator.hasNext()) {
+                    iterator.next(); // Skip header row
+                }
+//15
+                int count=0;
+                while (iterator.hasNext()) {
+                    count++;
+                    String subMsg = "";
+                    Row currentRow = iterator.next();
+                    Tasks task = new Tasks();
+                    Cell NoNumber = currentRow.getCell(0);
+                    if (NoNumber== null) {
+                        continue;
+                    }
                     Cell taskNameCell = currentRow.getCell(1);
                     task.setTaskName(taskNameCell.getStringCellValue());
 
-                    Program program = new Program();
-                    program.setId(programId);
-                    task.setProgram(program);
+                    Program program = programRepository.getById(Integer.valueOf(programId));
+                    if (program==null){
+                        subMsg += "Row " + countAll + " is have error. This programId not exist!\n";
+
+                    }else {
+                        task.setProgram(program);
+                    }
 
                     Cell statusCell = currentRow.getCell(2);
                     if (statusCell == null) {
@@ -270,16 +296,18 @@ public class TaskServiceImpl implements TasksService {
                         task.setCreateTime(createTime);
 
                     } else {
+                        LocalDateTime createTime = LocalDateTime.now();
+                        task.setCreateTime(createTime);
+                        if (createTimeCell.getStringCellValue() != "") {
+                            createTime   = LocalDateTime.parse(createTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                            if (createTime.isBefore(LocalDateTime.now())) {
+                                subMsg += "Row " + countAll + " is have error. Create time must be after today!\n";
+                                task.setCreateTime(createTime);
 
-                        LocalDateTime createTime = LocalDateTime.parse(createTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                        if (createTime.isBefore(LocalDateTime.now())) {
-                            subMsg += "Row " + countAll + " is have error. Create time must be after today!\n";
-                            task.setCreateTime(createTime);
-
-                        } else {
-                            task.setCreateTime(createTime);
+                            } else {
+                                task.setCreateTime(createTime);
+                            }
                         }
-
 
                     }
 
@@ -294,15 +322,21 @@ public class TaskServiceImpl implements TasksService {
                         if (endTime.isBefore(task.getCreateTime().toLocalDate())) {
                             subMsg += "Row " + countAll + " is have error. Endtime not allow before create time!\n";
                         }
+                        if (endTime.isAfter(program.getEndTime())){
+                            subMsg += "Row " + countAll + " is have error. Endtime of task not allow after Endtime of Program!\n";
 
+                        }
                         task.setEndTime(endTime);
 
                     }
                     if (subMsg.isEmpty()) {
                         tasksRepository.save(task);
                         countSaved++;
+
                     }
                     msg += subMsg;
+                 //return giữa hàm
+                    emitter.send(SseEmitter.event().data( new ProcessResponse(msg, countAll, count)));
                 }
 
                 workbook.close();
@@ -311,6 +345,7 @@ public class TaskServiceImpl implements TasksService {
             return new ImportResponse(msg, countAll, countSaved);
         } catch (Exception e) {
             e.printStackTrace();
+            emitter.completeWithError(e);
             return new ImportResponse(e.getMessage(), 0, 0);
         }
 
