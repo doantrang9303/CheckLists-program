@@ -8,7 +8,7 @@ import DatePicker from 'react-datepicker'; // Import DatePicker
 import 'react-datepicker/dist/react-datepicker.css'; // Import styles
 import TaskService from '../services/TaskService'; // Thay đổi import
 import { useParams } from 'react-router-dom';
-
+import { format } from 'date-fns';
 
 function CreateTask({ onClose }) { // Thay đổi tên hàm thành CreateTask
     const [show, setShow] = useState(true);
@@ -30,10 +30,10 @@ function CreateTask({ onClose }) { // Thay đổi tên hàm thành CreateTask
             e.stopPropagation();
         }
         setValidated(true);
-
+        const formattedEndTime = endTime ? format(endTime, 'yyyy-MM-dd') : null;
         const taskData = {
             task_name: taskName, // Thay đổi key thành name
-            end_time: endTime
+            end_time: formattedEndTime
         };
 
         TaskService.createTask(taskData, id)

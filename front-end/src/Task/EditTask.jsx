@@ -7,6 +7,8 @@ import Col from 'react-bootstrap/Col';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import TaskService from '../services/TaskService';
+import { format } from 'date-fns';
+
 function EditTask({ task, onClose }) {
     const [show, setShow] = useState(true);
     const [taskName, setTaskName] = useState('');
@@ -26,9 +28,10 @@ function EditTask({ task, onClose }) {
     };
 
     const handleSaveChanges = () => {
+        const formattedEndTime = endTime ? format(endTime, 'yyyy-MM-dd') : null;
         const updatedTaskData = {
             task_name: taskName,
-            end_time: endTime,
+            end_time:formattedEndTime,
             status: status,
         };
 
