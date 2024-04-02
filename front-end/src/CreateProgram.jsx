@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import Button from "react-bootstrap/Button";
-import Modal from "react-bootstrap/Modal";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import DatePicker from "react-datepicker"; // Import DatePicker
-import "react-datepicker/dist/react-datepicker.css"; // Import styles
-import ProgramService from "./services/ProgramService";
-import { useAuth } from "oidc-react";
-import { format } from "date-fns";
+
+import React, { useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Form from 'react-bootstrap/Form';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import DatePicker from 'react-datepicker'; // Import DatePicker
+import 'react-datepicker/dist/react-datepicker.css'; // Import styles
+import ProgramService from './services/ProgramService';
+import { useAuth } from 'oidc-react';  
+import { format } from 'date-fns';
+
 function CreateProgram({ onClose }) {
     const [show, setShow] = useState(true);
     const [programName, setProgramName] = useState(""); // State for program name
@@ -21,37 +23,31 @@ function CreateProgram({ onClose }) {
         onClose();
     };
 
-    const handleSaveChanges = (event) => {
-        const form = event.currentTarget;
-        if (form.checkValidity() === false) {
-            event.preventDefault();
-            event.stopPropagation();
-        } else {
-            const formattedEndTime = endDate
-                ? format(endDate, "yyyy-MM-dd")
-                : null;
-            const programData = {
-                name: programName,
-                endtime: formattedEndTime,
-            };
 
-            ProgramService.createProgram(
-                programData,
-                auth.userData?.profile.preferred_username
-            )
-                .then((response) => {
-                    console.log("Program created successfully:", response.data);
-                    handleClose();
-                })
-                .catch((error) => {
-                    console.error("Error creating program:", error);
-                    setErrorMessage(
-                        "The syntax is wrong, date should be in the future or task should have more than 3 words. Please try again."
-                    );
-                });
-        }
-        setValidated(true);
-    };
+  const handleSaveChanges = (event) => {
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    } else {
+      const formattedEndTime = endDate ? format(endDate, 'yyyy-MM-dd') : null;
+      const programData = {
+        name: programName,
+        endtime: formattedEndTime
+      };
+  
+      ProgramService.createProgram(programData, auth.userData?.profile.preferred_username)
+        .then(response => {
+          console.log('Program created successfully:', response.data);
+          handleClose();
+        })
+        .catch(error => {
+          console.error('Error creating program:', error);
+          setErrorMessage('The syntax is wrong, date should be in the future or task should have more than 3 words. Please try again.');
+        });
+    }
+    setValidated(true);
+  };
 
     return (
         <Modal show={show} onHide={handleClose} centered>

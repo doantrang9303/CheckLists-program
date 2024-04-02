@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -11,7 +12,7 @@ import { useParams } from "react-router-dom";
 import { format } from "date-fns";
 
 function CreateTask({ onClose }) {
-    // Thay đổi tên hàm thành CreateTask
+    
     const [show, setShow] = useState(true);
     const [taskName, setTaskName] = useState(""); // Thay đổi tên state thành taskName
     const [endTime, setEndDate] = useState(null);
@@ -31,11 +32,12 @@ function CreateTask({ onClose }) {
             e.stopPropagation();
         }
         setValidated(true);
+
         const formattedEndTime = endTime ? format(endTime, "yyyy-MM-dd") : null;
         const taskData = {
             task_name: taskName, // Thay đổi key thành name
             end_time: formattedEndTime,
-        };
+
 
         TaskService.createTask(taskData, id)
             .then((response) => {
