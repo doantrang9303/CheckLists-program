@@ -322,7 +322,18 @@ const TaskPage = (props) => {
 
                     // Convert data from sheet to array of objects
                     const excelData = XLSX.utils.sheet_to_json(firstSheet);
+                    // Check if create_time field is empty in all rows
+                    const isCreateTimeEmpty = excelData.every(
+                        (row) => !row.create_time
+                    );
 
+                    if (!isCreateTimeEmpty) {
+                        toast.error(
+                            "Trường create_time phải để trống trong tất cả các hàng."
+                        );
+                        getTasks(currentPage, id);
+                        return;
+                    }
                     const totalData = excelData.length;
 
                     // Perform data import and update progress
@@ -344,10 +355,12 @@ const TaskPage = (props) => {
                         toast.error(
                             "Import dữ liệu không thành công vì end_time Task đã vượt quá end_time Program. Hãy kiểm tra lại!!!!"
                         );
+                        getTasks(currentPage, id);
                     } else if (response.savedCount < response.totalCount) {
                         toast.warning(
                             "Import dữ liệu thành công nhưng 1 trong số đó có endTime Task vượt quá endTime Program. Hãy kiểm tra lại!!!! "
                         );
+                        getTasks(currentPage, id);
                     } else {
                         toast.success("Import dữ liệu thành công");
                         getTasks(currentPage, id);
@@ -361,6 +374,8 @@ const TaskPage = (props) => {
                 toast.error("Failed to import data. Please try again.");
             }
         }
+        // Clear input value after import completes
+        event.target.value = null;
     };
     ////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////Edit Task////////////////////////////////////
@@ -574,8 +589,11 @@ const TaskPage = (props) => {
                                                 textAlign: "center",
                                                 color:
                                                     item.status ===
-                                                    "IN_PROGRESS"
+                                                    "MISS_DEADLINE"
                                                         ? "red"
+                                                        : item.status ===
+                                                          "IN_PROGRESS"
+                                                        ? "orange"
                                                         : "green",
                                             }}
                                             onClick={() =>
