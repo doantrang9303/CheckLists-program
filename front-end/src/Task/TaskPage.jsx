@@ -15,7 +15,8 @@ import { CSVLink, CSVDownload } from "react-csv";
 import { toast } from "react-toastify";
 import "./TaskPage.css";
 import * as XLSX from "xlsx";
-
+import { ProgressBar } from "react-bootstrap";
+import "react-toastify/dist/ReactToastify.css";
 const TaskPage = (props) => {
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [showEditTask, setShowEditTask] = useState(false);
@@ -222,10 +223,80 @@ const TaskPage = (props) => {
         }
     };
 
-
     //------------Import--------------------------
-    const [importProgress, setImportProgress] = useState(0);
+    // const handleImportExcel = async (event) => {
+    //     setIsImporting(true);
+    //     if (event.target && event.target.files && event.target.files[0]) {
+    //         const file = event.target.files[0];
+    //         if (
+    //             file.type !==
+    //             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    //         ) {
+    //             toast.error("Only accept Excel files (.xlsx) ...");
+    //             setIsImporting(false); // Ẩn ProgressBar nếu có lỗi
+    //             return;
+    //         }
 
+    //         try {
+    //             const reader = new FileReader(); // Di chuyển đến đây
+    //             reader.onload = async (e) => {
+    //                 const data = new Uint8Array(e.target.result);
+    //                 const workbook = XLSX.read(data, { type: "array" });
+
+    //                 // Lấy danh sách tất cả các sheet trong workbook
+    //                 const sheetNames = workbook.SheetNames;
+
+    //                 // Lấy dữ liệu từ sheet đầu tiên
+    //                 const firstSheet = workbook.Sheets[sheetNames[0]];
+
+    //                 // Chuyển đổi dữ liệu từ sheet thành mảng các đối tượng
+    //                 const excelData = XLSX.utils.sheet_to_json(firstSheet);
+
+    //                 const totalData = excelData.length;
+
+    //                 // Tiến hành import dữ liệu và cập nhật tiến độ
+    //                 const response = await TaskService.importFile(file, id);
+    //                 console.log("Data imported successfully:", response.data);
+    //                 toast.success("Data imported successfully!");
+    //                 getTasks(currentPage, id);
+    //                 setImportProgress(100); // Đặt tiến độ về 100% khi import hoàn tất
+    //                 setIsImporting(false); // Ẩn ProgressBar khi hoàn thành
+    //             };
+
+    //             reader.readAsArrayBuffer(file);
+    //         } catch (error) {
+    //             console.error("Failed to import data:", error);
+    //             toast.error("Failed to import data. Please try again.");
+    //             setIsImporting(false); // Ẩn ProgressBar nếu có lỗi
+    //         }
+    //     }
+    // };
+
+    const [importProgress, setImportProgress] = useState(0);
+    const [isImporting, setIsImporting] = useState(false); // State để kiểm soát việc hiển thị ProgressBar
+
+    // const handleImportExcel = async (event) => {
+    //     if (event.target && event.target.files && event.target.files[0]) {
+    //         const file = event.target.files[0];
+    //         if (
+    //             file.type !==
+    //             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    //         ) {
+    //             toast.error("Only accept Excel files (.xlsx) ...");
+    //             return;
+    //         }
+
+    //         try {
+    //             const response = await TaskService.importFile(file, id);
+    //             console.log("Data imported successfully:", response.data);
+    //             toast.success("Data imported successfully!");
+    //             getTasks(currentPage, id);
+    //         } catch (error) {
+    //             console.error("Failed to import data:", error);
+    //             toast.error("Failed to import data. Please try again.");
+    //         }
+    //     }
+    // };
     const handleImportExcel = async (event) => {
         if (event.target && event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -243,18 +314,29 @@ const TaskPage = (props) => {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: "array" });
 
-                    // Lấy danh sách tất cả các sheet trong workbook
+                    // Get list of all sheets in the workbook
                     const sheetNames = workbook.SheetNames;
 
-                    // Lấy dữ liệu từ sheet đầu tiên
+                    // Get data from the first sheet
                     const firstSheet = workbook.Sheets[sheetNames[0]];
 
-                    // Chuyển đổi dữ liệu từ sheet thành mảng các đối tượng
+                    // Convert data from sheet to array of objects
                     const excelData = XLSX.utils.sheet_to_json(firstSheet);
+                    // Check if create_time field is empty in all rows
+                    const isCreateTimeEmpty = excelData.every(
+                        (row) => !row.create_time
+                    );
 
+                    if (!isCreateTimeEmpty) {
+                        toast.error(
+                            "Trường create_time phải để trống trong tất cả các hàng."
+                        );
+                        getTasks(currentPage, id);
+                        return;
+                    }
                     const totalData = excelData.length;
 
-                    // Tiến hành import dữ liệu và cập nhật tiến độ
+                    // Perform data import and update progress
                     let processedData = 0;
                     const intervalId = setInterval(() => {
                         if (processedData < totalData) {
@@ -269,9 +351,21 @@ const TaskPage = (props) => {
 
                     const response = await TaskService.importFile(file, id);
                     console.log("Data imported successfully:", response.data);
-                    toast.success("Data imported successfully!");
-                    getTasks(currentPage, id);
-                    setImportProgress(100); // Đặt tiến độ về 100% khi import hoàn tất
+                    if (response.savedCount === 0) {
+                        toast.error(
+                            "Import dữ liệu không thành công vì end_time Task đã vượt quá end_time Program. Hãy kiểm tra lại!!!!"
+                        );
+                        getTasks(currentPage, id);
+                    } else if (response.savedCount < response.totalCount) {
+                        toast.warning(
+                            "Import dữ liệu thành công nhưng 1 trong số đó có endTime Task vượt quá endTime Program. Hãy kiểm tra lại!!!! "
+                        );
+                        getTasks(currentPage, id);
+                    } else {
+                        toast.success("Import dữ liệu thành công");
+                        getTasks(currentPage, id);
+                    }
+                    setImportProgress(100); // Set progress to 100% when import completes
                 };
 
                 reader.readAsArrayBuffer(file);
@@ -280,8 +374,9 @@ const TaskPage = (props) => {
                 toast.error("Failed to import data. Please try again.");
             }
         }
+        // Clear input value after import completes
+        event.target.value = null;
     };
-
     ////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////Edit Task////////////////////////////////////
     const handleEditClick = (task) => {
@@ -364,12 +459,14 @@ const TaskPage = (props) => {
                             hidden
                             onChange={(event) => handleImportExcel(event, id)}
                         />
-                        <ProgressBar
-                            animated
-                            now={importProgress}
-                            label={`${importProgress}%`}
-                            style={{ marginTop: "10px" }}
-                        />
+                        {isImporting && (
+                            <ProgressBar
+                                animated
+                                now={importProgress}
+                                label={`${importProgress}%`}
+                                style={{ marginTop: "10px" }}
+                            />
+                        )}
                     </div>
                 </li>
             </ul>
@@ -492,8 +589,11 @@ const TaskPage = (props) => {
                                                 textAlign: "center",
                                                 color:
                                                     item.status ===
-                                                    "IN_PROGRESS"
+                                                    "MISS_DEADLINE"
                                                         ? "red"
+                                                        : item.status ===
+                                                          "IN_PROGRESS"
+                                                        ? "orange"
                                                         : "green",
                                             }}
                                             onClick={() =>
