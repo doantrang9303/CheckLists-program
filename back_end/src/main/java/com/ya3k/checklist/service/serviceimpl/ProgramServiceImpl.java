@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 public class ProgramServiceImpl implements ProgramService {
 
@@ -104,11 +105,26 @@ public class ProgramServiceImpl implements ProgramService {
         //handler auto update status for program
         Program program = tasks.getProgram();
         List<Tasks> allTasks = program.getListTask();
+        log.debug("Program {} has {} tasks", program.getName(), allTasks.size());
+
+        log.debug("All tasks are completed");
         boolean allTasksCompleted = allTasks.stream().allMatch(t -> StatusEnum.COMPLETED.getStatus().equals(t.getStatus()));
+
+        log.debug("Some tasks are in progress");
+        boolean tasksIsInProgress = allTasks.stream().anyMatch(t -> StatusEnum.IN_PROGRESS.getStatus().equals(t.getStatus()));
+
+        log.debug("Some tasks are missed deadline");
+        boolean tasksIsMissDeadline = allTasks.stream().anyMatch(t -> StatusEnum.MISS_DEADLINE.getStatus().equals(t.getStatus()));
         // Update program status if all tasks are completed
         if (allTasksCompleted) {
+            log.debug("Program {} is completed", program.getName());
             program.setStatus(StatusEnum.COMPLETED.getStatus());
         }
+        if (tasksIsInProgress && !tasksIsMissDeadline) {
+            log.debug("Program {} is in progress", program.getName());
+            program.setStatus(StatusEnum.IN_PROGRESS.getStatus());
+        }
+
 
         programRepository.save(program);
         // Publish program status change event
@@ -126,8 +142,9 @@ public class ProgramServiceImpl implements ProgramService {
     */
     //update program status base on deadline
     //    @Scheduled(fixedRate = 60000)
-//    @Scheduled(cron = "0 1 0 * * *") // Run at 12:01 AM every day
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 1 0 * * *") // Run at 12:01 AM every day
+    //@Scheduled(cron = "0 * * * * *")
+
     @Override
     public void updateProgramStatusBaseOnDeadline() {
         LocalDate currentDate = LocalDate.now();
@@ -137,8 +154,10 @@ public class ProgramServiceImpl implements ProgramService {
         if (tasksList.isEmpty()) {
             return;
         }
+
         //update status for tasks
         for (Tasks task : tasksList) {
+            log.debug("Task {} is missed deadline", task.getTaskName());
             task.setStatus(StatusEnum.MISS_DEADLINE.getStatus());
             tasksRepository.save(task);
         }
@@ -147,6 +166,7 @@ public class ProgramServiceImpl implements ProgramService {
         for (Tasks task : tasksList) {
             Program program = programRepository.findById(task.getProgram().getId()).orElse(null);
             if (program != null && program.getStatus().equals(StatusEnum.IN_PROGRESS.getStatus())) {
+                log.debug("Program {} is missed deadline", program.getName());
                 program.setStatus(StatusEnum.MISS_DEADLINE.getStatus());
                 programRepository.save(program);
             }
