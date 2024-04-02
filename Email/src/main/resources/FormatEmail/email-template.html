@@ -10,16 +10,18 @@
 <div class="container">
     <div class="header">
         <div class="content">
-        <h2>Deadline Reminder</h2>
-        <p>Dear {{userName}},</p>
-        <p>This email is sent to remind you about the number of programs whose deadlines are approaching:</p>
-            <p>  -Number of programs: <span class="count">{{deadline}}</span></p>
-        <p>Please click <a href="http://localhost:3000/">Go to CheckList Web</a> to see a detailed list of programs with upcoming deadlines.</p>
-        <p>If you have any questions or need assistance, feel free to contact us.</p>
-        <p>Best regards,<br>{{userName}}</p>
-    </div>
+            <h2>Deadline Reminder</h2>
+            <p>Dear {{userName}},</p>
+            <p>This email is sent to remind you about the number of programs whose deadlines are approaching:</p>
+            <p>   - Total of programs not COMPLETED: <span class="count">{{dlProgram}}</span></p>
+            <p>   - Number of task: <span class="count">{{dlTask}}</span> has deadline: {{date}}</p>
+            <p>Please click <a href="http://localhost:3000/">Go to CheckList Web</a> to see a detailed list of programs with upcoming deadlines.</p>
+            <p>If you have any questions or need assistance, feel free to contact us.</p>
+            <p>Best regards,<br>{{userName}}</p>
+        </div>
         <div class="footer">
-            <p>&copy; projectbygroup1@gmail.com , 2024</p>
+            <p>Contact us: projectbygroup1@gmail.com </p>
+            <p>&copy; CheckList web , 2024</p>
         </div>
     </div>
 </div>
