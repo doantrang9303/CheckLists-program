@@ -11,11 +11,11 @@ import ReactPaginate from "react-paginate";
 import EditTask from "./EditTask";
 import Swal from "sweetalert2";
 import { debounce } from "lodash";
-import { CSVLink, CSVDownload } from "react-csv";
-import { toast } from "react-toastify";
 import "./TaskPage.css";
 import * as XLSX from "xlsx";
-
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import ProgressBar from "react-bootstrap/ProgressBar";
 const TaskPage = (props) => {
     const [showCreateTask, setShowCreateTask] = useState(false);
     const [showEditTask, setShowEditTask] = useState(false);
@@ -222,7 +222,8 @@ const TaskPage = (props) => {
         }
     };
 
-    //------------Import---------------------------
+    //------------Import--------------------------
+
     const handleImportExcel = async (event) => {
         if (event.target && event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -245,6 +246,73 @@ const TaskPage = (props) => {
             }
         }
     };
+    // const handleImportExcel = async (event) => {
+    //     if (event.target && event.target.files && event.target.files[0]) {
+    //         const file = event.target.files[0];
+    //         if (
+    //             file.type !==
+    //             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    //         ) {
+    //             toast.error("Only accept Excel files (.xlsx) ...");
+    //             return;
+    //         }
+
+    //         try {
+    //             const reader = new FileReader();
+    //             reader.onload = async (e) => {
+    //                 const data = new Uint8Array(e.target.result);
+    //                 const workbook = XLSX.read(data, { type: "array" });
+
+    //                 // Lấy danh sách tất cả các sheet trong workbook
+    //                 const sheetNames = workbook.SheetNames;
+
+    //                 // Lấy dữ liệu từ sheet đầu tiên
+    //                 const firstSheet = workbook.Sheets[sheetNames[0]];
+
+    //                 // Chuyển đổi dữ liệu từ sheet thành mảng các đối tượng
+    //                 const excelData = XLSX.utils.sheet_to_json(firstSheet);
+
+    //                 const totalData = excelData.length;
+
+    //                 // Tiến hành import dữ liệu và cập nhật tiến độ
+    //                 let processedData = 0;
+    //                 const intervalId = setInterval(() => {
+    //                     if (processedData < totalData) {
+    //                         setImportProgress(
+    //                             (processedData / totalData) * 100
+    //                         );
+    //                         processedData++;
+    //                     } else {
+    //                         clearInterval(intervalId);
+    //                     }
+    //                 }, 1000);
+
+    //                 const response = await TaskService.importFile(
+    //                     file,
+    //                     id
+    //                 );
+    //                 console.log(
+    //                     "Data imported successfully:",
+    //                     response.data
+    //                 );
+    //                 toast.success("Data imported successfully!");
+    //                 getTasks(currentPage, id);
+    //                 setImportProgress(100); // Đặt tiến độ về 100% khi import hoàn tất
+    //             };
+
+    //             reader.readAsArrayBuffer(file);
+    //         } catch (error) {
+    //             console.error("Failed to import data:", error);
+    //             toast.error("Failed to import data. Please try again.");
+    //         }
+    //     }
+    // };
+    //     <ProgressBar
+    //     animated
+    //     now={importProgress}
+    //     label={`${importProgress}%`}
+    //     style={{ marginTop: "10px" }}
+    // />
     ////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////Edit Task////////////////////////////////////
     const handleEditClick = (task) => {
@@ -445,12 +513,26 @@ const TaskPage = (props) => {
                                             {formatDate(item.end_time)}
                                         </td>
                                         <td
+                                            //     style={{
+                                            //         textAlign: "center",
+                                            //         color:
+                                            //             item.status ===
+                                            //             "IN_PROGRESS"
+                                            //                 ? "red"
+                                            //                 : "green",
+                                            //     }}
+                                            //     onClick={() =>
+                                            //         handleEditClick(item)
+                                            //     }
+                                            // >
                                             style={{
-                                                textAlign: "center",
                                                 color:
                                                     item.status ===
-                                                    "IN_PROGRESS"
+                                                    "MISS_DEADLINE"
                                                         ? "red"
+                                                        : item.status ===
+                                                          "IN_PROGRESS"
+                                                        ? "orange"
                                                         : "green",
                                             }}
                                             onClick={() =>
