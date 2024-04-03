@@ -47,9 +47,9 @@ public class ProgramController {
 
     @Operation(summary = "Create a new Program", description = "Create a new Program")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Add Program Successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid Body"),
-            @ApiResponse(responseCode = "401", description = "User Not Found")
+            @ApiResponse(responseCode = "${response.success.code}", description = "Add Program Successfully"),
+            @ApiResponse(responseCode = "${response.bad-request.code}", description = "Invalid Body"),
+            @ApiResponse(responseCode = "${response.unauthorized.code}", description = "User Not Found")
     })
 
     @PostMapping("/add")
@@ -165,5 +165,5 @@ public class ProgramController {
 
     }
 
-   
+
 }
