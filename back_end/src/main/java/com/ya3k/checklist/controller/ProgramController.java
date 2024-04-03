@@ -53,8 +53,8 @@ public class ProgramController {
     })
 
     @PostMapping("/add")
-    public ResponseEntity<?> createProgram(@RequestBody @Valid ProgramDto programDto,
-                                           @RequestHeader(name = "user_name") String userName) {
+    public ResponseEntity<String> createProgram(@RequestBody @Valid ProgramDto programDto,
+                                                @RequestHeader(name = "user_name") String userName) {
         try {
             log.debug("Received request to create a new program");
 
@@ -75,15 +75,15 @@ public class ProgramController {
             ProgramDto savedProgram = programService.createProgram(programDto, userName);
             log.debug("Create program is successful. New program is: {}", savedProgram);
             log.info("Create program is successful. New program is: {}", savedProgram);
-            return ResponseEntity.ok(savedProgram);
+            return ResponseEntity.ok("Save Program" + savedProgram);
 
         } catch (IllegalArgumentException e) {
             log.error("Error creating program: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
             // Handle generic exceptions
-            log.error("An error occurred while processing the request: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            log.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 
     }
@@ -126,8 +126,8 @@ public class ProgramController {
                     .total(totalElements)
                     .build());
         } catch (Exception e) {
-            log.error("An error occurred while processing the request: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            log.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -139,7 +139,7 @@ public class ProgramController {
             @ApiResponse(responseCode = "404", description = "Program Not Found")
     })
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteProgram(@PathVariable int id) {
+    public ResponseEntity<String> deleteProgram(@PathVariable int id) {
         if (id < 1) {
             log.debug("Program ID must be greater than 0");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
@@ -160,7 +160,7 @@ public class ProgramController {
             }
         } catch (Exception e) {
             log.error("An error occurred while processing the request: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 
     }

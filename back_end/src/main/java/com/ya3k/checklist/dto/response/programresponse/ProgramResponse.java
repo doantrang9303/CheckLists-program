@@ -21,20 +21,17 @@ public class ProgramResponse {
     @JsonProperty("user_name")
     private String userName;
     private String status;
-    private LocalDateTime create_time;
-    private LocalDate end_time;
+    private LocalDateTime createTime;
+    private LocalDate endTime;
 
     public static ProgramResponse fromProgram(Program program) {
-        ProgramResponse programResponse = ProgramResponse.builder()
+        return ProgramResponse.builder()
                 .id(program.getId())
                 .name(program.getName())
                 .userName(program.getUser().getUser_name())
                 .status(program.getStatus())
-                .create_time(program.getCreate_time())
-                .end_time(program.getEndTime())
+                .createTime(program.getCreate_time())
+                .endTime(program.getEndTime())
                 .build();
-        return programResponse;
     }
-
-
 }

@@ -1,6 +1,6 @@
 package com.ya3k.checklist.service.serviceimpl;
 
-import com.ya3k.checklist.Enum.StatusEnum;
+import com.ya3k.checklist.enumm.StatusEnum;
 import com.ya3k.checklist.dto.TasksDto;
 import com.ya3k.checklist.dto.response.taskresponse.ImportResponse;
 import com.ya3k.checklist.dto.response.taskresponse.ProcessResponse;
@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.InputStream;
-import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,9 +38,9 @@ import java.util.Optional;
 
 @Service
 public class TaskServiceImpl implements TasksService {
+    private final static String DATETIMEPATTERN = "yyyy-MM-dd";
     private final TasksRepository tasksRepository;
     private final ProgramRepository programRepository;
-
     private final ProgramService programService;
 
     @Autowired
@@ -87,7 +86,7 @@ public class TaskServiceImpl implements TasksService {
             //set end time
             if (taskDto.getEndTime() != null) {
                 String endTimeString = taskDto.getEndTime().toString();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATETIMEPATTERN);
                 try {
                     LocalDate endTime = LocalDate.parse(endTimeString, formatter);
                     if (endTime.isBefore(LocalDate.now())) {
@@ -95,7 +94,6 @@ public class TaskServiceImpl implements TasksService {
                     } else if (endTime.isAfter(tasks.getProgram().getEndTime())) {
                         errorsMess.add("Tasks End time must be before program end time");
                     }
-                    System.out.println(endTime);
                     tasks.setEndTime(endTime);
                 } catch (DateTimeParseException e) {
                     errorsMess.add(e.getMessage());
@@ -129,7 +127,6 @@ public class TaskServiceImpl implements TasksService {
     @Override
     public TasksDto updateTask(Integer taskId, TasksDto updatedTaskDto) {
 
-//        Tasks tasks = tasksRepository.findByTasksId(taskId);
         Tasks tasks = tasksRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found"));
         List<String> errorsMess = new ArrayList<>();
         if (tasks != null) {
@@ -162,7 +159,7 @@ public class TaskServiceImpl implements TasksService {
             //update end time
             if (updatedTaskDto.getEndTime() != null) {
                 String endTimeString = updatedTaskDto.getEndTime().toString();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATETIMEPATTERN);
                 try {
                     LocalDate endTime = LocalDate.parse(endTimeString, formatter);
                     if (endTime.isBefore(LocalDate.now())) {
@@ -240,7 +237,7 @@ public class TaskServiceImpl implements TasksService {
                     Row currentRow = iterator.next();
                     Tasks task = new Tasks();
                     Cell NoNumber = currentRow.getCell(0);
-                    if (NoNumber== null) {
+                    if (NoNumber == null) {
                         break;
                     }
 
@@ -254,24 +251,24 @@ public class TaskServiceImpl implements TasksService {
                     iterator.next(); // Skip header row
                 }
 //15
-                int count=0;
+                int count = 0;
                 while (iterator.hasNext()) {
                     count++;
                     String subMsg = "";
                     Row currentRow = iterator.next();
                     Tasks task = new Tasks();
                     Cell NoNumber = currentRow.getCell(0);
-                    if (NoNumber== null) {
+                    if (NoNumber == null) {
                         continue;
                     }
                     Cell taskNameCell = currentRow.getCell(1);
                     task.setTaskName(taskNameCell.getStringCellValue());
 
                     Program program = programRepository.getById(Integer.valueOf(programId));
-                    if (program==null){
+                    if (program == null) {
                         subMsg += "Row " + countAll + " is have error. This programId not exist!\n";
 
-                    }else {
+                    } else {
                         task.setProgram(program);
                     }
 
@@ -298,8 +295,8 @@ public class TaskServiceImpl implements TasksService {
                     } else {
                         LocalDateTime createTime = LocalDateTime.now();
                         task.setCreateTime(createTime);
-                        if (createTimeCell.getStringCellValue() != "") {
-                            createTime   = LocalDateTime.parse(createTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                        if (createTimeCell.getStringCellValue().equals("")) {
+                            createTime = LocalDateTime.parse(createTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                             if (createTime.isBefore(LocalDateTime.now())) {
                                 subMsg += "Row " + countAll + " is have error. Create time must be after today!\n";
                                 task.setCreateTime(createTime);
@@ -318,11 +315,11 @@ public class TaskServiceImpl implements TasksService {
                         subMsg += "Row " + countAll + " is have error. Endtime not allow null!\n";
                     } else {
 
-                        LocalDate endTime = LocalDate.parse(endTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                        LocalDate endTime = LocalDate.parse(endTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern(DATETIMEPATTERN));
                         if (endTime.isBefore(task.getCreateTime().toLocalDate())) {
                             subMsg += "Row " + countAll + " is have error. Endtime not allow before create time!\n";
                         }
-                        if (endTime.isAfter(program.getEndTime())){
+                        if (endTime.isAfter(program.getEndTime())) {
                             subMsg += "Row " + countAll + " is have error. Endtime of task not allow after Endtime of Program!\n";
 
                         }
@@ -335,8 +332,8 @@ public class TaskServiceImpl implements TasksService {
 
                     }
                     msg += subMsg;
-                 //return giữa hàm
-                    emitter.send(SseEmitter.event().data( new ProcessResponse(msg, countAll, count)));
+                    //return giữa hàm
+                    emitter.send(SseEmitter.event().data(new ProcessResponse(msg, countAll, count)));
                 }
 
                 workbook.close();

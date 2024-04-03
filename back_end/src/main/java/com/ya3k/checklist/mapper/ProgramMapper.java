@@ -12,7 +12,7 @@ public class ProgramMapper {
                 program.getName(),
                 program.getUser().getUser_name(),
                 program.getStatus(),
-                program.getCreate_time(),
+                program.getCreateTime(),
                 program.getEndTime()
         );
     }
@@ -22,7 +22,7 @@ public class ProgramMapper {
         program.setId(programDto.getId());
         program.setName(programDto.getName());
         program.setStatus(programDto.getStatus());
-        program.setCreate_time(programDto.getCreateTime());
+        program.setCreateTime(programDto.getCreateTime());
         program.setEndTime(programDto.getEndTime());
         return program;
     }

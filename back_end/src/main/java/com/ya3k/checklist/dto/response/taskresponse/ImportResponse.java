@@ -6,9 +6,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ImportResponse {
-    public String mess;
-    public  int totalCount;
-    public int savedCount;
+    private String mess;
+    private int totalCount;
+    private int savedCount;
 
     public ImportResponse(String mess, int totalCount, int savedCount) {
         this.mess = mess;

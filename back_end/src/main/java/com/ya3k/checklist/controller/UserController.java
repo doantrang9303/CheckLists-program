@@ -23,13 +23,13 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addUserInfo(@RequestHeader String userName, @RequestHeader String email) {
+    public ResponseEntity<String> addUserInfo(@RequestHeader String userName, @RequestHeader String email) {
         try {
             UsersDto usersDto = new UsersDto();
             usersDto.setUserName(userName);
             usersDto.setEmail(email);
             userServiceImpl.saveUsers(usersDto);
-            log.info("Add info of user: {}  is successfully",usersDto.getUserName());
+            log.info("Add info of user: {}  is successfully", usersDto.getUserName());
             return ResponseEntity.ok("User added successfully");
         } catch (RuntimeException e) {
             log.error("Error while adding user: {}", e.getMessage());

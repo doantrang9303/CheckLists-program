@@ -37,7 +37,7 @@ public class TasksResponse {
     private LocalDate endTime;
 
     public static TasksResponse fromTasks(Tasks tasks) {
-        TasksResponse tasksResponse = TasksResponse.builder()
+        return TasksResponse.builder()
                 .id(tasks.getId())
                 .taskName(tasks.getTaskName())
                 .programId(tasks.getProgram().getId())
@@ -45,6 +45,5 @@ public class TasksResponse {
                 .createTime(tasks.getCreateTime())
                 .endTime(tasks.getEndTime())
                 .build();
-        return tasksResponse;
     }
 }
