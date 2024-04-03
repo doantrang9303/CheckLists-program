@@ -108,7 +108,6 @@ public class TasksController {
             }
             Pageable pageable = PageRequest.of(page - 1, size);
 
-//            int programId = (int) session.getAttribute("program_id");
             if (programId < 1) {
                 log.error("Program ID must be greater than 0");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program ID must be greater than 0");
@@ -181,15 +180,7 @@ public class TasksController {
         return ResponseEntity.ok().body(response);
 
     }
-
-    //update task
-    //http://localhost:9292/tasks/update/{id}
-    // {
-    //     "task_name": "task1",
-    //     "status": "COMPLETED",
-    //     "end_time": "2024-08-01"
-    // }
-    // truyen vao body 1 hoac nhieu truong can update
+    
 
     @Operation(summary = "Update Tasks", description = "Update Tasks by Tasks ID")
     @ApiResponses(value = {
@@ -248,28 +239,5 @@ public class TasksController {
         }
 
     }
-
-    //    @PostMapping("/add")
-//    public ResponseEntity<?> createProgram(@RequestBody Tasks task, @RequestHeader Integer program_id) {
-//        if (program_id <= 0) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("program_id is invalid");
-//        }
-//        Program program = repo.findById(program_id).orElse(null);
-//
-//        if (program == null) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Program not found");
-//        }
-//        task.setProgram(program);
-//        if (task.getStatus() == null || task.getStatus().isEmpty())
-//            task.setStatus(StatusEnum.IN_PROGRESS.getStatus());
-//        else task.setStatus(task.getStatus());
-//        task.setCreateTime(LocalDateTime.now());
-//        Tasks savedTask = trepo.save(task);
-//
-//        //call check status of program
-//        programservice.autoUpdateStatusByTaskStatus(task.getId());
-//
-//        return ResponseEntity.ok(savedTask.getTaskName() + " add successfully");
-//    }
 
 }

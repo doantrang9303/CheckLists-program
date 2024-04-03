@@ -5,9 +5,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import java.time.format.DateTimeParseException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ApplicationExceptionHandler {
@@ -29,7 +29,7 @@ public class ApplicationExceptionHandler {
                     errorMap.put("message", fieldError.getDefaultMessage());  // Key "message" for error message
                     return errorMap;
                 })
-                .collect(Collectors.toList());  // Collect error maps into a list
+                .toList();  // Collect error maps into a list
 
         // Add the error list to the errors map with a specific key ("invalid_input")
         errors.put("invalid_input", errorList);
@@ -37,7 +37,7 @@ public class ApplicationExceptionHandler {
         return errors;  // Return the errors map with categorized error lists
     }
 
-   //   Exception handler for handling DateTimeFormat parsing errors
+    //   Exception handler for handling DateTimeFormat parsing errors
     @ExceptionHandler(DateTimeParseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleDateTimeFormatException(DateTimeParseException e) {
@@ -45,9 +45,6 @@ public class ApplicationExceptionHandler {
         error.put("message", "Invalid date format for endTime, please use yyyy-MM-dd format.");
         return error;
     }
-
-
-
 
 
 }

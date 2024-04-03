@@ -1,6 +1,5 @@
 package com.ya3k.checklist.config;
 
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +18,7 @@ public class AppConfig {
     }
 
     @Bean
-    public WebMvcConfigurer configure(){
+    public WebMvcConfigurer configure() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
