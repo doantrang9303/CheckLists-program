@@ -5,7 +5,6 @@ import com.ya3k.checklist.dto.response.taskresponse.ImportResponse;
 import com.ya3k.checklist.dto.response.taskresponse.TasksListResponse;
 import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
 import com.ya3k.checklist.enumm.TasksApiNoti;
-import com.ya3k.checklist.service.serviceimpl.TasksServices2;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import com.ya3k.checklist.service.serviceinterface.TasksService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +13,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -40,12 +38,10 @@ public class TasksController {
 
     private final TasksService tasksService;
     private final ProgramService programservice;
-    private final TasksServices2 tasksServices2;
 
-    public TasksController(TasksService tasksService, ProgramService programservice, TasksServices2 tasksServices2) {
+    public TasksController(TasksService tasksService, ProgramService programservice) {
         this.tasksService = tasksService;
         this.programservice = programservice;
-        this.tasksServices2 = tasksServices2;
     }
 
 
@@ -68,13 +64,13 @@ public class TasksController {
 
             TasksDto createdTask = tasksService.createTask(taskDto, programId);
             //log
-            log.debug("Create task is successful. New task is: {}", createdTask);
-            log.info("Create task is successful. New task is: {}", createdTask);
+            log.debug(TasksApiNoti.CREATETASKSUCCESS.getMessage(), createdTask);
+            log.info(TasksApiNoti.CREATETASKSUCCESS.getMessage(), createdTask);
 
             programservice.autoUpdateStatusByTaskStatus(createdTask.getId());
             //log
-            log.debug("Update status of program by task status is successful");
-            log.info("Update status of program by task status is successful");
+            log.debug(TasksApiNoti.UPDATESTATUSSUCCESS.getMessage());
+            log.info(TasksApiNoti.UPDATESTATUSSUCCESS.getMessage());
             return ResponseEntity.ok("Create task is successful. New task is: " + createdTask);
         } catch (IllegalArgumentException e) {
             log.error("Invalid argument: " + e.getMessage(), e);
@@ -195,7 +191,7 @@ public class TasksController {
             }
 
         } catch (Exception e) {
-            log.error("An error occurred while processing the request: " + e.getMessage(), e);
+            log.error(TasksApiNoti.REQUESTERROR.getMessage() + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }
 
@@ -222,53 +218,50 @@ public class TasksController {
     })
     @PutMapping("/update/{id}")
     public ResponseEntity<String> updateTask(@PathVariable int id, @RequestBody @Valid TasksDto updatedTaskDto) {
-        String successMessage = "Update success. New task is: {} ";
-        if (id < 1) {
-            log.error("Task ID must be greater than 0");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Task ID must be greater than 0");
-        }
         try {
-            log.debug("Received request to update task with task ID: " + id);
-            log.info("Received request to update task with task ID: " + id);
-            TasksDto findTask = tasksService.findByTaskId(id);
-            if (findTask == null) {
-                log.error(TasksApiNoti.TASKNOTVALID.getMessage());
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TasksApiNoti.TASKNOTVALID.getMessage());
-            } else {
-                String updateMessage = ""; // Initialize update message
-                TasksDto updatedTask = tasksService.updateTask(id, updatedTaskDto);
-
-                if (!Objects.equals(findTask.getTaskName(), updatedTask.getTaskName())) {
-                    log.debug(successMessage, findTask);
-                    updateMessage += "Task Name updated: " + findTask.getTaskName() + " to " + updatedTask.getTaskName() + ".\n ";
-                }
-                if (!Objects.equals(findTask.getStatus(), updatedTask.getStatus())) {
-                    log.debug(successMessage, findTask);
-                    updateMessage += "Status updated: " + findTask.getStatus() + " to " + updatedTask.getStatus() + ".\n";
-                }
-                if (!Objects.equals(findTask.getEndTime(), updatedTask.getEndTime())) {
-                    log.debug(successMessage, findTask);
-                    updateMessage += "End Time updated: " + findTask.getEndTime() + " to " + updatedTask.getEndTime() + ".\n";
-                }
-                if (!updateMessage.isEmpty()) {
-                    log.debug(successMessage, findTask);
-                    log.info(successMessage, findTask);
-                }
-                return ResponseEntity.status(HttpStatus.OK).body(updateMessage.isEmpty() ?
-                        "No changes were made to the task" : updateMessage);
+            if (id < 1) {
+                log.error(TasksApiNoti.TASKIDNOTVALID.getMessage());
+                throw new IllegalArgumentException("Task ID must be greater than 0");
             }
 
-        } catch (IllegalArgumentException e) {
-            log.error("Invalid argument: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (EntityNotFoundException e) {
-            log.error("Task not found: " + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task not found");
+            TasksDto findTask = tasksService.findByTaskId(id);
+            if (findTask == null) {
+                log.error(TasksApiNoti.TASKNOTFOUND.getMessage());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TasksApiNoti.TASKNOTFOUND.getMessage());
+            }
+
+            String updateMessage = generateUpdateMessage(findTask, updatedTaskDto);
+            log.info("Task updated: {}", updateMessage);
+            log.debug("Task updated: {}", updateMessage);
+            return ResponseEntity.ok(updateMessage);
+
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
+            log.error(TasksApiNoti.REQUESTERROR.getMessage() + e.getMessage(), e);
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            log.error("An error occurred while processing the request: " + e.getMessage(), e);
+            log.error(TasksApiNoti.REQUESTERROR.getMessage() + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }
+    }
 
+    private String generateUpdateMessage(TasksDto findTask, TasksDto updatedTaskDto) {
+        StringBuilder updateMessage = new StringBuilder();
+
+        if (!Objects.equals(findTask.getTaskName(), updatedTaskDto.getTaskName())) {
+            appendUpdateMessage(updateMessage, "Task Name", findTask.getTaskName(), updatedTaskDto.getTaskName());
+        }
+        if (!Objects.equals(findTask.getStatus(), updatedTaskDto.getStatus())) {
+            appendUpdateMessage(updateMessage, "Status", findTask.getStatus(), updatedTaskDto.getStatus());
+        }
+        if (!Objects.equals(findTask.getEndTime(), updatedTaskDto.getEndTime())) {
+            appendUpdateMessage(updateMessage, "End Time", findTask.getEndTime(), updatedTaskDto.getEndTime());
+        }
+
+        return updateMessage.length() > 0 ? updateMessage.toString() : "No changes were made to the task";
+    }
+
+    private void appendUpdateMessage(StringBuilder builder, String label, Object oldValue, Object newValue) {
+        builder.append(label).append(" updated: ").append(oldValue).append(" to ").append(newValue).append(".\n");
     }
 
 }
