@@ -30,15 +30,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
+import static com.ya3k.checklist.mapper.TasksMapper.mapToTasks;
 
 
 @Service
 public class TaskServiceImpl implements TasksService {
-    private final static String DATETIMEPATTERN = "yyyy-MM-dd";
+    private static String dateTimePattern = "yyyy-MM-dd";
     private final TasksRepository tasksRepository;
     private final ProgramRepository programRepository;
     private final ProgramService programService;
@@ -49,6 +48,7 @@ public class TaskServiceImpl implements TasksService {
         this.tasksRepository = tasksRepository;
         this.programService = programService;
     }
+
 
     @Override
     public TasksDto createTask(TasksDto taskDto, Integer programId) {
@@ -86,7 +86,7 @@ public class TaskServiceImpl implements TasksService {
             //set end time
             if (taskDto.getEndTime() != null) {
                 String endTimeString = taskDto.getEndTime().toString();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATETIMEPATTERN);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimePattern);
                 try {
                     LocalDate endTime = LocalDate.parse(endTimeString, formatter);
                     if (endTime.isBefore(LocalDate.now())) {
@@ -159,7 +159,7 @@ public class TaskServiceImpl implements TasksService {
             //update end time
             if (updatedTaskDto.getEndTime() != null) {
                 String endTimeString = updatedTaskDto.getEndTime().toString();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATETIMEPATTERN);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimePattern);
                 try {
                     LocalDate endTime = LocalDate.parse(endTimeString, formatter);
                     if (endTime.isBefore(LocalDate.now())) {
@@ -315,7 +315,7 @@ public class TaskServiceImpl implements TasksService {
                         subMsg += "Row " + countAll + " is have error. Endtime not allow null!\n";
                     } else {
 
-                        LocalDate endTime = LocalDate.parse(endTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern(DATETIMEPATTERN));
+                        LocalDate endTime = LocalDate.parse(endTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern(dateTimePattern));
                         if (endTime.isBefore(task.getCreateTime().toLocalDate())) {
                             subMsg += "Row " + countAll + " is have error. Endtime not allow before create time!\n";
                         }

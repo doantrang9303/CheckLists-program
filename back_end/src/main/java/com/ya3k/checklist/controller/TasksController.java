@@ -5,6 +5,7 @@ import com.ya3k.checklist.dto.response.taskresponse.ImportResponse;
 import com.ya3k.checklist.dto.response.taskresponse.TasksListResponse;
 import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
 import com.ya3k.checklist.enumm.TasksApiNoti;
+import com.ya3k.checklist.service.serviceimpl.TasksServices2;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import com.ya3k.checklist.service.serviceinterface.TasksService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,10 +40,12 @@ public class TasksController {
 
     private final TasksService tasksService;
     private final ProgramService programservice;
+    private final TasksServices2 tasksServices2;
 
-    public TasksController(TasksService tasksService, ProgramService programservice) {
+    public TasksController(TasksService tasksService, ProgramService programservice, TasksServices2 tasksServices2) {
         this.tasksService = tasksService;
         this.programservice = programservice;
+        this.tasksServices2 = tasksServices2;
     }
 
 
@@ -83,6 +86,31 @@ public class TasksController {
 
     }
 
+    @PostMapping("/add2")
+    public ResponseEntity<String> createTask2(@Valid @RequestBody TasksDto taskDto, @RequestHeader(name = "program_id") Integer programId) {
+        log.debug("Received request to create a new task");
+        try {
+            if (programId < 1) {
+                log.error(TasksApiNoti.PROGRAMIDNOTVALID.getMessage());
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(TasksApiNoti.PROGRAMIDNOTVALID.getMessage());
+            }
+
+            TasksDto createdTask = tasksService.createTask(taskDto, programId);
+            //log
+            log.debug("Create task is successful. New task is: {}", createdTask);
+            log.info("Create task is successful. New task is: {}", createdTask);
+
+            programservice.autoUpdateStatusByTaskStatus(createdTask.getId());
+            //log
+            log.debug("Update status of program by task status is successful");
+            log.info("Update status of program by task status is successful");
+            return ResponseEntity.ok("Create task is successful. New task is: " + createdTask);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
+    }
 
     //filter tasks of program
     //http://localhost:9292/tasks/filter/{program_id}/?status=done&task_name=task1&end_time=2021-08-01&page=1&size=10

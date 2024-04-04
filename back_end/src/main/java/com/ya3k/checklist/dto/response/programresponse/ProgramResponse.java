@@ -21,7 +21,9 @@ public class ProgramResponse {
     @JsonProperty("user_name")
     private String userName;
     private String status;
+    @JsonProperty("create_time")
     private LocalDateTime createTime;
+    @JsonProperty("end_time")
     private LocalDate endTime;
 
     public static ProgramResponse fromProgram(Program program) {
@@ -30,7 +32,7 @@ public class ProgramResponse {
                 .name(program.getName())
                 .userName(program.getUser().getUser_name())
                 .status(program.getStatus())
-                .createTime(program.getCreate_time())
+                .createTime(program.getCreateTime())
                 .endTime(program.getEndTime())
                 .build();
     }

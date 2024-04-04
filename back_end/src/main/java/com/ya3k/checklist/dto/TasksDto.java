@@ -2,9 +2,7 @@ package com.ya3k.checklist.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +22,8 @@ public class TasksDto {
     private int id;
     @JsonProperty("task_name")
     @Schema(description = "Task Name")
+    @NotNull(message = "task_name is required.")
+    @NotBlank(message = "Task name cannot be empty.")
     @Size(min = 3, max = 50, message = "Task name must be between 3 and 50 characters.")
     private String taskName;
     @JsonProperty("program_id")
@@ -37,6 +37,7 @@ public class TasksDto {
     @CreatedDate
     private LocalDateTime createTime;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "end_time is required.")
     @FutureOrPresent(message = "end_time must be in the present or future.")
     @JsonProperty("end_time")
     private LocalDate endTime;
