@@ -21,7 +21,9 @@ public class ProgramResponse {
     @JsonProperty("user_name")
     private String userName;
     private String status;
+    @JsonProperty("create_time")
     private LocalDateTime createTime;
+    @JsonProperty("end_time")
     private LocalDate endTime;
 
     public static ProgramResponse fromProgram(Program program) {

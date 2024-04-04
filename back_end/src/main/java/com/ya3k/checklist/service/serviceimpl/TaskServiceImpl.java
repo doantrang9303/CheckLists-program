@@ -49,93 +49,67 @@ public class TaskServiceImpl implements TasksService {
         this.programService = programService;
     }
 
+
+    @Override
     public TasksDto createTask(TasksDto taskDto, Integer programId) {
-        Program program = programRepository.findById(programId).orElseThrow(() -> new EntityNotFoundException("Program not found"));
-        Tasks task = mapToTasks(taskDto);
+        Program programs = programRepository.findById(programId).orElseThrow(() -> new EntityNotFoundException("Program not found"));
+        List<String> errorsMess = new ArrayList<>();
 
-        if (taskDto.getTaskName() != null) {
-            String trimmedName = taskDto.getTaskName().trim();
-            task.setTaskName(trimmedName);
-        }
-        task.setProgram(program);
+        if (programs != null) {
+            Tasks tasks = TasksMapper.mapToTasks(taskDto);
 
-        task.setStatus(StatusEnum.IN_PROGRESS.name());
-
-        task.setCreateTime(LocalDateTime.now());
-
-        if (taskDto.getEndTime() != null) {
-            String endTimeString = taskDto.getEndTime().toString();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimePattern);
-            try {
-                LocalDate endTime = LocalDate.parse(endTimeString, formatter);
-                task.setEndTime(endTime);
-            } catch (DateTimeParseException e) {
-                throw new IllegalArgumentException("Invalid date format. Please use yyyy-MM-dd");
+            //validate task name
+            if (taskDto.getTaskName() != null) {
+                String trimmedName = taskDto.getTaskName().trim();
+                if (trimmedName.isEmpty() || trimmedName.isBlank()) {
+                    errorsMess.add("Task name is required");
+                } else if (trimmedName.length() < 3 || trimmedName.length() > 50) {
+                    errorsMess.add("Task name must be between 3 and 50 characters.");
+                } else {
+                    //set task name
+                    tasks.setTaskName(trimmedName);
+                }
+            } else {
+                errorsMess.add("Task name is required");
             }
+
+            //set program
+            tasks.setProgram(programs);
+
+            //set default status to IN_PROGRESS
+            if (tasks.getStatus() == null || tasks.getStatus().isEmpty() || tasks.getStatus().isBlank()) {
+                tasks.setStatus(StatusEnum.IN_PROGRESS.getStatus());
+            }
+            //set create time
+            tasks.setCreateTime(LocalDateTime.now());
+
+            //set end time
+            if (taskDto.getEndTime() != null) {
+                String endTimeString = taskDto.getEndTime().toString();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimePattern);
+                try {
+                    LocalDate endTime = LocalDate.parse(endTimeString, formatter);
+                    if (endTime.isBefore(LocalDate.now())) {
+                        errorsMess.add("End time must be in the future");
+                    } else if (endTime.isAfter(tasks.getProgram().getEndTime())) {
+                        errorsMess.add("Tasks End time must be before program end time");
+                    }
+                    tasks.setEndTime(endTime);
+                } catch (DateTimeParseException e) {
+                    errorsMess.add(e.getMessage());
+                }
+            }
+
+            //print error message
+            if (!errorsMess.isEmpty()) {
+                throw new IllegalArgumentException(String.join("\n", errorsMess));
+            }
+            tasksRepository.save(tasks);
+            return TasksMapper.tasksToDto(tasks);
         }
-        tasksRepository.save(task);
-        return TasksMapper.tasksToDto(task);
+
+        return null;
     }
-//    @Override
-//    public TasksDto createTask(TasksDto taskDto, Integer programId) {
-//        Program programs = programRepository.findById(programId).orElseThrow(() -> new EntityNotFoundException("Program not found"));
-//        List<String> errorsMess = new ArrayList<>();
-//
-//        if (programs != null) {
-//            Tasks tasks = TasksMapper.mapToTasks(taskDto);
-//
-//            //validate task name
-//            if (taskDto.getTaskName() != null) {
-//                String trimmedName = taskDto.getTaskName().trim();
-//                if (trimmedName.isEmpty() || trimmedName.isBlank()) {
-//                    errorsMess.add("Task name is required");
-//                } else if (trimmedName.length() < 3 || trimmedName.length() > 50) {
-//                    errorsMess.add("Task name must be between 3 and 50 characters.");
-//                } else {
-//                    //set task name
-//                    tasks.setTaskName(trimmedName);
-//                }
-//            } else {
-//                errorsMess.add("Task name is required");
-//            }
-//
-//            //set program
-//            tasks.setProgram(programs);
-//
-//            //set default status to IN_PROGRESS
-//            if (tasks.getStatus() == null || tasks.getStatus().isEmpty() || tasks.getStatus().isBlank()) {
-//                tasks.setStatus(StatusEnum.IN_PROGRESS.getStatus());
-//            }
-//            //set create time
-//            tasks.setCreateTime(LocalDateTime.now());
-//
-//            //set end time
-//            if (taskDto.getEndTime() != null) {
-//                String endTimeString = taskDto.getEndTime().toString();
-//                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATETIMEPATTERN);
-//                try {
-//                    LocalDate endTime = LocalDate.parse(endTimeString, formatter);
-//                    if (endTime.isBefore(LocalDate.now())) {
-//                        errorsMess.add("End time must be in the future");
-//                    } else if (endTime.isAfter(tasks.getProgram().getEndTime())) {
-//                        errorsMess.add("Tasks End time must be before program end time");
-//                    }
-//                    tasks.setEndTime(endTime);
-//                } catch (DateTimeParseException e) {
-//                    errorsMess.add(e.getMessage());
-//                }
-//            }
-//
-//            //print error message
-//            if (!errorsMess.isEmpty()) {
-//                throw new IllegalArgumentException(String.join("\n", errorsMess));
-//            }
-//            tasksRepository.save(tasks);
-//            return TasksMapper.tasksToDto(tasks);
-//        }
-//
-//        return null;
-//    }
 
 
     @Override
@@ -152,107 +126,65 @@ public class TaskServiceImpl implements TasksService {
 
     @Override
     public TasksDto updateTask(Integer taskId, TasksDto updatedTaskDto) {
-        Tasks tasks = tasksRepository.findById(taskId)
-                .orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
-        validateAndUpdateTaskName(updatedTaskDto, tasks);
-        validateAndUpdateStatus(updatedTaskDto, tasks);
-        validateAndUpdateEndTime(updatedTaskDto, tasks);
-
-        programService.autoUpdateStatusByTaskStatus(taskId);
-        tasksRepository.save(tasks);
-
-        return TasksMapper.tasksToDto(tasks);
-    }
-
-    private void validateAndUpdateTaskName(TasksDto updatedTaskDto, Tasks tasks) {
-        if (updatedTaskDto.getTaskName() != null) {
-            String trimmedName = updatedTaskDto.getTaskName().trim();
-            if (!trimmedName.isEmpty() && trimmedName.length() >= 3 && trimmedName.length() <= 50) {
-                tasks.setTaskName(trimmedName);
+        Tasks tasks = tasksRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found"));
+        List<String> errorsMess = new ArrayList<>();
+        if (tasks != null) {
+            // Update name with trimmed spaces and validate length
+            if (updatedTaskDto.getTaskName() != null) {
+                String trimmedName = updatedTaskDto.getTaskName().trim();
+                if (trimmedName.isEmpty() || trimmedName.isBlank()) {
+                    tasks.setTaskName(tasks.getTaskName());
+                } else if (trimmedName.length() < 3 || trimmedName.length() > 50) {
+                    errorsMess.add("Task name must be between 3 and 50 characters.");
+                } else {
+                    tasks.setTaskName(trimmedName);
+                }
+            } else {
+                tasks.setTaskName(tasks.getTaskName());
             }
-        }
-    }
 
-    private void validateAndUpdateStatus(TasksDto updatedTaskDto, Tasks tasks) {
-        if (updatedTaskDto.getStatus() != null) {
-            String status = updatedTaskDto.getStatus().toUpperCase();
-            if (Arrays.asList(StatusEnum.IN_PROGRESS.getStatus(), StatusEnum.COMPLETED.getStatus()).contains(status)) {
-                tasks.setStatus(status);
+            //update status
+            if (updatedTaskDto.getStatus() != null &&
+                    !updatedTaskDto.getStatus().isEmpty() &&
+                    !updatedTaskDto.getStatus().isBlank()) {
+                String status = updatedTaskDto.getStatus().toUpperCase();
+                if (StatusEnum.IN_PROGRESS.toString().equals(status) || StatusEnum.COMPLETED.toString().equals(status) || StatusEnum.MISS_DEADLINE.toString().equals(status)) {
+                    tasks.setStatus(status);
+                } else {
+                    errorsMess.add("Status must be IN_PROGRESS or COMPLETED");
+                }
             }
-        }
-    }
 
-    private void validateAndUpdateEndTime(TasksDto updatedTaskDto, Tasks tasks) {
-        if (updatedTaskDto.getEndTime() != null) {
-            LocalDate endTime = updatedTaskDto.getEndTime();
-            if (endTime.isAfter(LocalDate.now()) && endTime.isBefore(tasks.getProgram().getEndTime())) {
-                tasks.setEndTime(endTime);
+            //update end time
+            if (updatedTaskDto.getEndTime() != null) {
+                String endTimeString = updatedTaskDto.getEndTime().toString();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimePattern);
+                try {
+                    LocalDate endTime = LocalDate.parse(endTimeString, formatter);
+                    if (endTime.isBefore(LocalDate.now())) {
+                        errorsMess.add("End time must be in the future");
+                    } else if (endTime.isAfter(tasks.getProgram().getEndTime())) {
+                        errorsMess.add("Tasks End time must be before program end time");
+                    }
+                    tasks.setEndTime(endTime);
+                } catch (DateTimeParseException e) {
+                    errorsMess.add(e.getMessage());
+                }
             }
-        }
-    }
 
-//    @Override
-//    public TasksDto updateTask(Integer taskId, TasksDto updatedTaskDto) {
-//
-//        Tasks tasks = tasksRepository.findById(taskId).orElseThrow(() -> new EntityNotFoundException("Task not found"));
-//        List<String> errorsMess = new ArrayList<>();
-//        if (tasks != null) {
-//            // Update name with trimmed spaces and validate length
-//            if (updatedTaskDto.getTaskName() != null) {
-//                String trimmedName = updatedTaskDto.getTaskName().trim();
-//                if (trimmedName.isEmpty() || trimmedName.isBlank()) {
-//                    tasks.setTaskName(tasks.getTaskName());
-//                } else if (trimmedName.length() < 3 || trimmedName.length() > 50) {
-//                    errorsMess.add("Task name must be between 3 and 50 characters.");
-//                } else {
-//                    tasks.setTaskName(trimmedName);
-//                }
-//            } else {
-//                tasks.setTaskName(tasks.getTaskName());
-//            }
-//
-//            //update status
-//            if (updatedTaskDto.getStatus() != null &&
-//                    !updatedTaskDto.getStatus().isEmpty() &&
-//                    !updatedTaskDto.getStatus().isBlank()) {
-//                String status = updatedTaskDto.getStatus().toUpperCase();
-//                if (StatusEnum.IN_PROGRESS.toString().equals(status) || StatusEnum.COMPLETED.toString().equals(status) || StatusEnum.MISS_DEADLINE.toString().equals(status)) {
-//                    tasks.setStatus(status);
-//                } else {
-//                    errorsMess.add("Status must be IN_PROGRESS or COMPLETED");
-//                }
-//            }
-//
-//            //update end time
-//            if (updatedTaskDto.getEndTime() != null) {
-//                String endTimeString = updatedTaskDto.getEndTime().toString();
-//                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATETIMEPATTERN);
-//                try {
-//                    LocalDate endTime = LocalDate.parse(endTimeString, formatter);
-//                    if (endTime.isBefore(LocalDate.now())) {
-//                        errorsMess.add("End time must be in the future");
-//                    } else if (endTime.isAfter(tasks.getProgram().getEndTime())) {
-//                        errorsMess.add("Tasks End time must be before program end time");
-//                    }
-//                    tasks.setEndTime(endTime);
-//                } catch (DateTimeParseException e) {
-//                    errorsMess.add(e.getMessage());
-//                }
-//            }
-//
-//            //print error message
-//            if (!errorsMess.isEmpty()) {
-//                throw new IllegalArgumentException(String.join("\n", errorsMess));
-//            }
-//
-//            programService.autoUpdateStatusByTaskStatus(taskId);
-//
-//            tasksRepository.save(tasks);
-//            return TasksMapper.tasksToDto(tasks);
-//        }
-//        return null;
-//    }
+            //print error message
+            if (!errorsMess.isEmpty()) {
+                throw new IllegalArgumentException(String.join("\n", errorsMess));
+            }
+
+            programService.autoUpdateStatusByTaskStatus(taskId);
+
+            tasksRepository.save(tasks);
+            return TasksMapper.tasksToDto(tasks);
+        }
+        return null;
+    }
 
     @Override
     public Page<TasksResponse> findByProgramIdAndFilter(int programId, String status, String taskName, LocalDate endTime, Pageable pageable) {
