@@ -57,8 +57,6 @@ public class ProgramController {
                                                 @RequestHeader(name = "user_name") String userName) {
         try {
             log.debug("Received request to create a new program");
-
-
             if (userName == null || userName.isEmpty()) {
                 log.debug("username is empty");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username is empty");
