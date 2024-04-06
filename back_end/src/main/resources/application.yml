@@ -6,17 +6,17 @@ front-end:
 back-end:
   url: "http://localhost:9292"
 keycloak:
-  client-id: "auth-client"
-  realm: "ya3ktest"
-  client-secret: "T1lrAs44N7wsk1mfZxag54IXMO8NOOa1"
-  introspect-url: "http://localhost:8080/realms/${keycloak.realm}/protocol/openid-connect/token/introspect"
+  client-id: "myclient"
+  realm: "myclient"
+  client-secret: "8VtXYqfCAvNrilCOZkAott9ZJYSbfFwf"
+  introspect-url: "http://localhost:8080/realms/react-test/protocol/openid-connect/token/introspect"
 
 
 spring:
   datasource:
-    url: "jdbc:mysql://localhost:3306/checklist"
+    url: "jdbc:mysql://127.0.0.1:3307/checklist"
     username: "root"
-    password: "23012003aA@"
+    password: "admin123"
   jpa:
     show-sql: false
     hibernate:

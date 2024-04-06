@@ -53,6 +53,20 @@ public class TasksController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
 
+    @GetMapping("/testWebsocket")
+    public ResponseEntity<String> testWebsocket() {
+        log.debug("Received request to create a new task");
+        try {
+            tasksService.sendWebsocketMessages();
+            return ResponseEntity.status(HttpStatus.OK).body("");
+
+        }
+        catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
+    }
     @PostMapping("/add")
     public ResponseEntity<String> createTask(@Valid @RequestBody TasksDto taskDto, @RequestHeader(name = "program_id") Integer programId) {
         log.debug("Received request to create a new task");
