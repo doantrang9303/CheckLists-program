@@ -7,6 +7,7 @@ import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
 import com.ya3k.checklist.enumm.TasksApiNoti;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import com.ya3k.checklist.service.serviceinterface.TasksService;
+import com.ya3k.checklist.ws.SocketHandler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -21,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -38,10 +40,11 @@ public class TasksController {
 
     private final TasksService tasksService;
     private final ProgramService programservice;
-
-    public TasksController(TasksService tasksService, ProgramService programservice) {
+    private  final SocketHandler socketHandler;
+    public TasksController(TasksService tasksService, ProgramService programservice, SocketHandler socketHandler) {
         this.tasksService = tasksService;
         this.programservice = programservice;
+        this.socketHandler = socketHandler;
     }
 
 
@@ -53,20 +56,6 @@ public class TasksController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
 
-    @GetMapping("/testWebsocket")
-    public ResponseEntity<String> testWebsocket() {
-        log.debug("Received request to create a new task");
-        try {
-            tasksService.sendWebsocketMessages();
-            return ResponseEntity.status(HttpStatus.OK).body("");
-
-        }
-        catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-
-    }
     @PostMapping("/add")
     public ResponseEntity<String> createTask(@Valid @RequestBody TasksDto taskDto, @RequestHeader(name = "program_id") Integer programId) {
         log.debug("Received request to create a new task");
@@ -215,7 +204,8 @@ public class TasksController {
     public ResponseEntity<ImportResponse> importTasksFromExcel(@RequestParam(name = "program_id") int programId, @RequestParam("file") MultipartFile filePath) throws IOException {
         log.debug("Received request to import tasks from excel file");
         log.info("Received request to import tasks from excel file");
-        ImportResponse response = tasksService.inportTask(filePath, programId);
+        WebSocketSession session = socketHandler.getSessionAtr();
+        ImportResponse response = tasksService.inportTask(filePath, programId,session);
         log.debug("Import tasks from excel file successfully");
         log.info("Import tasks from excel file successfully");
         return ResponseEntity.ok().body(response);

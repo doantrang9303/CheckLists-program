@@ -11,9 +11,13 @@
 
         client.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            client.subscribe('/topic/messages', function (message) {
+            client.subscribe('/topic/progress', function (message) {
                 console.log('Received message: ' + message.body);
             });
+
+            fetch('http://localhost:9292/tasks/testUpload?program_id=1', {
+                method: 'POST'
+            })
         });
     </script>
 </head>

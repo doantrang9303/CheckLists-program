@@ -6,6 +6,7 @@ import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.time.LocalDate;
 
@@ -25,6 +26,5 @@ public interface TasksService {
     TasksDto findByTaskId(int id);
 
 
-    public ImportResponse inportTask(MultipartFile file, int programId);
-    public void sendWebsocketMessages();
+    public ImportResponse inportTask(MultipartFile file, int programId,WebSocketSession session);
 }

@@ -13,7 +13,7 @@ import com.ya3k.checklist.repository.TasksRepository;
 import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import com.ya3k.checklist.service.serviceinterface.TasksService;
-import com.ya3k.checklist.service.websocket.MessageService;
+import com.ya3k.checklist.ws.SocketHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,16 +26,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
-
-import static com.ya3k.checklist.mapper.TasksMapper.mapToTasks;
 
 
 @Slf4j
@@ -44,14 +43,12 @@ public class TaskServiceImpl implements TasksService {
     private static String dateTimePattern = "yyyy-MM-dd";
     private final TasksRepository tasksRepository;
     private final ProgramRepository programRepository;
-
+    private  final SocketHandler socketHandler;
     @Autowired
-    private MessageService messageService;
-
-    @Autowired
-    public TaskServiceImpl(TasksRepository tasksRepository, ProgramRepository programRepository, ProgramService programService) {
+    public TaskServiceImpl(TasksRepository tasksRepository, ProgramRepository programRepository, ProgramService programService, SocketHandler socketHandler) {
         this.programRepository = programRepository;
         this.tasksRepository = tasksRepository;
+        this.socketHandler = socketHandler;
     }
 
     @Override
@@ -189,7 +186,7 @@ public class TaskServiceImpl implements TasksService {
     }
 
 
-    public ImportResponse inportTask(MultipartFile file, int programId) {
+    public ImportResponse inportTask(MultipartFile file, int programId,WebSocketSession session) {
         try {
             String msg = "";
             int countAll = 0;
@@ -220,7 +217,6 @@ public class TaskServiceImpl implements TasksService {
                 if (iterator.hasNext()) {
                     iterator.next(); // Skip header row
                 }
-//15
                 int count = 0;
                 while (iterator.hasNext()) {
                     count++;
@@ -246,9 +242,9 @@ public class TaskServiceImpl implements TasksService {
                     if (statusCell == null) {
                         task.setStatus("IN_PROGRESS");
                     } else {
-                        if(statusCell.getStringCellValue() == ""){
+                        if (statusCell.getStringCellValue() == "") {
                             task.setStatus("IN_PROGRESS");
-                        }else {
+                        } else {
                             if (statusCell.getStringCellValue().trim().equalsIgnoreCase("COMPLETED") || statusCell.getStringCellValue().trim().equalsIgnoreCase("IN_PROGRESS")) {
                                 task.setStatus(statusCell.getStringCellValue());
 
@@ -304,8 +300,8 @@ public class TaskServiceImpl implements TasksService {
 
                     }
                     msg += subMsg;
-                    //return giữa hàm
-                    messageService.sendMessage(new Gson().toJson(new ProcessResponse(msg, countAll, count)));
+                   socketHandler.sendProgress(session,new Gson().toJson(new ProcessResponse(msg, countAll, count)));
+                    Thread.sleep(100);
                 }
 
                 workbook.close();
@@ -318,18 +314,4 @@ public class TaskServiceImpl implements TasksService {
         }
 
     }
-
-    public void sendWebsocketMessages() {
-        try {
-            for (int i = 0; i < 20; i++) {
-                double process = (double) (i / 20) * 100;
-                messageService.sendMessage(process + "%");
-                Thread.sleep(500); // Delay 0.5 giây
-
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }

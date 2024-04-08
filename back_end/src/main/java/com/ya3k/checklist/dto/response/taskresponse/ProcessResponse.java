@@ -7,12 +7,13 @@ import lombok.Setter;
 @Setter
 public class ProcessResponse {
     private String mess;
-    private int totalCount;
-    private int Count;
+    private int total;
+    private int saved;
 
     public ProcessResponse(String mess, int totalCount, int Count) {
         this.mess = mess;
-        this.totalCount = totalCount;
-        this.Count = Count;
+        this.total = totalCount;
+        this.saved = Count;
     }
+
 }
