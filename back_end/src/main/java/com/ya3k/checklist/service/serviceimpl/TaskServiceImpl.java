@@ -1,5 +1,6 @@
 package com.ya3k.checklist.service.serviceimpl;
 
+import com.google.gson.Gson;
 import com.ya3k.checklist.enumm.StatusEnum;
 import com.ya3k.checklist.dto.TasksDto;
 import com.ya3k.checklist.dto.response.taskresponse.ImportResponse;
@@ -12,6 +13,7 @@ import com.ya3k.checklist.repository.TasksRepository;
 import com.ya3k.checklist.dto.response.taskresponse.TasksResponse;
 import com.ya3k.checklist.service.serviceinterface.ProgramService;
 import com.ya3k.checklist.service.serviceinterface.TasksService;
+import com.ya3k.checklist.service.websocket.MessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -42,6 +44,9 @@ public class TaskServiceImpl implements TasksService {
     private static String dateTimePattern = "yyyy-MM-dd";
     private final TasksRepository tasksRepository;
     private final ProgramRepository programRepository;
+
+    @Autowired
+    private MessageService messageService;
 
     @Autowired
     public TaskServiceImpl(TasksRepository tasksRepository, ProgramRepository programRepository, ProgramService programService) {
@@ -185,7 +190,6 @@ public class TaskServiceImpl implements TasksService {
 
 
     public ImportResponse inportTask(MultipartFile file, int programId) {
-        SseEmitter emitter = new SseEmitter();
         try {
             String msg = "";
             int countAll = 0;
@@ -232,7 +236,7 @@ public class TaskServiceImpl implements TasksService {
 
                     Program program = programRepository.getById(Integer.valueOf(programId));
                     if (program == null) {
-                        subMsg += "Row " + countAll + " is have error. This programId not exist!\n";
+                        subMsg += "Row " + count + " is have error. This programId not exist!\n";
 
                     } else {
                         task.setProgram(program);
@@ -240,15 +244,17 @@ public class TaskServiceImpl implements TasksService {
 
                     Cell statusCell = currentRow.getCell(2);
                     if (statusCell == null) {
-                        subMsg += "Row " + countAll + " is have error. Status not allow null!\n";
-
+                        task.setStatus("IN_PROGRESS");
                     } else {
-                        if (statusCell.getStringCellValue().trim().equalsIgnoreCase("COMPLETED") || statusCell.getStringCellValue().trim().equalsIgnoreCase("IN_PROGRESS")) {
-                            task.setStatus(statusCell.getStringCellValue());
+                        if(statusCell.getStringCellValue() == ""){
+                            task.setStatus("IN_PROGRESS");
+                        }else {
+                            if (statusCell.getStringCellValue().trim().equalsIgnoreCase("COMPLETED") || statusCell.getStringCellValue().trim().equalsIgnoreCase("IN_PROGRESS")) {
+                                task.setStatus(statusCell.getStringCellValue());
 
-                        } else {
-                            subMsg += "Row " + countAll + " is have error. Status is invalid!\n";
-
+                            } else {
+                                subMsg += "Row " + count + " is have error. Status is invalid!\n";
+                            }
                         }
                     }
 
@@ -261,10 +267,10 @@ public class TaskServiceImpl implements TasksService {
                     } else {
                         LocalDateTime createTime = LocalDateTime.now();
                         task.setCreateTime(createTime);
-                        if (createTimeCell.getStringCellValue().equals("")) {
+                        if (!createTimeCell.getStringCellValue().equals("")) {
                             createTime = LocalDateTime.parse(createTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                             if (createTime.isBefore(LocalDateTime.now())) {
-                                subMsg += "Row " + countAll + " is have error. Create time must be after today!\n";
+                                subMsg += "Row " + count + " is have error. Create time must be after today!\n";
                                 task.setCreateTime(createTime);
 
                             } else {
@@ -278,15 +284,15 @@ public class TaskServiceImpl implements TasksService {
                     Cell endTimeCell = currentRow.getCell(4);
                     if (endTimeCell == null) {
 
-                        subMsg += "Row " + countAll + " is have error. Endtime not allow null!\n";
+                        subMsg += "Row " + count + " is have error. Endtime not allow null!\n";
                     } else {
 
                         LocalDate endTime = LocalDate.parse(endTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern(dateTimePattern));
                         if (endTime.isBefore(task.getCreateTime().toLocalDate())) {
-                            subMsg += "Row " + countAll + " is have error. Endtime not allow before create time!\n";
+                            subMsg += "Row " + count + " is have error. Endtime not allow before create time!\n";
                         }
                         if (endTime.isAfter(program.getEndTime())) {
-                            subMsg += "Row " + countAll + " is have error. Endtime of task not allow after Endtime of Program!\n";
+                            subMsg += "Row " + count + " is have error. Endtime of task not allow after Endtime of Program!\n";
 
                         }
                         task.setEndTime(endTime);
@@ -299,7 +305,7 @@ public class TaskServiceImpl implements TasksService {
                     }
                     msg += subMsg;
                     //return giữa hàm
-                    emitter.send(SseEmitter.event().data(new ProcessResponse(msg, countAll, count)));
+                    messageService.sendMessage(new Gson().toJson(new ProcessResponse(msg, countAll, count)));
                 }
 
                 workbook.close();
@@ -308,11 +314,22 @@ public class TaskServiceImpl implements TasksService {
             return new ImportResponse(msg, countAll, countSaved);
         } catch (Exception e) {
             e.printStackTrace();
-            emitter.completeWithError(e);
             return new ImportResponse(e.getMessage(), 0, 0);
         }
 
     }
 
+    public void sendWebsocketMessages() {
+        try {
+            for (int i = 0; i < 20; i++) {
+                double process = (double) (i / 20) * 100;
+                messageService.sendMessage(process + "%");
+                Thread.sleep(500); // Delay 0.5 giây
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

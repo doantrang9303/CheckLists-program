@@ -73,7 +73,7 @@ public class ProgramController {
             ProgramDto savedProgram = programService.createProgram(programDto, userName);
             log.debug("Create program is successful. New program is: {}", savedProgram);
             log.info("Create program is successful. New program is: {}", savedProgram);
-            return ResponseEntity.ok("Save Program: " + savedProgram);
+            return ResponseEntity.ok("Save Program" + savedProgram);
 
         } catch (IllegalArgumentException e) {
             log.error("Error creating program: " + e.getMessage(), e);
