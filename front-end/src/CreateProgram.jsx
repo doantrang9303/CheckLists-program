@@ -31,7 +31,7 @@ function CreateProgram({ onClose }) {
       const formattedEndTime = endDate ? format(endDate, 'yyyy-MM-dd') : null;
       const programData = {
         name: programName,
-        endtime: formattedEndTime
+        endtime:formattedEndTime
       };
   
       ProgramService.createProgram(programData, auth.userData?.profile.preferred_username)
@@ -102,5 +102,8 @@ function CreateProgram({ onClose }) {
     </Modal>
   );
 }
+CreateProgram.propTypes = {
+  onClose: PropTypes.func.isRequired, // onClose function is required
+};
 
 export default CreateProgram;

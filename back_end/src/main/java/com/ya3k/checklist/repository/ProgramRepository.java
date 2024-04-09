@@ -14,7 +14,7 @@ public interface ProgramRepository extends JpaRepository<Program, Integer> {
             "AND (:status IS NULL OR p.status = :status) " +
             "AND (:endTime IS NULL OR p.endTime = :endTime)" +
             "AND (:programName IS NULL OR p.name like %:programName%)" +
-            "ORDER BY p.create_time DESC")
+            "ORDER BY p.createTime DESC")
     Page<Program> findByUserAndFilters(String username,
                                        String status,
                                        LocalDate endTime,

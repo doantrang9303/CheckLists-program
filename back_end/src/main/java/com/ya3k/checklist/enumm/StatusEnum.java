@@ -1,4 +1,4 @@
-package com.ya3k.checklist.Enum;
+package com.ya3k.checklist.enumm;
 
 import lombok.Getter;
 

@@ -1,6 +1,6 @@
 package com.ya3k.checklist.service.serviceimpl;
 
-import com.ya3k.checklist.Enum.StatusEnum;
+import com.ya3k.checklist.enumm.StatusEnum;
 import com.ya3k.checklist.dto.ProgramDto;
 import com.ya3k.checklist.entity.Program;
 import com.ya3k.checklist.entity.Tasks;
@@ -59,7 +59,7 @@ public class ProgramServiceImpl implements ProgramService {
         }
 
         //set create time
-        program.setCreate_time(LocalDateTime.now());
+        program.setCreateTime(LocalDateTime.now());
 
         if (programDto.getEndTime() != null) {
             program.setEndTime(programDto.getEndTime());
@@ -142,8 +142,8 @@ public class ProgramServiceImpl implements ProgramService {
     */
     //update program status base on deadline
     //    @Scheduled(fixedRate = 60000)
-    @Scheduled(cron = "0 1 0 * * *") // Run at 12:01 AM every day
-    //@Scheduled(cron = "0 * * * * *")
+//    @Scheduled(cron = "0 1 0 * * *") // Run at 12:01 AM every day
+    @Scheduled(cron = "0 * * * * *")
 
     @Override
     public void updateProgramStatusBaseOnDeadline() {

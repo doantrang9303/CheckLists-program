@@ -26,5 +26,5 @@ public interface TasksService {
 
 
     public ImportResponse inportTask(MultipartFile file, int programId);
-
+    public void sendWebsocketMessages();
 }

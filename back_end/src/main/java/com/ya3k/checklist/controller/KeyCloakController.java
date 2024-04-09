@@ -2,32 +2,39 @@ package com.ya3k.checklist.controller;
 
 import com.ya3k.checklist.service.KeyCloakService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@AllArgsConstructor
+@Slf4j
 @RestController
 @CrossOrigin(origins = "${front-end.url}",
         allowedHeaders = "*",
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class KeyCloakController {
-    @Autowired
+    private String statusToken = "Missing";
+
     private final KeyCloakService keycloakService;
+
+    public KeyCloakController(KeyCloakService keycloakService) {
+        this.keycloakService = keycloakService;
+    }
+
     //method post
     //verify token
     @PostMapping("/verify-token")
-    private ResponseEntity<?> verifyToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws Exception {
+    public ResponseEntity<String> verifyToken(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) throws Exception {
         //check if token is empty
         if (token == null || token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is Empty");
         }
 
         //check length of token
-        if (!token.startsWith("Bearer ")){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing");
+        if (!token.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(statusToken);
         }
 
         //substring Bearer
@@ -35,10 +42,10 @@ public class KeyCloakController {
         boolean isActive = keycloakService.introspectToken(token);
         //check token true or false
         if (isActive) {
-            System.out.println("is active: " + isActive);
+            log.debug("is active: " + isActive);
             return ResponseEntity.status(HttpStatus.OK).body("True");
         } else {
-            System.out.println("is active: " + isActive);
+            log.debug("is active: " + isActive);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("False");
         }
 
@@ -53,11 +60,11 @@ public class KeyCloakController {
     @PostMapping("/test")
     public ResponseEntity<String> test(@RequestHeader(HttpHeaders.AUTHORIZATION) String token) {
         if (token.length() < 7) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(statusToken);
         }
         token = token.substring(7);
         if (token.equals("")) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Missing");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(statusToken);
         }
         //api verify token
         //parse result -> active ? true : false
@@ -67,8 +74,6 @@ public class KeyCloakController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("False");
         }
     }
-
-
 
 
 }

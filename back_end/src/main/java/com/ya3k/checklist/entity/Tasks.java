@@ -1,18 +1,19 @@
 package com.ya3k.checklist.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
+
 @Entity
 @Table(name = "tasks")
 @Data
@@ -32,7 +33,7 @@ public class Tasks {
     @JoinColumn(name = "program_id")
     private Program program;
 
-    @Column(name="status")
+    @Column(name = "status")
     private String status;
 
     @Column(name = "create_time")

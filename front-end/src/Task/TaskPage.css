@@ -8,6 +8,7 @@
     padding: 0; /* Khoảng cách giữa các phần tử trong thanh phân trang */
     border-radius: 5px; /* Bo tròn góc */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Đổ bóng */
+    width: 100%
 }
 
 .pagination-container ul {
@@ -45,11 +46,7 @@
     background-color: #888; /* Màu nền của thanh cuộn */
     border-radius: 10px; /* Độ cong của các góc */
 }
-.pagination-container {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-}
+
 
 /* CSS cho thanh scrollbar chỉ hiển thị khi màn hình được thu nhỏ */
 @media screen and (max-height: 500px) {
