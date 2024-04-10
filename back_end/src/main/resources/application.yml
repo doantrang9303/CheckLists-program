@@ -55,9 +55,7 @@ logging:
     root: info
   pattern:
     console:  "%clr(CheckList_project){faint}  %clr(%-40.40logger{39}){cyan} %clr(%23.23M){green} %clr(%d{yyyy-MM-dd E HH:mm:ss}){faint} %clr([%6X{requestId}]){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(:){faint} %m%n%clr(${LOG_EXCEPTION_CONVERSION_WORD:%wEx}){red}"
-    file: "CheckList_project  %40.40logger{39}   %23.23M  %d{yyyy-MM-dd E HH:mm:ss}  [%6X{requestId}] %-5level : %msg%n"
-  file:
-    name: demoLog.log
+
 
 #  pattern:
 #    console: "%clr(%d{yyyy-MM-dd E HH:mm:ss}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr([%6X{requestId}]){faint} %clr(:){faint} %m%n%clr(${LOG_EXCEPTION_CONVERSION_WORD:%wEx}){red}"
