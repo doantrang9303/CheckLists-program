@@ -3,10 +3,9 @@ server:
 
 spring:
   datasource:
-    url: "jdbc:sqlserver://ThinkPad:1433;encrypt=true;trustServerCertificate=true;databaseName=test"
-    username: "sa"
-    password: "trang"
-
+    url: ${DB_URL:}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
   mail:
     properties:
       mail:
@@ -15,17 +14,26 @@ spring:
           starttls:
             enable=true:
             required=true:
-    username: "projectbygroup1@gmail.com"
+    username: ${CHECKLIST_EMAIL_USERNAME}
     port: 587
     host: "smtp.gmail.com"
-    password: "memx qifl jhbw hacz"
+    password: ${CHECKLIST_EMAIL_PASSWORD}
 
-cron expression: '0 0/2 * * * ? '   # sau 1 hour gui mail 1 lan
+cron expression: ${TIME_SEND_EMAIL}  # sau 1 hour gui mail 1 lan
 #Co the chon cai dat send mail theo nhung moc thoi gian sau:
 # cron expression: '0 30 20 ? * FRI'     :  8h30 moi toi thu 6 se gui mail 1 lan
 # cron expression: '0 0 20 ? * MON-FRI' :  8h moi toi thu 2-thu 6 se gui mail 1 lan
 
 logging:
   level:
+    org:
+      springframework: error
+      hibernate: off
+      apache.catalina: off
+    com.zaxxer: off
     root: info
+  pattern:
+    console: " %clr(CheckList_project){faint}  %clr(%-40.40logger{39}){cyan} %clr(%21.21M){green} %clr(%d{yyyy-MM-dd E HH:mm:ss}){faint} %clr([%6X{requestId}]){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(:){faint} %m%n%clr(${LOG_EXCEPTION_CONVERSION_WORD:%wEx}){red}"
+#  pattern:
+#    console: "%clr(%d{yyyy-MM-dd E HH:mm:ss}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr([%6X{requestId}]){faint} %clr(:){faint} %m%n%clr(${LOG_EXCEPTION_CONVERSION_WORD:%wEx}){red}"
 
