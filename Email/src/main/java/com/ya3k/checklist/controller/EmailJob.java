@@ -50,8 +50,8 @@ public class EmailJob {
                 String email = emails.get(i);
                 String users = user.get(i);
                 String dlTimeProgram=dlineProgram.get(i);
-                String dlTimeTask=dlineTask.get(i);
-
+                String dlTimeTask=dlineTask.isEmpty() ? "0" : dlineTask.get(i);
+                
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 LocalDateTime hientai = LocalDateTime.now();
                 LocalDateTime ngaySau = hientai.plusDays(1);
