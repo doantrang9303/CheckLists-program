@@ -14,10 +14,10 @@ spring:
           starttls:
             enable=true:
             required=true:
-    username: ${CHECKLIST_EMAIL_USERNAME}
+    username: "projectbygroup1@gmail.com"
     port: 587
     host: "smtp.gmail.com"
-    password: ${CHECKLIST_EMAIL_PASSWORD}
+    password: "memx qifl jhbw hacz"
 
 cron expression: ${TIME_SEND_EMAIL}  # sau 1 hour gui mail 1 lan
 #Co the chon cai dat send mail theo nhung moc thoi gian sau:
