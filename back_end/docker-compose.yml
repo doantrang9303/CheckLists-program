@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.7
+    ports:
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command: ["start-dev"]
+
+  web:
+    image: your-spring-boot-image
+    ports:
+      - "9292:9292"
+    env_file:
+      - backend.env
+    environment:
+      - KEYCLOAK_CLIENT_ID=${KEYCLOAK_CLIENT_ID}
+      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+      - KEYCLOAK_CLIENT_SECRET=${KEYCLOAK_CLIENT_SECRET}
+      - DB_URL=${DB_URL}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
+
+  db:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    env_file:
+      - backend.env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: checklist
+    restart: always
