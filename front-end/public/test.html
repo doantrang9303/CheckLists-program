@@ -15,6 +15,7 @@
             
             // Subscribe để nhận các tin nhắn từ endpoint "/import/mess"
             stompClient.subscribe('/importMess', function (message) {
+                console.log('sub to importMess');
                 showMessage(JSON.parse(message.body));
             });
         });
