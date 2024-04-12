@@ -243,8 +243,7 @@ public class TasksController {
                 log.error(TasksApiNoti.TASKNOTFOUND.getMessage());
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TasksApiNoti.TASKNOTFOUND.getMessage());
             }
-            
-            tasksService.updateTask(id, updatedTaskDto);
+
             String updateMessage = generateUpdateMessage(findTask, updatedTaskDto);
             log.info("Task updated: {}", updateMessage);
             log.debug("Task updated: {}", updateMessage);
@@ -255,7 +254,7 @@ public class TasksController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error(TasksApiNoti.REQUESTERROR.getMessage() + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
         }
     }
 
