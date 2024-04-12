@@ -58,7 +58,7 @@ public class TasksController {
     public ResponseEntity<String> testWebsocket() {
         log.debug("Received request to create a new task");
         try {
-            tasksService.sendWebsocketMessages();
+            //tasksService.sendWebsocketMessages();
             return ResponseEntity.status(HttpStatus.OK).body("");
 
         }
