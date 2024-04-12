@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -279,4 +280,13 @@ public class TasksController {
         builder.append(label).append(" updated: ").append(oldValue).append(" to ").append(newValue).append(".\n");
     }
 
+    @PostMapping("/testUpload")
+    public ResponseEntity<ImportResponse> handleUpload(@RequestParam(name = "program_id") int programId, @RequestParam(name = "file") MultipartFile file) throws IOException {
+        log.debug("Received request to import tasks from excel file");
+        log.info("Received request to import tasks from excel file");
+        ImportResponse response = tasksService.hanldeUloadFile(programId, file);
+        log.debug("Import tasks from excel file successfully");
+        log.info("Import tasks from excel file successfully");
+        return ResponseEntity.ok().body(response);
+    }
 }
