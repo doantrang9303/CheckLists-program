@@ -27,4 +27,5 @@ public interface TasksService {
 
     public ImportResponse inportTask(MultipartFile file, int programId);
 
+    public ImportResponse hanldeUloadFile(int programId, MultipartFile file);
 }

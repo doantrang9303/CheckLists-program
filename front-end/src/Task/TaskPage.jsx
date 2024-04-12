@@ -16,6 +16,8 @@ import { toast } from "react-toastify";
 import "./TaskPage.css";
 import * as XLSX from "xlsx";
 import { ProgressBar } from "react-bootstrap";
+import SockJS from "sockjs-client";
+import { Stomp } from "@stomp/stompjs";
 import "react-toastify/dist/ReactToastify.css";
 const TaskPage = (props) => {
     const [showCreateTask, setShowCreateTask] = useState(false);
@@ -45,6 +47,20 @@ const TaskPage = (props) => {
             getTasks(currentPage, id);
         }
     }, [auth.isLoading, auth.userData, id]);
+    useEffect(() => {
+        const sock = new SockJS('http://localhost:9292/ws');
+        const client = Stomp.over(sock);
+        client.connect({}, () => {
+            console.log('Connected to web socket!');
+            client.subscribe('/topic/progress', (message) => {
+                const data = JSON.parse(message.body);
+                setImportProgress(Math.floor(data.savedCount / data.totalCount * 100));
+            });
+            return () => {
+                client.abort();
+            };
+        });
+    }, []);
     ////////////////////////////////Delete Task///////////////////////////////////
     const handleCheckAll = (event) => {
         const isChecked = event.target.checked;
@@ -334,21 +350,8 @@ const TaskPage = (props) => {
                         getTasks(currentPage, id);
                         return;
                     }
-                    const totalData = excelData.length;
-
-                    // Perform data import and update progress
-                    let processedData = 0;
-                    const intervalId = setInterval(() => {
-                        if (processedData < totalData) {
-                            setImportProgress(
-                                (processedData / totalData) * 100
-                            );
-                            processedData++;
-                        } else {
-                            clearInterval(intervalId);
-                        }
-                    }, 1000);
-
+                    setIsImporting(true);
+                    setImportProgress(0);
                     const response = await TaskService.importFile(file, id);
                     console.log("Data imported successfully:", response.data);
                     if (response.savedCount === 0) {
@@ -365,7 +368,9 @@ const TaskPage = (props) => {
                         toast.success("Import dữ liệu thành công");
                         getTasks(currentPage, id);
                     }
-                    setImportProgress(100); // Set progress to 100% when import completes
+                    setTimeout(() => {
+                        setIsImporting(false);
+                    }, 750);
                 };
 
                 reader.readAsArrayBuffer(file);

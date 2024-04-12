@@ -263,5 +263,13 @@ public class TasksController {
     private void appendUpdateMessage(StringBuilder builder, String label, Object oldValue, Object newValue) {
         builder.append(label).append(" updated: ").append(oldValue).append(" to ").append(newValue).append(".\n");
     }
-
+    @PostMapping("/testUpload")
+    public ResponseEntity<ImportResponse> handleUpload(@RequestParam(name = "program_id") int programId, @RequestParam(name = "file") MultipartFile file) throws IOException {
+        log.debug("Received request to import tasks from excel file");
+        log.info("Received request to import tasks from excel file");
+        ImportResponse response = tasksService.hanldeUloadFile(programId, file);
+        log.debug("Import tasks from excel file successfully");
+        log.info("Import tasks from excel file successfully");
+        return ResponseEntity.ok().body(response);
+    }
 }
