@@ -6,10 +6,10 @@ front-end:
 back-end:
   url: "http://localhost:9292"
 keycloak:
-  client-id: "auth-client"
-  realm: "ya3ktest"
-  client-secret: "T1lrAs44N7wsk1mfZxag54IXMO8NOOa1"
-  introspect-url: "http://localhost:8080/realms/${keycloak.realm}/protocol/openid-connect/token/introspect"
+  client-id: "myclient"
+  realm: "myclient"
+  client-secret: "8VtXYqfCAvNrilCOZkAott9ZJYSbfFwf"
+  introspect-url: "http://localhost:8080/realms/react-test/protocol/openid-connect/token/introspect"
 
 
 spring:
@@ -45,18 +45,18 @@ springdoc:
     enabled: true
     path: /swagger-ui.html
 
-
-#logging:
-#  level:
-#    root: info
-#
-# Logging configuration
 logging:
   level:
-    root: INFO
-
-
+    org:
+      springframework: error
+      hibernate: off
+      apache.catalina:  off
+    com.zaxxer:  off
+    root: info
   pattern:
-    console: "%clr(%d{yyyy-MM-dd E HH:mm:ss}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr([%6X{requestId}]){faint} %clr(:){faint} %m%n%clr(${LOG_EXCEPTION_CONVERSION_WORD:%wEx}){red}"
+    console:  "%clr(CheckList_project){faint}  %clr(%-40.40logger{39}){cyan} %clr(%23.23M){green} %clr(%d{yyyy-MM-dd E HH:mm:ss}){faint} %clr([%6X{requestId}]){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(:){faint} %m%n%clr(${LOG_EXCEPTION_CONVERSION_WORD:%wEx}){red}"
 
+
+#  pattern:
+#    console: "%clr(%d{yyyy-MM-dd E HH:mm:ss}){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr([%6X{requestId}]){faint} %clr(:){faint} %m%n%clr(${LOG_EXCEPTION_CONVERSION_WORD:%wEx}){red}"
 
