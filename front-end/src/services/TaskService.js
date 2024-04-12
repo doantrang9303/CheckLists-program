@@ -30,7 +30,7 @@ const importFile = async (file, program_id) => {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await axios.post(`/tasks/testUpload?program_id=${program_id}`, formData, {
+    const response = await axios.post(`/tasks/importTasksFromExcel?program_id=${program_id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
