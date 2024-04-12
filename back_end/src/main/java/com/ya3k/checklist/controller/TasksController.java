@@ -244,7 +244,7 @@ public class TasksController {
                 log.error(TasksApiNoti.TASKNOTFOUND.getMessage());
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TasksApiNoti.TASKNOTFOUND.getMessage());
             }
-            
+
             tasksService.updateTask(id, updatedTaskDto);
             String updateMessage = generateUpdateMessage(findTask, updatedTaskDto);
             log.info("Task updated: {}", updateMessage);
