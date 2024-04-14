@@ -61,13 +61,13 @@ public class TasksController {
             //tasksService.sendWebsocketMessages();
             return ResponseEntity.status(HttpStatus.OK).body("");
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 
     }
+
     @PostMapping("/add")
     public ResponseEntity<String> createTask(@Valid @RequestBody TasksDto taskDto, @RequestHeader(name = "program_id") Integer programId) {
         log.debug("Received request to create a new task");
@@ -90,32 +90,6 @@ public class TasksController {
         } catch (IllegalArgumentException e) {
             log.error("Invalid argument: " + e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-
-    }
-
-    @PostMapping("/add2")
-    public ResponseEntity<String> createTask2(@Valid @RequestBody TasksDto taskDto, @RequestHeader(name = "program_id") Integer programId) {
-        log.debug("Received request to create a new task");
-        try {
-            if (programId < 1) {
-                log.error(TasksApiNoti.PROGRAMIDNOTVALID.getMessage());
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(TasksApiNoti.PROGRAMIDNOTVALID.getMessage());
-            }
-
-            TasksDto createdTask = tasksService.createTask(taskDto, programId);
-            //log
-            log.debug("Create task is successful. New task is: {}", createdTask);
-            log.info("Create task is successful. New task is: {}", createdTask);
-
-            programservice.autoUpdateStatusByTaskStatus(createdTask.getId());
-            //log
-            log.debug("Update status of program by task status is successful");
-            log.info("Update status of program by task status is successful");
-            return ResponseEntity.ok("Create task is successful. New task is: " + createdTask);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -279,6 +253,7 @@ public class TasksController {
     private void appendUpdateMessage(StringBuilder builder, String label, Object oldValue, Object newValue) {
         builder.append(label).append(" updated: ").append(oldValue).append(" to ").append(newValue).append(".\n");
     }
+
     @PostMapping("/testUpload")
     public ResponseEntity<ImportResponse> handleUpload(@RequestParam(name = "program_id") int programId, @RequestParam(name = "file") MultipartFile file) throws IOException {
         log.debug("Received request to import tasks from excel file");

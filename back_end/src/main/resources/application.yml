@@ -6,17 +6,17 @@ front-end:
 back-end:
   url: "http://localhost:9292"
 keycloak:
-  client-id: "myclient"
-  realm: "mySclient"
-  client-secret: "8VtXYqfCAvNrilCOZkAott9ZJYSbfFwf"
-  introspect-url: "http://localhost:8080/realms/react-test/protocol/openid-connect/token/introspect"
+  client-id: "auth-client"
+  realm: "ya3ktest"
+  client-secret: "T1lrAs44N7wsk1mfZxag54IXMO8NOOa1"
+  introspect-url: "http://localhost:8080/realms/${keycloak.realm}/protocol/openid-connect/token/introspect"
 
 
 spring:
   datasource:
-    url: "jdbc:mysql://127.0.0.1:3307/checklist"
+    url: "jdbc:mysql://localhost:3306/checklist"
     username: "root"
-    password: "admin123"
+    password: "23012003aA@"
   jpa:
     show-sql: false
     hibernate:
@@ -50,11 +50,11 @@ logging:
     org:
       springframework: error
       hibernate: off
-      apache.catalina:  off
-    com.zaxxer:  off
+      apache.catalina: off
+    com.zaxxer: off
     root: info
   pattern:
-    console:  "%clr(CheckList_project){faint}  %clr(%-40.40logger{39}){cyan} %clr(%23.23M){green} %clr(%d{yyyy-MM-dd E HH:mm:ss}){faint} %clr([%6X{requestId}]){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(:){faint} %m%n%clr(${LOG_EXCEPTION_CONVERSION_WORD:%wEx}){red}"
+    console: "%clr(CheckList_project){faint}  %clr(%-40.40logger{39}){cyan} %clr(%23.23M){green} %clr(%d{yyyy-MM-dd E HH:mm:ss}){faint} %clr([%6X{requestId}]){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(:){faint} %m%n%clr(${LOG_EXCEPTION_CONVERSION_WORD:%wEx}){red}"
 
 
 #  pattern:
