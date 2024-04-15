@@ -37,11 +37,6 @@ export const AuthProvider = ({ children }) => {
                     access_token: keycloak.tokenParsed?.access_token,
                 });
                 if (authenticated) {
-                    // addUser(
-                    //     keycloak.tokenParsed?.preferred_username,
-                    //     keycloak.tokenParsed?.email
-                    // );
-
                     // Gọi hàm addUser từ UserService
                     UserService.addUser(
                         keycloak.tokenParsed?.preferred_username,

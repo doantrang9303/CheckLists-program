@@ -48,13 +48,15 @@ const TaskPage = (props) => {
         }
     }, [auth.isLoading, auth.userData, id]);
     useEffect(() => {
-        const sock = new SockJS('http://localhost:9292/ws');
+        const sock = new SockJS("http://localhost:9292/ws");
         const client = Stomp.over(sock);
         client.connect({}, () => {
-            console.log('Connected to web socket!');
-            client.subscribe('/topic/progress', (message) => {
+            console.log("Connected to web socket!");
+            client.subscribe("/topic/progress", (message) => {
                 const data = JSON.parse(message.body);
-                setImportProgress(Math.floor(data.savedCount / data.totalCount * 100));
+                setImportProgress(
+                    Math.floor((data.savedCount / data.totalCount) * 100)
+                );
             });
             return () => {
                 client.abort();
@@ -224,7 +226,7 @@ const TaskPage = (props) => {
             // Create anchor element to trigger download
             const a = document.createElement("a");
             a.href = url;
-            a.download = "Task-list.xlsx";
+            a.download = `${name}.xlsx`;
 
             // Trigger click on anchor element
             a.click();
