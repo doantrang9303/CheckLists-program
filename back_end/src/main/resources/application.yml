@@ -14,9 +14,9 @@ keycloak:
 
 spring:
   datasource:
-    url: "jdbc:mysql://localhost:3306/checklist"
+    url: "jdbc:mysql://127.0.0.1:3307/checklist"
     username: "root"
-    password: "23012003aA@"
+    password: "admin123"
   jpa:
     show-sql: false
     hibernate:

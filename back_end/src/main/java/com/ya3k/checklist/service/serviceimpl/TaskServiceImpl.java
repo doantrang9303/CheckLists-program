@@ -1,6 +1,5 @@
 package com.ya3k.checklist.service.serviceimpl;
 
-import com.google.gson.Gson;
 import com.ya3k.checklist.enumm.StatusEnum;
 import com.ya3k.checklist.dto.TasksDto;
 import com.ya3k.checklist.dto.response.taskresponse.ImportResponse;
@@ -25,16 +24,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
-
-import static com.ya3k.checklist.mapper.TasksMapper.mapToTasks;
-
 
 @Slf4j
 @Service
@@ -243,7 +237,7 @@ public class TaskServiceImpl implements TasksService {
                     if (statusCell == null) {
                         task.setStatus("IN_PROGRESS");
                     } else {
-                        if(statusCell.getStringCellValue() == ""){
+                        if(statusCell.getStringCellValue().equals(" ")){
                             task.setStatus("IN_PROGRESS");
                         }else {
                             if (statusCell.getStringCellValue().trim().equalsIgnoreCase("COMPLETED") || statusCell.getStringCellValue().trim().equalsIgnoreCase("IN_PROGRESS")) {
@@ -264,7 +258,7 @@ public class TaskServiceImpl implements TasksService {
                     } else {
                         LocalDateTime createTime = LocalDateTime.now();
                         task.setCreateTime(createTime);
-                        if (!createTimeCell.getStringCellValue().equals("")) {
+                        if (!createTimeCell.getStringCellValue().equals(" ")) {
                             createTime = LocalDateTime.parse(createTimeCell.getStringCellValue(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                             if (createTime.isBefore(LocalDateTime.now())) {
                                 subMsg += "Row " + count + " is have error. Create time must be after today!\n";
@@ -380,7 +374,7 @@ public class TaskServiceImpl implements TasksService {
                     if (statusCell == null) {
                         task.setStatus("IN_PROGRESS");
                     } else {
-                        if(statusCell.getStringCellValue() == ""){
+                        if(statusCell.getStringCellValue().equals(" ")){
                             task.setStatus("IN_PROGRESS");
                         }else {
                             if (statusCell.getStringCellValue().trim().equalsIgnoreCase("COMPLETED") || statusCell.getStringCellValue().trim().equalsIgnoreCase("IN_PROGRESS")) {
