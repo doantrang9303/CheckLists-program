@@ -31,7 +31,7 @@ import java.util.Objects;
 @Slf4j
 @RestController
 @RequestMapping("/tasks")
-@CrossOrigin(origins = "${front-end.url}",
+@CrossOrigin(origins = "${frontend.url}",
         allowedHeaders = "*",
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 @Tag(name = "Tasks API", description = "APIs for Tasks")
