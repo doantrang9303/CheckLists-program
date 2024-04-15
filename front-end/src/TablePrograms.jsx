@@ -15,7 +15,6 @@ import ProgramService from "./services/ProgramService";
 import "react-toastify/dist/ReactToastify.css";
 const TablePrograms = (props) => {
     const [showCreateProgram, setShowCreateProgram] = useState(false);
-    const [showSuccessToast, setShowSuccessToast] = useState(false); // State để kiểm soát việc hiển thị toastify
     const auth = useAuth();
     const formatDate = (dateString) => {
         return format(new Date(dateString), "yyyy/MM/dd");
