@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
@@ -10,9 +9,9 @@ import "react-datepicker/dist/react-datepicker.css"; // Import styles
 import TaskService from "../services/TaskService"; // Thay đổi import
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function CreateTask({ onClose }) {
-    
     const [show, setShow] = useState(true);
     const [taskName, setTaskName] = useState(""); // Thay đổi tên state thành taskName
     const [endTime, setEndDate] = useState(null);
@@ -37,18 +36,19 @@ function CreateTask({ onClose }) {
         const taskData = {
             task_name: taskName, // Thay đổi key thành name
             end_time: formattedEndTime,
-
-        }
+        };
         TaskService.createTask(taskData, id)
             .then((response) => {
                 console.log("Task created successfully:", response.data);
                 handleClose();
+                toast.success("Task created successfully!");
             })
             .catch((error) => {
                 console.error("Error creating task:", error);
                 setErrorMessage(
                     "The syntax is wrong, date should be in the future or task should have more than 3 words. Please try again."
                 );
+                toast.success("Failed to create task. Please try again.");
             });
     };
     return (
