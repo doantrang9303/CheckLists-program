@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.1
+    ports:
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command: ["start-dev"]
+  mysqldb:
+    image: mysql:8.3.0
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 23012003aA@
+      MYSQL_DATABASE: checklist
+    restart: always
+  
+  spring:
+ 
+    build:
+      context: ./back_end
+      dockerfile: Dockerfile
+    depends_on:
+      - mysqldb
+      - keycloak
+    environment:
+      - BE_PORT=9292
+      - DATASOURCE_URL=jdbc:mysql://localhost:3307/checklist
+      - DATASOURCE_USERNAME=root
+      - DATASOURCE_PASSWORD=23012003aA@
+      - KEYCLOAK_REALM=ya3ktest
+      - KEYCLOAK_CLIENT=auth-client
+      - KEYCLOAK_SECRET_CLIENT=T1lrAs44N7wsk1mfZxag54IXMO8NOOa1
+      - FE_URL=http://localhost:3000
+      - LOGGING_LEVEL_ROOT=INFO
+      - SPRING_LOG_LEVEL_ROOT=ERROR
+    ports:
+      - "9292:9292"
+  nodejs:
+    build: 
+      context: ./front-end
+      dockerfile: Dockerfile
+    depends_on:
+      - keycloak
+      - spring
+    environment:
+    - REACT_APP_KEYCLOAK_URL=http://localhost:8080
+    - REACT_APP_KEYCLOAK_REALM=ya3ktest
+    - REACT_APP_KEYCLOAK_CLIENT=auth-client
+    - REACT_APP_API_SSO_VERIFY_ACCESS_TOKEN=http://localhost:9292
+    - REACT_APP_KEYCLOAK_SECRET_CLIENT=T1lrAs44N7wsk1mfZxag54IXMO8NOOa1
+    - REACT_APP_KEYCLOAK_VERIFY=http://localhost:9292/verify-token
+    - REACT_APP_HOME_PAGE=http://localhost:3000
+    ports:
+      - "3000:3000"
+ 

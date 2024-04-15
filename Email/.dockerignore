@@ -1,0 +1,25 @@
+# Ignore Maven build directory
+target/
+
+# Ignore Gradle build directory
+build/
+
+# Ignore IDE files and directories
+.idea/
+*.iml
+*.ipr
+*.iws
+*.log
+
+# Ignore Git related files
+.git/
+.gitignore
+
+# Ignore Docker specific files
+.dockerignore
+
+# Ignore temporary files
+*.tmp
+*.swp
+
+# Ignore any other files/directories you don't want to include in the Docker image
