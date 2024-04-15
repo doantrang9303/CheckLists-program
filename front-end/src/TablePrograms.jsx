@@ -11,7 +11,7 @@ import { debounce } from "lodash";
 import Swal from "sweetalert2";
 import "./TablePrograms.css";
 import ProgramService from "./services/ProgramService";
-import { ToastContainer, toast } from "react-toastify";
+
 import "react-toastify/dist/ReactToastify.css";
 const TablePrograms = (props) => {
     const [showCreateProgram, setShowCreateProgram] = useState(false);
@@ -94,10 +94,8 @@ const TablePrograms = (props) => {
                 currentPage,
                 auth.userData?.profile.preferred_username
             );
-            toast.success("Program created successfully!");
         } catch (error) {
             console.error("Failed to create program:", error);
-            toast.error("Failed to create program. Please try again.");
         }
     };
     const [listPrograms, setListPrograms] = useState([]);
