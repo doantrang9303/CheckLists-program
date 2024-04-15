@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>WebSocket Test</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-    <script>
-        var socket = new SockJS("http://localhost:9292/ws");
-        var client = Stomp.over(socket);
+    <head>
+        <title>WebSocket Test</title>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+        <script>
+            // Kết nối với WebSocket endpoint
+            var socket = new SockJS("http://localhost:9292/ws");
+            var stompClient = Stomp.over(socket);
 
-        client.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
-            client.subscribe('/topic/progress', function (message) {
-                console.log('Received message: ' + message.body);
+            stompClient.connect({}, function (frame) {
+                console.log("Connected: " + frame);
+
+                // Subscribe để nhận các tin nhắn từ endpoint "/import/mess"
+                stompClient.subscribe("/importMess", function (message) {
+                    console.log("sub to importMess");
+                    showMessage(JSON.parse(message.body));
+                });
             });
 
-            fetch('http://localhost:9292/tasks/testUpload?program_id=1', {
-                method: 'POST'
-            })
-        });
-    </script>
-</head>
-<body>
-    <h1>WebSocket Test</h1>
-    <ul id="messages"></ul>
-</body>
+            function showMessage(message) {
+                $("#messages").append("<li>" + message + "</li>");
+            }
+        </script>
+    </head>
+    <body>
+        <h1>WebSocket Test</h1>
+        <ul id="messages"></ul>
+    </body>
 </html>

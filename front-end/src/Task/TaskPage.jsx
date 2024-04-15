@@ -16,8 +16,8 @@ import { toast } from "react-toastify";
 import "./TaskPage.css";
 import * as XLSX from "xlsx";
 import { ProgressBar } from "react-bootstrap";
-import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import { Stomp } from "@stomp/stompjs";
 import "react-toastify/dist/ReactToastify.css";
 const TaskPage = (props) => {
     const [showCreateTask, setShowCreateTask] = useState(false);
@@ -47,25 +47,21 @@ const TaskPage = (props) => {
             getTasks(currentPage, id);
         }
     }, [auth.isLoading, auth.userData, id]);
-
     useEffect(() => {
         const sock = new SockJS("http://localhost:9292/ws");
-        const client = Stomp.over(sock, { debug: false });
-        Stomp.debug = () => {};
-        client.connect({}, function () {
-            console.log('Connected to websocket!');
-            client.subscribe('/topic/progress', function (message) {
-                setIsImporting(true);
+        const client = Stomp.over(sock);
+        client.connect({}, () => {
+            console.log("Connected to web socket!");
+            client.subscribe("/topic/progress", (message) => {
                 const data = JSON.parse(message.body);
                 setImportProgress(
-                    Math.floor(data.savedCount / data.totalCount * 100)
+                    Math.floor((data.savedCount / data.totalCount) * 100)
                 );
             });
+            return () => {
+                client.abort();
+            };
         });
-    
-        return () => {
-            client.disconnect();
-        };
     }, []);
     ////////////////////////////////Delete Task///////////////////////////////////
     const handleCheckAll = (event) => {
@@ -356,6 +352,8 @@ const TaskPage = (props) => {
                         getTasks(currentPage, id);
                         return;
                     }
+                    setIsImporting(true);
+                    setImportProgress(0);
                     const response = await TaskService.importFile(file, id);
                     console.log("Data imported successfully:", response.data);
                     if (response.savedCount === 0) {
@@ -374,7 +372,6 @@ const TaskPage = (props) => {
                     }
                     setTimeout(() => {
                         setIsImporting(false);
-                        setImportProgress(0);
                     }, 750);
                 };
 

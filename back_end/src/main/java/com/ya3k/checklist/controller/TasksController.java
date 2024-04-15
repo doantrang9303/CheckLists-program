@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -56,6 +57,20 @@ public class TasksController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
 
+    @GetMapping("/testWebsocket")
+    public ResponseEntity<String> testWebsocket() {
+        log.debug("Received request to create a new task");
+        try {
+            //tasksService.sendWebsocketMessages();
+            return ResponseEntity.status(HttpStatus.OK).body("");
+
+        }
+        catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
+    }
     @PostMapping("/add")
     public ResponseEntity<String> createTask(@Valid @RequestBody TasksDto taskDto, @RequestHeader(name = "program_id") Integer programId) {
         log.debug("Received request to create a new task");
@@ -234,6 +249,7 @@ public class TasksController {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(TasksApiNoti.TASKNOTFOUND.getMessage());
             }
 
+            tasksService.updateTask(id, updatedTaskDto);
             String updateMessage = generateUpdateMessage(findTask, updatedTaskDto);
             log.info("Task updated: {}", updateMessage);
             log.debug("Task updated: {}", updateMessage);
@@ -244,7 +260,7 @@ public class TasksController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             log.error(TasksApiNoti.REQUESTERROR.getMessage() + e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal Server Error");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -267,5 +283,13 @@ public class TasksController {
     private void appendUpdateMessage(StringBuilder builder, String label, Object oldValue, Object newValue) {
         builder.append(label).append(" updated: ").append(oldValue).append(" to ").append(newValue).append(".\n");
     }
-
+    @PostMapping("/testUpload")
+    public ResponseEntity<ImportResponse> handleUpload(@RequestParam(name = "program_id") int programId, @RequestParam(name = "file") MultipartFile file) throws IOException {
+        log.debug("Received request to import tasks from excel file");
+        log.info("Received request to import tasks from excel file");
+        ImportResponse response = tasksService.hanldeUloadFile(programId, file);
+        log.debug("Import tasks from excel file successfully");
+        log.info("Import tasks from excel file successfully");
+        return ResponseEntity.ok().body(response);
+    }
 }

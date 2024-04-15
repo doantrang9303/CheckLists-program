@@ -26,5 +26,7 @@ public interface TasksService {
     TasksDto findByTaskId(int id);
 
 
-    public ImportResponse inportTask(MultipartFile file, int programId,WebSocketSession session);
+    public ImportResponse inportTask(MultipartFile file, int programId);
+
+    public ImportResponse hanldeUloadFile(int programId, MultipartFile file);
 }
