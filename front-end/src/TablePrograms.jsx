@@ -15,6 +15,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const TablePrograms = (props) => {
     const [showCreateProgram, setShowCreateProgram] = useState(false);
+    const [showSuccessToast, setShowSuccessToast] = useState(false); // State để kiểm soát việc hiển thị toastify
     const auth = useAuth();
     const formatDate = (dateString) => {
         return format(new Date(dateString), "yyyy/MM/dd");
@@ -77,6 +78,13 @@ const TablePrograms = (props) => {
         setShowCreateProgram(true);
     };
 
+    // Xử lý sự kiện nhấp ra ngoài modal
+    const handleOutsideClick = (event) => {
+        if (event.target === document.querySelector(".modal-overlay")) {
+            setShowCreateProgram(false);
+            // Xóa dòng này để không hiển thị toastify khi thoát ra khỏi modal
+        }
+    };
     const handleCloseCreateProgram = async () => {
         setShowCreateProgram(false);
         // Refresh the data on the current page
@@ -220,14 +228,20 @@ const TablePrograms = (props) => {
                             <option value="Completed">COMPLETED</option>
                         </Form.Select>
                     </li>
-                    <li style={{ display: "inline-block", marginLeft: "auto" }}>
+                    <li
+                        style={{
+                            display: "inline-block",
+                            marginLeft: "auto",
+                            textAlign: "center",
+                        }}
+                    >
                         <Button
                             style={{ width: "125px", color: "white" }}
                             type="button"
                             className="btn btn-info "
                             onClick={handleCreateProgramClick}
                         >
-                            Create Task
+                            Create Program
                         </Button>
                     </li>
                     <li style={{ display: "inline-block" }}>
