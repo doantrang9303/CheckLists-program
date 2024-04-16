@@ -1,0 +1,71 @@
+version: '3'
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.1
+    ports:
+      - "8080:8080"
+    command: ["start-dev"]
+    env_file:
+      - .env
+    networks:
+      - checklist-network
+
+  mysql:
+    image: mysql:8.3.0
+    depends_on:
+      - keycloak
+    ports:
+      - "3306:3306"
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - checklist-network
+
+  spring-app:
+    build:
+      context: ./back_end
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql
+      - keycloak
+    ports:
+      - "9292:9292"
+    env_file:
+      - .env
+    networks:
+      - checklist-network
+
+  mail-app:
+    build:
+      context: ./Email
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql
+      - spring-app
+      - keycloak
+    ports:
+      - "9000:9000"
+    env_file:
+      - .env
+    networks:
+      - checklist-network
+
+  nodejs:
+    build:
+      context: ./front-end
+      dockerfile: Dockerfile
+    depends_on:
+      - keycloak
+      - spring-app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    networks:
+      - checklist-network
+
+networks:
+  checklist-network:
+    driver: bridge

@@ -28,7 +28,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/programs")
-@CrossOrigin(origins = "${front-end.url}",
+@CrossOrigin(origins = "${frontend.url}",
         allowedHeaders = "*",
         methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 @Tag(name = "Programs API", description = "APIs for Programs")

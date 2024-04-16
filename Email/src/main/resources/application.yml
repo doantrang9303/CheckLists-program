@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: "jdbc:sqlserver://ThinkPad:1433;encrypt=true;trustServerCertificate=true;databaseName=test"
-    username: "sa"
-    password: "trang"
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/checklist?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:23012003aA@}
 
   mail:
     properties:
@@ -15,11 +15,10 @@ spring:
           starttls:
             enable=true:
             required=true:
-    username: "projectbygroup1@gmail.com"
-    port: 587
-    host: "smtp.gmail.com"
-    password: "memx qifl jhbw hacz"
-
+    username: ${SPRING_DATASOURCE_MAIL_USERNAME:projectbygroup1@gmail.com}
+    port: ${SPRING_DATASOURCE_MAIL_PORT:587}
+    host: ${SPRING_DATASOURCE_MAIL_HOST:smtp.gmail.com}
+    password: ${SPRING_DATASOURCE_MAIL_PASSWORD:memx qifl jhbw hacz}
 cron expression: '0 0/2 * * * ? '   # sau 1 hour gui mail 1 lan
 #Co the chon cai dat send mail theo nhung moc thoi gian sau:
 # cron expression: '0 30 20 ? * FRI'     :  8h30 moi toi thu 6 se gui mail 1 lan
@@ -27,5 +26,4 @@ cron expression: '0 0/2 * * * ? '   # sau 1 hour gui mail 1 lan
 
 logging:
   level:
-    root: info
-
+    root: ${LOGGING_LEVEL_ROOT}
