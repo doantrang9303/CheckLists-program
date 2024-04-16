@@ -9,7 +9,7 @@ import "react-datepicker/dist/react-datepicker.css"; // Import styles
 import ProgramService from "./services/ProgramService";
 import { useAuth } from "oidc-react";
 import { format } from "date-fns";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function CreateProgram({ onClose }) {
@@ -25,7 +25,6 @@ function CreateProgram({ onClose }) {
         setIsModalClosed(true);
         onClose();
     };
-
     const handleSaveChanges = (event) => {
         const form = event.currentTarget;
         if (form.checkValidity() === false) {
