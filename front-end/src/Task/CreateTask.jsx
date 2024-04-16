@@ -9,7 +9,7 @@ import "react-datepicker/dist/react-datepicker.css"; // Import styles
 import TaskService from "../services/TaskService"; // Thay đổi import
 import { useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 function CreateTask({ onClose }) {
     const [show, setShow] = useState(true);

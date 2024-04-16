@@ -11,16 +11,13 @@ import { debounce } from "lodash";
 import Swal from "sweetalert2";
 import "./TablePrograms.css";
 import ProgramService from "./services/ProgramService";
-
 import "react-toastify/dist/ReactToastify.css";
 const TablePrograms = (props) => {
     const [showCreateProgram, setShowCreateProgram] = useState(false);
-    const [showSuccessToast, setShowSuccessToast] = useState(false); // State để kiểm soát việc hiển thị toastify
     const auth = useAuth();
     const formatDate = (dateString) => {
         return format(new Date(dateString), "yyyy/MM/dd");
     };
-
     // Function click event to delete//////////////////////////////////////////////////
     const [selectedPrograms, setSelectedPrograms] = useState([]);
     const [isDeleteButtonEnabled, setIsDeleteButtonEnabled] = useState(false);
@@ -107,7 +104,7 @@ const TablePrograms = (props) => {
         if (!auth.isLoading && !!auth.userData) {
             getPrograms(currentPage, auth.userData?.profile.preferred_username);
         }
-    }, [auth.isLoading, auth.userData]);
+    }, [auth.isLoading]);
 
     useEffect(() => {
         if (listPrograms.length === 0 && currentPage > 1) {
@@ -118,8 +115,7 @@ const TablePrograms = (props) => {
             );
             setCurrentPage(previousPage);
         }
-    }, [listPrograms, currentPage, auth.userData]);
-    /////////////////useEffect////////////////
+    }, [listPrograms, currentPage, auth.userData]); /////////////////useEffect////////////////
     const getPrograms = async (page, username) => {
         let res = await ProgramSerivce.fetchAllProgram(page, username);
         if (res && res.program_list) {

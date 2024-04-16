@@ -114,7 +114,7 @@ const TaskPage = (props) => {
     useEffect(() => {
         setIsDeleteButtonEnabled(selectedTasks.length > 0);
     }, [selectedTasks]);
-    //////////////////////////////////////////////////////////////////////////////
+
     ////////////////////////////////Create Task///////////////////////////////////
     const handleCreateTaskClick = () => {
         setShowCreateTask(true);
@@ -126,7 +126,6 @@ const TaskPage = (props) => {
         setCurrentPage(1);
         getTasks(currentPage, id);
     };
-    ////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////Paging//////////////////////////////////////
     const [search, setSearch] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("");
@@ -241,80 +240,8 @@ const TaskPage = (props) => {
         }
     };
 
-    //------------Import--------------------------
-    // const handleImportExcel = async (event) => {
-    //     setIsImporting(true);
-    //     if (event.target && event.target.files && event.target.files[0]) {
-    //         const file = event.target.files[0];
-    //         if (
-    //             file.type !==
-    //             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    //         ) {
-    //             toast.error("Only accept Excel files (.xlsx) ...");
-    //             setIsImporting(false); // Ẩn ProgressBar nếu có lỗi
-    //             return;
-    //         }
-
-    //         try {
-    //             const reader = new FileReader(); // Di chuyển đến đây
-    //             reader.onload = async (e) => {
-    //                 const data = new Uint8Array(e.target.result);
-    //                 const workbook = XLSX.read(data, { type: "array" });
-
-    //                 // Lấy danh sách tất cả các sheet trong workbook
-    //                 const sheetNames = workbook.SheetNames;
-
-    //                 // Lấy dữ liệu từ sheet đầu tiên
-    //                 const firstSheet = workbook.Sheets[sheetNames[0]];
-
-    //                 // Chuyển đổi dữ liệu từ sheet thành mảng các đối tượng
-    //                 const excelData = XLSX.utils.sheet_to_json(firstSheet);
-
-    //                 const totalData = excelData.length;
-
-    //                 // Tiến hành import dữ liệu và cập nhật tiến độ
-    //                 const response = await TaskService.importFile(file, id);
-    //                 console.log("Data imported successfully:", response.data);
-    //                 toast.success("Data imported successfully!");
-    //                 getTasks(currentPage, id);
-    //                 setImportProgress(100); // Đặt tiến độ về 100% khi import hoàn tất
-    //                 setIsImporting(false); // Ẩn ProgressBar khi hoàn thành
-    //             };
-
-    //             reader.readAsArrayBuffer(file);
-    //         } catch (error) {
-    //             console.error("Failed to import data:", error);
-    //             toast.error("Failed to import data. Please try again.");
-    //             setIsImporting(false); // Ẩn ProgressBar nếu có lỗi
-    //         }
-    //     }
-    // };
-
     const [importProgress, setImportProgress] = useState(0);
     const [isImporting, setIsImporting] = useState(false); // State để kiểm soát việc hiển thị ProgressBar
-
-    // const handleImportExcel = async (event) => {
-    //     if (event.target && event.target.files && event.target.files[0]) {
-    //         const file = event.target.files[0];
-    //         if (
-    //             file.type !==
-    //             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    //         ) {
-    //             toast.error("Only accept Excel files (.xlsx) ...");
-    //             return;
-    //         }
-
-    //         try {
-    //             const response = await TaskService.importFile(file, id);
-    //             console.log("Data imported successfully:", response.data);
-    //             toast.success("Data imported successfully!");
-    //             getTasks(currentPage, id);
-    //         } catch (error) {
-    //             console.error("Failed to import data:", error);
-    //             toast.error("Failed to import data. Please try again.");
-    //         }
-    //     }
-    // };
     const handleImportExcel = async (event) => {
         if (event.target && event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -384,7 +311,7 @@ const TaskPage = (props) => {
         // Clear input value after import completes
         event.target.value = null;
     };
-    ////////////////////////////////////////////////////////////////////////////////
+
     ///////////////////////////////////Edit Task////////////////////////////////////
     const handleEditClick = (task) => {
         setSelectedTask(task); // Set selected task when a row is clicked
@@ -395,7 +322,6 @@ const TaskPage = (props) => {
         setCurrentPage(1);
         getTasks(currentPage, id);
     };
-    ////////////////////////////////////////////////////////////////////////////////
     return (
         <nav className="p-3 bg-light">
             <ul style={{ display: "flex", whiteSpace: "nowrap" }}>

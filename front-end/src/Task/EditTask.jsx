@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import TaskService from '../services/TaskService';
-import { format } from 'date-fns';
+import React, { useState, useEffect } from "react";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import TaskService from "../services/TaskService";
+import { format } from "date-fns";
 
 function EditTask({ task, onClose }) {
     const [show, setShow] = useState(true);
-    const [taskName, setTaskName] = useState('');
+    const [taskName, setTaskName] = useState("");
     const [endTime, setEndTime] = useState(null);
-    const [status, setStatus] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
+    const [status, setStatus] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     useEffect(() => {
         setTaskName(task.task_name);
@@ -28,28 +28,24 @@ function EditTask({ task, onClose }) {
     };
 
     const handleSaveChanges = () => {
-        const formattedEndTime = endTime ? format(endTime, 'yyyy-MM-dd') : null;
+        const formattedEndTime = endTime ? format(endTime, "yyyy-MM-dd") : null;
         const updatedTaskData = {
             task_name: taskName,
-            end_time:formattedEndTime,
+            end_time: formattedEndTime,
             status: status,
         };
 
         TaskService.editTask(task.id, updatedTaskData)
-            .then(response => {
-                console.log('Task updated successfully:', response.data);
+            .then((response) => {
+                console.log("Task updated successfully:", response.data);
                 handleClose();
             })
-            .catch(error => {
-                console.error('Error updating task:', error);
-                setErrorMessage('The syntax is wrong, date should be in the future or task should have more than 3 words. Please try again.');
+            .catch((error) => {
+                console.error("Error updating task:", error);
+                setErrorMessage(
+                    "The syntax is wrong, date should be in the future or task should have more than 3 words. Please try again."
+                );
             });
-    };
-    const handleEditClick = (e) => {
-        // Check if the clicked element is not the checkbox
-        if (!e.target.closest('.CheckOption')) {
-            setShow(true); // Open edit modal
-        }
     };
 
     return (
@@ -58,15 +54,21 @@ function EditTask({ task, onClose }) {
                 <Modal.Title>Edit Task</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
                 <Form>
                     <Row>
                         <Col md={7}>
                             <Form.Group className="mb-3" controlId="Input1">
                                 <Form.Label>Task Name</Form.Label>
-                                <Form.Control type="text" placeholder="Enter Task Name" autoFocus
+                                <Form.Control
+                                    type="text"
+                                    placeholder="Enter Task Name"
+                                    autoFocus
                                     value={taskName}
-                                    onChange={e => setTaskName(e.target.value)} />
+                                    onChange={(e) =>
+                                        setTaskName(e.target.value)
+                                    }
+                                />
                             </Form.Group>
                         </Col>
                         <Col md={5}>
@@ -74,7 +76,7 @@ function EditTask({ task, onClose }) {
                                 <Form.Label>End Date</Form.Label>
                                 <DatePicker
                                     selected={endTime}
-                                    onChange={date => setEndTime(date)}
+                                    onChange={(date) => setEndTime(date)}
                                     dateFormat="yyyy/MM/dd"
                                     placeholderText="Select End Date"
                                     className="form-control"
@@ -86,10 +88,15 @@ function EditTask({ task, onClose }) {
                         <Col md={12}>
                             <Form.Group className="mb-3" controlId="Input2">
                                 <Form.Label>Status</Form.Label>
-                                <Form.Select value={status} onChange={e => setStatus(e.target.value)}>
+                                <Form.Select
+                                    value={status}
+                                    onChange={(e) => setStatus(e.target.value)}
+                                >
                                     <option value="">Select Status</option>
 
-                                    <option value="IN_PROGRESS">IN_PROGRESS</option>
+                                    <option value="IN_PROGRESS">
+                                        IN_PROGRESS
+                                    </option>
                                     <option value="COMPLETED">COMPLETED</option>
                                 </Form.Select>
                             </Form.Group>

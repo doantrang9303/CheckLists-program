@@ -1,14 +1,11 @@
-import axios from "axios";
+import axios from "./customize-axios";
 
 const addUser = async (userName, email) => {
     try {
-        const response = await axios.post(
-            `${process.env.REACT_APP_API_SSO_VERIFY_ACCESS_TOKEN}/users/add`,
-            {
-                userName: userName,
-                email: email,
-            }
-        );
+        const response = await axios.post(`/users/add`, {
+            userName: userName,
+            email: email,
+        });
         return response.data;
     } catch (error) {
         throw error.response.data;
