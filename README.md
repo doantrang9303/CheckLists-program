@@ -63,26 +63,15 @@ Check: `mvn –version `
 
 
 ## SETTING PARAMETER
-
-### Setting for checklistprogram_server
-
-Modify application.properties file in: ` your_folder\CheckLists-program\checklistproject_server\src\main\resources `
-and choose `application.yml ` and change info match your system
-
-<img width="679" alt="image" src="https://github.com/doantrang9303/keycloak-containers-demo/assets/133722717/e0b6b712-bf1d-4c67-8383-d824f8718317">
+## SETUP ENVIRONMENT VARIABLE
+Open file `.env` in `CheckLists-program`
 
 
-### Setting for Front-end
-
-Open file .env in ` CheckLists-program\Front-end design` folder and change config keycloak suitable for your local computer:
-   
-<img width="442" alt="image" src="https://github.com/doantrang9303/CheckLists-program/assets/133722717/b0d9defe-ab9a-4267-b35c-18a18665a0ec">
-
-
-
+## RUN WITH DOCKER COMPOSE
+Open `cmd` in `CheckLits-program` folder.
+- enter : `docker-compose up`
 
 ## RUN CHECKLIST PROGRAM 
-
 ### Install source: 
 Open CMD: ` git clone https://github.com/doantrang9303/CheckLists-program `
  ####
@@ -92,32 +81,31 @@ Open docker
 #### Build image
 Open cmd :  `docker build -t imageName `.
 #### Run docker
-On cmd :  `docker run -p setPort(5173:5173) imageName`
+Open cmd :  `docker run -p setPort(5173:5173) imageName`
 
 ####
+### KeyCloak
+Default URL
+ `http://localhost:8080`
+User Name: `admin`
+Password: `admin`
+
+### DataBase
+MYSQL
+hostname: `localhost` or `mysql`
+port: `3306`
+user name : `root`
+password: `123456789aA@`
+
+#### Back-end:
+
+Access the project through your web browser at `http://localhost:9292`
+
+#### Front-end:  
+
+Access the project through your web browser at `http://localhost:3000`
 
 
-### Run program by CMD:
-
-#### Start Back-end:
-Navigate to the project directory:` cd CheckLists-program/checklistproject_server `
-
-Build the project using Maven: ` mvn clean install `
-
-Run the project using Maven: ` mvn spring-boot:run`
-
-Access the project through your web browser at http://localhost:9292
-
-#### Start Front-end:  
-
-1. Open another terminal and navigate to ` CheckLists-program\Front-end design` folder
-  
-2. Run the command below if you are running the application for the first time:
-     `npm install`
-      
-3. Run the npm command below to start the application:
-    `npm start`
-    -> click  http://localhost:3000/ 
 
 
 
