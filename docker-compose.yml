@@ -13,6 +13,8 @@ services:
       - checklist-network
   mysql:
     image: mysql:8.3.0
+    depends_on:
+      - keycloak
     ports:
       - "3306:3306"
     restart: always
@@ -42,6 +44,31 @@ services:
       - LOGGING_LEVEL_ROOT=INFO
       - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK=ERROR
     
+    networks:
+      - checklist-network
+
+  mail-app:
+    build:
+      context: ./Email
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql
+      - spring-app
+      - keycloak
+    ports:
+      - "9000:9000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/checklist?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=23012003aA@
+      - SPRING_DATASOURCE_MAIL_USERNAME=projectbygroup1@gmail.com
+      - SPRING_DATASOURCE_MAIL_PASSWORD=memx qifl jhbw hacz
+      - SPRING_DATASOURCE_MAIL_PORT=587
+      - SPRING_DATASOURCE_MAIL_HOST=smtp.gmail.com
+      - FRONTEND_URL=http://localhost:3000
+      - LOGGING_LEVEL_ROOT=INFO
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK=ERROR
+
     networks:
       - checklist-network
   nodejs:
