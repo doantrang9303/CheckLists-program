@@ -230,7 +230,7 @@ const TablePrograms = (props) => {
                         }}
                     >
                         <Button
-                            style={{ width: "125px", color: "white" }}
+                            style={{ width: "135px", color: "white" , textAlign: "center"}}
                             type="button"
                             className="btn btn-info "
                             onClick={handleCreateProgramClick}
