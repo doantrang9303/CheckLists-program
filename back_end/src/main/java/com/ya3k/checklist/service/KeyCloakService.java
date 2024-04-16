@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 public class KeyCloakService {
 
 
-    @Value("${keycloak.client-id}")
+    @Value("${keycloak.client}")
     private  String CLIENT_ID;
     @Value("${keycloak.client-secret}")
     private  String CLIENT_SECRET;
