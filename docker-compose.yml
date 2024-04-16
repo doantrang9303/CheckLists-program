@@ -5,12 +5,12 @@ services:
     image: quay.io/keycloak/keycloak:24.0.1
     ports:
       - "8080:8080"
-    environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=admin
     command: ["start-dev"]
+    env_file:
+      - .env
     networks:
       - checklist-network
+
   mysql:
     image: mysql:8.3.0
     depends_on:
@@ -18,10 +18,11 @@ services:
     ports:
       - "3306:3306"
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: 23012003aA@
+    env_file:
+      - .env
     networks:
       - checklist-network
+
   spring-app:
     build:
       context: ./back_end
@@ -29,21 +30,10 @@ services:
     depends_on:
       - mysql
       - keycloak
-    
     ports:
       - "9292:9292"
-    environment:
-      - SERVER_PORT=9292
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/checklist?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=23012003aA@
-      - KEYCLOAK_REALM=checklistrealm
-      - KEYCLOAK_CLIENT=checklistclient
-      - KEYCLOAK_CLIENT_SECRET=nQZklt23waTcHvc6APt5rRBPRjr9uhgS
-      - FRONTEND_URL=http://localhost:3000
-      - LOGGING_LEVEL_ROOT=INFO
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK=ERROR
-    
+    env_file:
+      - .env
     networks:
       - checklist-network
 
@@ -57,20 +47,11 @@ services:
       - keycloak
     ports:
       - "9000:9000"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/checklist?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=23012003aA@
-      - SPRING_DATASOURCE_MAIL_USERNAME=projectbygroup1@gmail.com
-      - SPRING_DATASOURCE_MAIL_PASSWORD=memx qifl jhbw hacz
-      - SPRING_DATASOURCE_MAIL_PORT=587
-      - SPRING_DATASOURCE_MAIL_HOST=smtp.gmail.com
-      - FRONTEND_URL=http://localhost:3000
-      - LOGGING_LEVEL_ROOT=INFO
-      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK=ERROR
-
+    env_file:
+      - .env
     networks:
       - checklist-network
+
   nodejs:
     build: 
       context: ./front-end
@@ -78,16 +59,10 @@ services:
     depends_on:
       - keycloak
       - spring-app
-    environment:
-    - REACT_APP_KEYCLOAK_URL=http://localhost:8080
-    - REACT_APP_KEYCLOAK_REALM=checklistrealm
-    - REACT_APP_KEYCLOAK_CLIENT=checklistclient
-    - REACT_APP_API_SSO_VERIFY_ACCESS_TOKEN=http://localhost:9292
-    - REACT_APP_KEYCLOAK_SECRET_CLIENT=1EMVSL3W7lQZRbsDyyGvIR6eBGX8AsPc
-    - REACT_APP_KEYCLOAK_VERIFY=http://localhost:9292/verify-token
-    - REACT_APP_HOME_PAGE=http://localhost:3000
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     networks:
       - checklist-network
 
