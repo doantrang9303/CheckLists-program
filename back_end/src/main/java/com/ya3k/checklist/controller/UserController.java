@@ -22,11 +22,8 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<String> addUserInfo(@RequestHeader String userName, @RequestHeader String email) {
+    public ResponseEntity<String> addUserInfo(@RequestBody UsersDto usersDto) {
         try {
-            UsersDto usersDto = new UsersDto();
-            usersDto.setUserName(userName);
-            usersDto.setEmail(email);
             userServiceImpl.saveUsers(usersDto);
             log.info("Add info of user: {}  is successfully", usersDto.getUserName());
             return ResponseEntity.ok("User added successfully");
