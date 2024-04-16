@@ -1,35 +1,35 @@
 server:
-  port: 9000
+    port: 9000
 
 spring:
-  datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/checklist?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:23012003aA@}
-  jpa:
-    show-sql: false
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-  mail:
-    properties:
-      mail:
-        smtp:
-          auth=true:
-          starttls:
-            enable=true:
-            required=true:
-    username: ${SPRING_DATASOURCE_MAIL_USERNAME:projectbygroup1@gmail.com}
-    port: ${SPRING_DATASOURCE_MAIL_PORT:587}
-    host: ${SPRING_DATASOURCE_MAIL_HOST:smtp.gmail.com}
-    password: ${SPRING_DATASOURCE_MAIL_PASSWORD:memx qifl jhbw hacz}
-cron expression: '0 0/2 * * * ? '   # sau 1 hour gui mail 1 lan
+    datasource:
+        url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/checklist?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
+        username: ${SPRING_DATASOURCE_USERNAME:root}
+        password: ${SPRING_DATASOURCE_PASSWORD:23012003aA@}
+    jpa:
+        show-sql: false
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                dialect: org.hibernate.dialect.MySQLDialect
+    mail:
+        properties:
+            mail:
+                smtp:
+                    auth=true:
+                    starttls:
+                        enable=true:
+                        required=true:
+        username: ${SPRING_DATASOURCE_MAIL_USERNAME:projectbygroup1@gmail.com}
+        port: ${SPRING_DATASOURCE_MAIL_PORT:587}
+        host: ${SPRING_DATASOURCE_MAIL_HOST:smtp.gmail.com}
+        password: ${SPRING_DATASOURCE_MAIL_PASSWORD:memx qifl jhbw hacz}
+cron expression: "0 0/2 * * * ? " # sau 1 hour gui mail 1 lan
 #Co the chon cai dat send mail theo nhung moc thoi gian sau:
 # cron expression: '0 30 20 ? * FRI'     :  8h30 moi toi thu 6 se gui mail 1 lan
 # cron expression: '0 0 20 ? * MON-FRI' :  8h moi toi thu 2-thu 6 se gui mail 1 lan
 
 logging:
-  level:
-    root: ${LOGGING_LEVEL_ROOT}
+    level:
+        root: ${LOGGING_LEVEL_ROOT}
