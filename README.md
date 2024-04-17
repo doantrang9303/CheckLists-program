@@ -35,11 +35,6 @@ Check: `mvn –version `
 ### **Install Node.js**
 -Node.js v20.11.1 :  ` https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi `
 
-
-## SETTING PARAMETER
-## SETUP ENVIRONMENT VARIABLE
-Open file `.env` in `CheckLists-program`
-
 ## CLONE CHECKLIST PROGRAM 
 ### Install source: 
 Open CMD: ` git clone https://github.com/doantrang9303/CheckLists-program `
@@ -74,6 +69,12 @@ On the next form fill in the following values:
 <img width="388" alt="image" src="https://github.com/doantrang9303/CheckLists-program/assets/133722717/e9583a1d-4af5-4a2a-a788-d9bc42707cc8">
 
 
+
+## SETTING PARAMETER
+## SETUP ENVIRONMENT VARIABLE
+Open file `.env` in `CheckLists-program`
+
+
 ### DataBase
 MYSQL
 hostname: `localhost` or `mysql`
@@ -84,6 +85,11 @@ password: `123456789aA@`
 #### Back-end:
 
 Access the project through your web browser at `http://localhost:9292`
+Health Check `http://localhost:9292/actuator/health`
+### Mail
+
+Access the project through your web browser at `http://localhost:9000`
+Health Check `http://localhost:9000/actuator/health`
 
 #### Front-end:  
 
