@@ -43,7 +43,7 @@ Open CMD: ` git clone https://github.com/doantrang9303/CheckLists-program `
 Open `cmd` in `CheckLits-program` folder.
 - enter : `docker-compose up`
 
-### KeyCloak
+## KeyCloak URL
 Default URL
  `http://localhost:8080`
 User Name: `admin`
@@ -75,23 +75,23 @@ On the next form fill in the following values:
 Open file `.env` in `CheckLists-program`
 
 
-### DataBase
+## DataBase
 MYSQL
 hostname: `localhost` or `mysql`
 port: `3306`
 user name : `root`
 password: `123456789aA@`
 
-#### Back-end:
+## Back-end:
 
 Access the project through your web browser at `http://localhost:9292`
 Health Check `http://localhost:9292/actuator/health`
-### Mail
+## Mail
 
 Access the project through your web browser at `http://localhost:9000`
 Health Check `http://localhost:9000/actuator/health`
 
-#### Front-end:  
+## Front-end:  
 
 Access the project through your web browser at `http://localhost:3000`
 
