@@ -25,8 +25,9 @@ spring:
         port: ${SPRING_DATASOURCE_MAIL_PORT:587}
         host: ${SPRING_DATASOURCE_MAIL_HOST:smtp.gmail.com}
         password: ${SPRING_DATASOURCE_MAIL_PASSWORD:memx qifl jhbw hacz}
-cron expression: "0 0/2 * * * ? " # sau 1 hour gui mail 1 lan
+cron expression: '0 0 8 * * ?' # 8h00 sang moi ngay se gui mail 1 lan
 #Co the chon cai dat send mail theo nhung moc thoi gian sau:
+#cron expression: '0 0/2 * * * ?' # sau 2p  gui mail 1 lan
 # cron expression: '0 30 20 ? * FRI'     :  8h30 moi toi thu 6 se gui mail 1 lan
 # cron expression: '0 0 20 ? * MON-FRI' :  8h moi toi thu 2-thu 6 se gui mail 1 lan
 
