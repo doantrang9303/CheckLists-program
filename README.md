@@ -5,32 +5,6 @@
 ### **Install Docker**
 `https://www.docker.com/products/docker-desktop`
 
-### **Start Keycloak**
-Open CMD : `docker run -p 8080:8080 -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin quay.io/keycloak/keycloak:23.0.7 start-dev`
-
-
-
-#### Creating the realm
-
-Open [Keycloak Admin Console](http://localhost:8080/admin/). Login with Username & Password = admin
-
-Create a new realm called with YOUR_REALM_NAME you choice(find the `add realm` button in the drop-down
-in the top-left corner). 
-
-
-#### Create a client
-
-Now create a client for the JS console by clicking on `clients` then `create`.
-
-Fill in the following values:
-
-* Client ID: YOUR_CLIENT_NAME 
-
-On the next form fill in the following values:
-
-<img width="388" alt="image" src="https://github.com/doantrang9303/CheckLists-program/assets/133722717/e9583a1d-4af5-4a2a-a788-d9bc42707cc8">
-
-
 
 ### **Install GIT for WINDOWS**
  Download and install GIT : https://git-scm.com/download/win
@@ -66,29 +40,39 @@ Check: `mvn –version `
 ## SETUP ENVIRONMENT VARIABLE
 Open file `.env` in `CheckLists-program`
 
+## CLONE CHECKLIST PROGRAM 
+### Install source: 
+Open CMD: ` git clone https://github.com/doantrang9303/CheckLists-program `
 
 ## RUN WITH DOCKER COMPOSE
 Open `cmd` in `CheckLits-program` folder.
 - enter : `docker-compose up`
 
-## RUN CHECKLIST PROGRAM 
-### Install source: 
-Open CMD: ` git clone https://github.com/doantrang9303/CheckLists-program `
- ####
- 
-### Run program by Docker:
-Open docker 
-#### Build image
-Open cmd :  `docker build -t imageName `.
-#### Run docker
-Open cmd :  `docker run -p setPort(5173:5173) imageName`
-
-####
 ### KeyCloak
 Default URL
  `http://localhost:8080`
 User Name: `admin`
 Password: `admin`
+#### Creating the realm
+
+Open [Keycloak Admin Console](http://localhost:8080/admin/). Login with Username & Password = admin
+
+Create a new realm called with YOUR_REALM_NAME you choice(find the `add realm` button in the drop-down
+in the top-left corner). 
+
+
+#### Create a client
+
+Now create a client for the JS console by clicking on `clients` then `create`.
+
+Fill in the following values:
+
+* Client ID: YOUR_CLIENT_NAME 
+
+On the next form fill in the following values:
+
+<img width="388" alt="image" src="https://github.com/doantrang9303/CheckLists-program/assets/133722717/e9583a1d-4af5-4a2a-a788-d9bc42707cc8">
+
 
 ### DataBase
 MYSQL
