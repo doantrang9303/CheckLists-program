@@ -52,8 +52,10 @@ Password: `admin`
 
 Open [Keycloak Admin Console](http://localhost:8080/admin/). Login with Username & Password = admin
 
-Create a new realm called with YOUR_REALM_NAME (should be `checklistrealm`) you choice(find the `add realm` button in the drop-down
+Create a new realm called with YOUR_REALM_NAME (should be `checklistrealm`) and modify in .env file you choice(find the `add realm` button in the drop-down
 in the top-left corner). 
+
+
 
 
 #### Create a client
@@ -66,11 +68,13 @@ On the next form fill in the following values:
 
 <img width="388" alt="image" src="https://github.com/doantrang9303/CheckLists-program/assets/133722717/e9583a1d-4af5-4a2a-a788-d9bc42707cc8">
 
+####
 
 ## SETTING PARAMETER
 ## SETUP ENVIRONMENT VARIABLE
 Open file `.env` in `CheckLists-program`
 
+Change environment variable matches what's in your device.
 
 ## DataBase
 MYSQL
