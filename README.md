@@ -67,6 +67,12 @@ Chose import client and import client `checklistclient.json` from `CheckLists-pr
 On the next form fill in the following values:
 
 <img width="388" alt="image" src="https://github.com/doantrang9303/CheckLists-program/assets/133722717/e9583a1d-4af5-4a2a-a788-d9bc42707cc8">
+#### Create new user
+![image](https://github.com/doantrang9303/CheckLists-program/assets/98958049/1bdb0ffd-e4ae-48ff-b649-6d5b48f7b4fc)
+
+And setup password for new user
+![image](https://github.com/doantrang9303/CheckLists-program/assets/98958049/6ee2617b-032a-42a1-b3b0-d5da59a1fe3b)
+
 
 ####
 
