@@ -52,22 +52,19 @@ Password: `admin`
 
 Open [Keycloak Admin Console](http://localhost:8080/admin/). Login with Username & Password = admin
 
-Create a new realm called with YOUR_REALM_NAME you choice(find the `add realm` button in the drop-down
+Create a new realm called with YOUR_REALM_NAME (should be `checklistrealm`) you choice(find the `add realm` button in the drop-down
 in the top-left corner). 
 
 
 #### Create a client
-
 Now create a client for the JS console by clicking on `clients` then `create`.
+![image](https://github.com/doantrang9303/CheckLists-program/assets/98958049/6b05dde4-c1ae-467c-b75b-49978b1c415d)
 
-Fill in the following values:
-
-* Client ID: YOUR_CLIENT_NAME 
+Chose import client and import client `checklistclient.json` from `CheckLists-program\client_keycloak` 
 
 On the next form fill in the following values:
 
 <img width="388" alt="image" src="https://github.com/doantrang9303/CheckLists-program/assets/133722717/e9583a1d-4af5-4a2a-a788-d9bc42707cc8">
-
 
 
 ## SETTING PARAMETER
