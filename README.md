@@ -81,7 +81,7 @@ MYSQL
 hostname: `localhost` or `mysql`
 port: `3306`
 user name : `root`
-password: `123456789aA@`
+password: `23012003aA@`
 
 ## Back-end:
 
