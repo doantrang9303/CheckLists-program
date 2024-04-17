@@ -85,10 +85,12 @@ password: `123456789aA@`
 ## Back-end:
 
 Access the project through your web browser at `http://localhost:9292`
+
 Health Check `http://localhost:9292/actuator/health`
 ## Mail
 
 Access the project through your web browser at `http://localhost:9000`
+
 Health Check `http://localhost:9000/actuator/health`
 
 ## Front-end:  
