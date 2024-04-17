@@ -83,6 +83,9 @@ port: `3306`
 user name : `root`
 password: `23012003aA@`
 
+Create new database with name : `checklist`
+Use sql script in `CheckLists-program\databases`
+
 ## Back-end:
 
 Access the project through your web browser at `http://localhost:9292`
