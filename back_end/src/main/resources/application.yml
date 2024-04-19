@@ -9,12 +9,12 @@ keycloak:
   client: ${KEYCLOAK_CLIENT}
   realm: ${KEYCLOAK_REALM}
   client-secret: ${KEYCLOAK_CLIENT_SECRET}
-  introspect-url: "http://localhost:8080/realms/${keycloak.realm}/protocol/openid-connect/token/introspect"
+  introspect: ${KEYCLOAK_INTROSPECT}
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/checklist?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:23012003aA@}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     show-sql: false
     hibernate:
