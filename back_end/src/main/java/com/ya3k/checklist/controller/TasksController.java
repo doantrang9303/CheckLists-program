@@ -54,21 +54,7 @@ public class TasksController {
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
 
-    @GetMapping("/testWebsocket")
-    public ResponseEntity<String> testWebsocket() {
-        log.debug("Received request to create a new task");
-        try {
-            //tasksService.sendWebsocketMessages();
-            return ResponseEntity.status(HttpStatus.OK).body("");
-
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-
-    }
-
-    @PostMapping("/add")
+        @PostMapping("/add")
     public ResponseEntity<String> createTask(@Valid @RequestBody TasksDto taskDto, @RequestHeader(name = "program_id") Integer programId) {
         log.debug("Received request to create a new task");
         try {
@@ -186,16 +172,15 @@ public class TasksController {
 
     }
 
-    @PostMapping("/importTasksFromExcel")
-    public ResponseEntity<ImportResponse> importTasksFromExcel(@RequestParam(name = "program_id") int programId, @RequestParam("file") MultipartFile filePath) throws IOException {
-        log.debug("Received request to import tasks from excel file");
-        log.info("Received request to import tasks from excel file");
-        ImportResponse response = tasksService.inportTask(filePath, programId);
-        log.debug("Import tasks from excel file successfully");
-        log.info("Import tasks from excel file successfully");
-        return ResponseEntity.ok().body(response);
-
-    }
+//    @PostMapping("/importTasksFromExcel")
+//    public ResponseEntity<ImportResponse> importTasksFromExcel(@RequestParam(name = "program_id") int programId, @RequestParam("file") MultipartFile filePath) throws IOException {
+//        log.debug("Received request to import tasks from excel file");
+//        log.info("Received request to import tasks from excel file");
+//        ImportResponse response = tasksService.inportTask(filePath, programId);
+//        log.debug("Import tasks from excel file successfully");
+//        log.info("Import tasks from excel file successfully");
+//        return ResponseEntity.ok().body(response);
+//    }
 
 
     @Operation(summary = "Update Tasks", description = "Update Tasks by Tasks ID")
