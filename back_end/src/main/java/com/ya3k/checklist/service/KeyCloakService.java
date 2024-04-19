@@ -18,7 +18,7 @@ public class KeyCloakService {
     private  String CLIENT_ID;
     @Value("${keycloak.client-secret}")
     private  String CLIENT_SECRET;
-    @Value("${keycloak.introspect-url}")
+    @Value("${keycloak.introspect}")
     private  String INTROSPECT_URL;
 
 
