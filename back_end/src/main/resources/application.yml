@@ -1,20 +1,20 @@
 server:
-  port: ${SERVER_PORT}
+  port: ${SERVER_PORT:9292}
 
 frontend:
-  url: ${FRONTEND_URL}
+  url: ${FRONTEND_URL:https://qn24cpl202401.z23.web.core.windows.net}
 backend:
   url: "http://localhost:9292"
 keycloak:
-  client: ${KEYCLOAK_CLIENT}
-  realm: ${KEYCLOAK_REALM}
-  client-secret: ${KEYCLOAK_CLIENT_SECRET}
-  introspect: ${KEYCLOAK_INTROSPECT}
+  client: ${KEYCLOAK_CLIENT:checklistclient}
+  realm: ${KEYCLOAK_REALM:checklistrealm}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:nD356nxehtoB7G4KPDw3E6Q3TcYO3QiF}
+  introspect: ${KEYCLOAK_INTROSPECT:https://qn24-cpl-2024-01.azurewebsites.net/realms/checklistrealm/protocol/openid-connect/token/introspect}
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://qn24-cpl-2024-01-db.mysql.database.azure.com:3306/checklist?useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:dvan23}
+    password: ${SPRING_DATASOURCE_PASSWORD:23012003aA@}
   jpa:
     show-sql: false
     hibernate:
@@ -48,11 +48,11 @@ springdoc:
 logging:
   level:
     org:
-      springframework: ${LOGGING_LEVEL_ORG_SPRINGFRAMEWORK}
+      springframework: ${LOGGING_LEVEL_ORG_SPRINGFRAMEWORK:ERROR}
       hibernate: off
       apache.catalina: off
     com.zaxxer: off
-    root: ${LOGGING_LEVEL_ROOT}
+    root: ${LOGGING_LEVEL_ROOT:INFO}
   pattern:
     console: "%clr(CheckList_project){faint}  %clr(%-40.40logger{39}){cyan} %clr(%23.23M){green} %clr(%d{yyyy-MM-dd E HH:mm:ss}){faint} %clr([%6X{requestId}]){faint} %clr(${LOG_LEVEL_PATTERN:%5p}) %clr(:){faint} %m%n%clr(${LOG_EXCEPTION_CONVERSION_WORD:%wEx}){red}"
 
